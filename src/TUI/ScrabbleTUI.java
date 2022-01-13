@@ -1,6 +1,6 @@
 package TUI;
 
-public class ScrabbleTUI {
+public class ScrabbleTUI implements ANSI {
 
 
 }
