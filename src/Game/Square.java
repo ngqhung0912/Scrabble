@@ -1,7 +1,7 @@
 package Game;
 
 public class Square {
-    private TileType type;
+    private SquareType type;
     private Tile tile;
 
     /**
@@ -9,7 +9,7 @@ public class Square {
      * @param type
      * @param tile
      */
-    public Square(TileType type, Tile tile) {
+    public Square(SquareType type, Tile tile) {
         this.tile = tile;
         this.type = type;
     }
@@ -18,7 +18,7 @@ public class Square {
      *
      * @return
      */
-    public TileType getType() {
+    public SquareType getType() {
         return type;
     }
 
@@ -26,8 +26,7 @@ public class Square {
         this.tile = tile;
     }
 
-    /**
-     *
+     /*
      * @return
      */
     public Tile getTile() {
@@ -38,7 +37,7 @@ public class Square {
      *
      * @param type
      */
-    public void setType(TileType type) {
+    public void setType(SquareType type) {
         this.type = type;
     }
 
