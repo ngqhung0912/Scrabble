@@ -30,6 +30,7 @@ public class BoardConstructor  {
 
             for (int x = 0; x < board.SIZE; x++) {
                 //implement switch case for color-coding special
+
                 Square square = board.getField();
                 switch (square.getType()) {
                     case CENTER:
