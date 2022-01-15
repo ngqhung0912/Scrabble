@@ -7,10 +7,9 @@ public class Square {
     /**
      *
      * @param type
-     * @param tile
+     *
      */
-    public Square(SquareType type, Tile tile) {
-        this.tile = tile;
+    public Square(SquareType type) {
         this.type = type;
     }
 
@@ -26,34 +25,24 @@ public class Square {
         this.tile = tile;
     }
 
-     /*
+     /**
      * @return
      */
     public Tile getTile() {
         return tile;
     }
 
-    /**
-     *
-     * @param type
-     */
     public void setType(SquareType type) {
         this.type = type;
     }
+
 
     /**
      *
      * @return
      */
     public boolean hasTile() {
-        return false;
+        return tile == null ? false : true;
     }
 
-    /**
-     *
-     * @return
-     */
-    public boolean isEmpty() {
-        return false;
-    }
 }

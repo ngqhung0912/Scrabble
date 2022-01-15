@@ -14,22 +14,25 @@ public class Tile {
 
     /**
      *
-     * @param letter
+     * @return
      */
-    public void setLetter(char letter) {
-        this.letter = letter;
+    public int getPoint() {
+        return point;
     }
 
     /**
      *
      */
-    public Tile()   {
-
+    public Tile(char letter, int point)   {
+        this.letter = letter;
+        this.point = point;
     }
 
-    public boolean isBlank(){
-        return false;
+    /**
+     * 0 represents a blank tile
+     * @return
+     */
+    public boolean isBlank() {
+        return letter == '0' ? true : false;
     }
-
-
 }

@@ -58,9 +58,7 @@ Backup[ ]of[ ]*.numbers/
 *.vpp.working-journal
 *.lock
 tmp/*
-<<<<<<< HEAD
-*.vpp.lck
-*.vpp.bak_*
 
-=======
->>>>>>> ccae4103c4c2d3213fffd2017c0883348dc56259
+*.vpp.lck
+
+*.vpp.bak_*
