@@ -46,11 +46,20 @@ Backup[ ]of[ ]*.pages/
 Backup[ ]of[ ]*.key/
 Backup[ ]of[ ]*.numbers/
 
+<<<<<<< HEAD
+=======
+# Visual Paradigm
+*.bak_000f
+*.lck
+>>>>>>> ccae4103c4c2d3213fffd2017c0883348dc56259
 .vpprefdata/
 *.vpp~*
 *.vpp.working
 *.vpp.working-journal
 *.lock
 tmp/*
+<<<<<<< HEAD
 *.lck
 *.bak_000f
+=======
+>>>>>>> ccae4103c4c2d3213fffd2017c0883348dc56259
