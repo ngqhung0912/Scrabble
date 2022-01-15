@@ -66,9 +66,10 @@ public class BoardConstructor  {
                 } else if (y == board.SIZE - 1 && x == board.SIZE - 1) {
                     builder.append("━━━━┛");
                 }
-//                else if (y == board.SIZE -1 && x == board.SIZE-1) {
-            }
+                else if (y == board.SIZE -1 && x == board.SIZE-1) {
 
+                }
+            }
 
 
             }
