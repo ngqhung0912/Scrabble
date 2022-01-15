@@ -59,7 +59,7 @@ Backup[ ]of[ ]*.numbers/
 *.lock
 tmp/*
 <<<<<<< HEAD
-*.lck
-*.bak_000f
+*.vpp.lck
+*.vpp.bak_*
 =======
 >>>>>>> ccae4103c4c2d3213fffd2017c0883348dc56259
