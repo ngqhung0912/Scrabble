@@ -8,14 +8,14 @@ public class Board {
 
 
     public Board(){
-        squaresBoard = new Square[SIZE-1][SIZE-1];
+        squaresBoard = new Square[SIZE][SIZE];
 
-        for (Square[] squares : squaresBoard) {
-            for (Square square : squares) {
-                square.setType(SquareType.NORMAL);
-
+        for (int x = 0; x < SIZE; x++){
+            for (int y = 0; y < SIZE; y++){
+                squaresBoard[x][y] = new Square(SquareType.NORMAL);
             }
         }
+
 
         squaresBoard[0][0].setType(SquareType.TRIPLE_WORD);
         squaresBoard[0][7].setType(SquareType.TRIPLE_WORD);
@@ -71,7 +71,6 @@ public class Board {
         squaresBoard[13][9].setType(SquareType.TRIPLE_LETTER);
 
         squaresBoard[7][7].setType(SquareType.CENTER);
-
 
 
 
