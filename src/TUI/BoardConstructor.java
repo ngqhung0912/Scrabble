@@ -73,10 +73,11 @@ public class BoardConstructor  {
                 else {
                     builder.append("━━━━╋");
                 }
-//                builder.append("\n");
             }
-            builder.append(ANSI.RESET);
+            builder.append("\n");
+
         }
+        builder.append(ANSI.RESET);
         return builder.toString();
     }
     public static void main(String[] args) {
