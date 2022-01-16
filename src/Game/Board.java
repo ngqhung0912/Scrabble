@@ -12,11 +12,8 @@ public class Board {
     public Board(){
         squaresBoard = new Square[SIZE][SIZE];
 
-        for (int x = 0; x < SIZE; x++){
-            for (int y = 0; y < SIZE; y++){
-                squaresBoard[x][y] = new Square(SquareType.NORMAL);
-            }
-        }
+        for (int x = 0; x < SIZE; x++)
+            for (int y = 0; y < SIZE; y++) squaresBoard[x][y] = new Square(SquareType.NORMAL);
 
 
         squaresBoard[0][0].setType(SquareType.TRIPLE_WORD);
@@ -102,9 +99,7 @@ public class Board {
      */
     public void reset(){
         for (Square[] squareList: squaresBoard) {
-            for (Square square: squareList ){
-                square.reset();
-            }
+            for (Square square: squareList ) square.reset();
         }
     }
 

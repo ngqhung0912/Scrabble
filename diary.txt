@@ -1,1 +1,6 @@
 15/1/2022:
+
+16/1/2022:
+- Logic for tray assigning in controller: Initialize player with
+- Save all words by players in the board in a dictionary, then re-loop the dictionary to find it later if there
+is a word connected to that tile.
