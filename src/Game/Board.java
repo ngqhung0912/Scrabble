@@ -99,15 +99,8 @@ public class Board {
         return squaresBoard[x][y];
     }
 
-    public void setField(){
-
-    }
-
     public void reset(){
-
+        Board newBoard = new Board();
     }
 
-    public String toString(){
-        return null;
-    }
 }
