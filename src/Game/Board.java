@@ -95,8 +95,11 @@ public class Board {
     }
 
     public Square getSquare(int x, int y){
-
-        return squaresBoard[x][y];
+        boolean validIn = (x >= 0) && (x <= SIZE-1) && (y >= 0) && (y <= SIZE-1) ? true : false;
+        if (validIn) {
+            return squaresBoard[x][y];
+        }
+        return null;
     }
 
     public void reset(){
