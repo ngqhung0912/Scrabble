@@ -94,8 +94,9 @@ public class Board {
         return false;
     }
 
-    public Square getField(){
-        return null;
+    public Square getSquare(int x, int y){
+
+        return squaresBoard[x][y];
     }
 
     public void setField(){
