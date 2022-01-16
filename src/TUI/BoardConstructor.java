@@ -5,7 +5,9 @@ import Game.*;
 public class BoardConstructor  {
     public static String generateBoard() {
         Board board = new Board();
+
         StringBuilder builder = new StringBuilder();
+
         builder.append("    ");
         for (int x = 0; x < board.SIZE; x++) {
             builder.append("  " + ((char)(65+x)) + "  ");
@@ -25,13 +27,9 @@ public class BoardConstructor  {
         for (int y = 0; y < board.SIZE; y++) {
             builder.append("" + (y<9? "  " : " ") + (y+1) + " ");
             builder.append("┃");
-            builder.append("\n");
-
 
             for (int x = 0; x < board.SIZE; x++) {
-                //implement switch case for color-coding special
-
-                Square square = board.getField();
+                Square square = board.getSquare(x,y);
                 switch (square.getType()) {
                     case CENTER:
                         builder.append(ANSI.PURPLE_BACKGROUND);
@@ -49,45 +47,39 @@ public class BoardConstructor  {
                         builder.append(ANSI.YELLOW_BACKGROUND);
                         break;
                 }
+
                 Tile tile = square.getTile();
                 builder.append("  " + (tile != null ? tile.getLetter() : " ") + " ");
                 builder.append(ANSI.RESET);
                 builder.append("┃");
             }
-            builder.append("\n   ");
+            builder.append("\n    ");
             if (y < board.SIZE-1) {
                 builder.append("┣");
             }
             else {
             builder.append("┗");
             }
+
             for (int x = 0; x < board.SIZE; x++ ) {
                 if (y == board.SIZE - 1 && x < board.SIZE - 1) {
                     builder.append("━━━━┻");
                 } else if (y == board.SIZE - 1 && x == board.SIZE - 1) {
                     builder.append("━━━━┛");
                 }
-                else if (y == board.SIZE -1 && x == board.SIZE-1) {
-
+                else if (y < board.SIZE -1 && x == board.SIZE-1) {
+                    builder.append("━━━━┫");
                 }
+                else {
+                    builder.append("━━━━╋");
+                }
+//                builder.append("\n");
             }
-
-
-            }
-
-
-
+            builder.append(ANSI.RESET);
+        }
         return builder.toString();
-
     }
     public static void main(String[] args) {
         System.out.println(generateBoard());
     }
-
-
-
-
-
-
-
 }
