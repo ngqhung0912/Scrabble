@@ -48,8 +48,7 @@ public class BoardConstructor  {
                         break;
                 }
 
-                Tile tile = square.getTile();
-                builder.append("  " + (tile != null ? tile.getLetter() : " ") + " ");
+                builder.append("  " + (square.hasTile() ? square.getTile().getLetter() : " ") + " ");
                 builder.append(ANSI.RESET);
                 builder.append("┃");
             }
@@ -75,9 +74,8 @@ public class BoardConstructor  {
                 }
             }
             builder.append("\n");
-
+            builder.append(ANSI.RESET);
         }
-        builder.append(ANSI.RESET);
         return builder.toString();
     }
     public static void main(String[] args) {

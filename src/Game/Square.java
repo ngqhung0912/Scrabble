@@ -1,12 +1,16 @@
 package Game;
 
+/**
+ * @author Hung Nguyen
+ * @version 0.1
+ */
 public class Square {
     private SquareType type;
     private Tile tile;
 
     /**
-     *
-     * @param type
+     * Square Constructor
+     * @param type of the square, indicated by SquareType enum
      *
      */
     public Square(SquareType type) {
@@ -15,23 +19,31 @@ public class Square {
 
     /**
      *
-     * @return
+     * @return the type of this square
      */
     public SquareType getType() {
         return type;
     }
 
+    /**
+     *
+     * @param tile tile to be assigned to the square by player
+     */
     public void setTile(Tile tile) {
         this.tile = tile;
     }
 
      /**
-     * @return
+     * @return the current tile on the square
      */
     public Tile getTile() {
         return tile;
     }
 
+    /**
+     * Set the type of this square, when initialize board.
+     * @param type
+     */
     public void setType(SquareType type) {
         this.type = type;
     }
@@ -39,7 +51,7 @@ public class Square {
 
     /**
      *
-     * @return
+     * @return true if this square has a tile, false otherwise
      */
     public boolean hasTile() {
         return tile == null ? false : true;
