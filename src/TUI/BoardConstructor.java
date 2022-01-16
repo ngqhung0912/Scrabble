@@ -6,7 +6,9 @@ public class BoardConstructor  {
     public static String generateBoard() {
         Board board = new Board();
 
+
         StringBuilder builder = new StringBuilder();
+
 
         builder.append("    ");
         for (int x = 0; x < board.SIZE; x++) {
