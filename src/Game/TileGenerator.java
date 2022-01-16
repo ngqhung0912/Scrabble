@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TileGenerator {
-    public void generateInstruction(){
+    public List<Tile> generateInstruction(){
         /**
          * @invariant inititialCapacity == 26
          */
@@ -42,9 +42,11 @@ public class TileGenerator {
         List<Tile> tiles = new ArrayList<>(100);
         for(TileDescription tileDescription: input){
             for(int i = 0; i < tileDescription.getQuantity(); i++){
-                tiles.add(new Tile(tileDescription.getLetter(), tileDescription.getPoints()))
+                tiles.add(new Tile(tileDescription.getLetter(), tileDescription.getPoints()));
             }
         }
+
+        return tiles;
 
     }
 
