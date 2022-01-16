@@ -45,8 +45,4 @@ public class Square {
         return tile == null ? false : true;
     }
 
-    public void reset (){
-        tile = null;
-    }
-
 }

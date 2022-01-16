@@ -1,13 +1,11 @@
 package Game;
 
 public class Board {
-    // -- Instance variables -----------------------------------------
 
     public static final int SIZE = 15;
 
     private Square[][] squaresBoard;
 
-    // -- Constructors -----------------------------------------------
 
     public Board(){
         squaresBoard = new Square[SIZE][SIZE];
@@ -73,6 +71,9 @@ public class Board {
         squaresBoard[13][9].setType(SquareType.TRIPLE_LETTER);
 
         squaresBoard[7][7].setType(SquareType.CENTER);
+
+
+
     }
 
     public Board clone(){
@@ -85,9 +86,13 @@ public class Board {
         return copyCat;
     }
 
-//    public boolean gameOver(){
-//        return false;
-//    }
+    public int getSIZE() {
+        return SIZE;
+    }
+
+    public boolean gameOver(){
+        return false;
+    }
 
     public Square getSquare(int x, int y){
         boolean validIn = (x >= 0) && (x <= SIZE-1) && (y >= 0) && (y <= SIZE-1) ? true : false;
@@ -97,15 +102,8 @@ public class Board {
         return null;
     }
 
-    /**
-     * Empty the board
-     */
     public void reset(){
-        for (Square[] squareList: squaresBoard) {
-            for (Square square: squareList ){
-                square.reset();
-            }
-        }
+        Board newBoard = new Board();
     }
 
 }
