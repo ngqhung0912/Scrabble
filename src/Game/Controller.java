@@ -10,13 +10,13 @@ public class Controller  {
     private int currentPlayer;
     private Player[] players;
 
-    public Controller(int numPlayers) {
+    public Controller(int numPlayers, String[] playerList) {
         board = new Board();
         currentPlayer = 0;
         players = new Player[numPlayers];
-        for (Player player : players) {
-            player = new HumanPlayer();
-        }
+//        for (int i = 0; i < numPlayers; i++) {
+//            player = new Player(playerList[i]);
+//        }
 
     }
 
