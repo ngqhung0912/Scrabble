@@ -109,7 +109,7 @@ public class Game {
     }
 
     public boolean gameOver() {
-        return isEmptyTrayAndBag() && isFullBoard();
+        return isEmptyTrayAndBag() || isFullBoard();
     }
 
     public void start(){
@@ -124,7 +124,7 @@ public class Game {
 
     public void pass() {
         currentPlayer++;
-    }
+
 
 
 }
