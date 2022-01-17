@@ -1,5 +1,7 @@
 package Game;
 
+import java.util.ArrayList;
+
 /**
  * author Nhat Tran
  */
@@ -9,11 +11,11 @@ public class Player {
 
      private String name;
      private int point;
-     private Tile[] tray;
+     private ArrayList<Tile> tray;
 
      // -- Constructors -----------------------------------------------
 
-     public Player(String name, Tile[] tray){
+     public Player(String name, ArrayList<Tile> tray){
           this.name = name;
           point = 0;
           this.tray = tray;
@@ -31,17 +33,10 @@ public class Player {
       * Return the tray with the current tiles belongs to the player
       * @return tray - The tray with the current tiles belongs to the player
       */
-     public Tile[] getTray() {
+     public ArrayList<Tile>getTray() {
           return tray;
      }
 
-     /**
-      * Set the tray of the player with new tile(s)
-      * @param tray
-      */
-     public void setTray(Tile[] tray) {
-          this.tray = tray;
-     }
 
      /**
       * Get the current point of the player

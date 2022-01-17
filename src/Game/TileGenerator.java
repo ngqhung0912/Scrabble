@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TileGenerator {
-    public List<Tile> generateInstruction(){
+    public List<Tile> generateTiles(){
         /**
          * @invariant inititialCapacity == 26
          */
