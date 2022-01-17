@@ -25,6 +25,9 @@ xcuserdata/
 # IDE
 *.idea
 *.iml
+*.ipr
+*.iws
+
  
 # Generated files
 /web-app/WEB-INF
