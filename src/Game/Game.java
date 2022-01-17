@@ -10,7 +10,6 @@ import WordChecker.main.java.ScrabbleWordChecker;
 import java.util.ArrayList;
 import java.util.Random;
 
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -101,24 +100,31 @@ public class Game {
     }
 
 
-    public boolean isEmptyTray() {
-        return players[currentPlayer].getTray().isEmpty() && tileBag.isEmpty() ? true : false;
+    public boolean isEmptyTrayAndBag() {
+        return players[currentPlayer].getTray().isEmpty() && tileBag.isEmpty();
     }
 
     public boolean isFullBoard() {
         return false;
     }
 
-    public void start(){
+    public boolean gameOver() {
+        return isEmptyTrayAndBag() || isFullBoard();
+    }
 
+    public void start(){
     }
 
     public void update(){
-
     }
 
     public void printResult(){
 
     }
+
+    public void pass() {
+        currentPlayer++;
+
+
 
 }
