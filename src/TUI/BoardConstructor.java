@@ -3,8 +3,7 @@ import Game.*;
 
 
 public class BoardConstructor  {
-    public static String generateBoard() {
-        Board board = new Board();
+    public static String generateBoard(Board board) {
 
 
         StringBuilder builder = new StringBuilder();
@@ -78,9 +77,11 @@ public class BoardConstructor  {
             builder.append("\n");
             builder.append(ANSI.RESET);
         }
+
+
         return builder.toString();
     }
-    public static void main(String[] args) {
-        System.out.println(generateBoard());
-    }
+//    public static void main(String[] args) {
+//        System.out.println(generateBoard());
+//    }
 }

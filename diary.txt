@@ -4,3 +4,12 @@
 - Logic for tray assigning in controller: Initialize player with
 - Save all words by players in the board in a dictionary, then re-loop the dictionary to find it later if there
 is a word connected to that tile.
+
+17/1/2022:
+To do list:
+- Implementing the input controller.
+- When will game ends?
+- Do our game run both locally and on a network, or only on network? i.e. you have use 4 different terminals to connect to
+game and run?
+- https://www.youtube.com/watch?v=aIaFFPatJjY tictactoe multiplayer
+
