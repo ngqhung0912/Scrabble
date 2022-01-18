@@ -4,19 +4,13 @@ import Game.*;
 
 public class BoardConstructor  {
     public static String generateBoard(Board board) {
-
-
         StringBuilder builder = new StringBuilder();
-
-
         builder.append("    ");
         for (int x = 0; x < board.SIZE; x++) {
             builder.append("  " + ((char)(65+x)) + "  ");
         }
         builder.append("\n");
-
         builder.append("    ┏");
-
         for (int x = 0; x < board.SIZE-1; x++) {
             builder.append("━━━━┳");
         }
@@ -81,7 +75,8 @@ public class BoardConstructor  {
 
         return builder.toString();
     }
-//    public static void main(String[] args) {
-//        System.out.println(generateBoard());
-//    }
+    public static void main(String[] args) {
+        Board board = new Board();
+        System.out.println(generateBoard(board));
+    }
 }
