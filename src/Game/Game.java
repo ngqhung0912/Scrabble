@@ -86,6 +86,10 @@ public class Game {
         return  (doubleWord ? score * 2 : tripleWord ? score * 3 : score);
     }
 
+    /**
+     * add Tile to each player's tray
+     * @param player which player to add tile to.
+     */
     public void addTileToTray(Player player) {
         ArrayList<Tile> tray = player.getTray();
         int bagSize = tileBag.size();
@@ -99,7 +103,10 @@ public class Game {
         }
     }
 
-
+    /**
+     *
+     * @return true if the current player's tray is empty and the tile bag is empty, false otherwise.
+     */
     public boolean isEmptyTrayAndBag() {
         return players[currentPlayer].getTray().isEmpty() && tileBag.isEmpty();
     }
@@ -124,6 +131,7 @@ public class Game {
 
     public void pass() {
         currentPlayer++;
+    }
 
 
 
