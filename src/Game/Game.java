@@ -44,6 +44,8 @@ public class Game {
         return board;
     }
 
+
+
     public void setBoard(Board board) {
         this.board = board;
     }
@@ -157,53 +159,53 @@ public class Game {
 
     public Player isWinner(){
         Player winner = players[0];
-        int totalDeductPoints = 0;
         Map<Player, Integer> finalDeduct = new HashMap<Player, Integer>();
+        ArrayList<Tile> tilesLeft = null;
 
-        if (gameOver()){
-            for (Player currentPlayer: players){
-                ArrayList<Tile> tilesLeft = currentPlayer.getTray();
+        if (gameOver()) {
+            //Create a map of players with their deduct points
+            for (Player currentPlayer : players) {
+                tilesLeft = currentPlayer.getTray();
                 int deductPoints = 0;
-//                if (tilesLeft.size() == 0){
-//                    //The totalPoints will be the sum of other players unplayed tiles
-//
-//                }
-//                else {
-                    for (Tile tile: tilesLeft){
-                        deductPoints += tile.getPoint();
+                for (Tile tile : tilesLeft) {
+                    deductPoints += tile.getPoint();
+                }
+                finalDeduct.put(currentPlayer, deductPoints);
+            }
 
-                        //totalDeductPoints += deductPoints;
-                    }
+
+            for (int i = 0; i < players.length; i++) {
+                int finalPoints = 0;
+                //Calculate final score for each player
+                if (tilesLeft.size() == 0) {
+                    int totalDeductPoints = finalDeduct.get(players[0]) + finalDeduct.get(players[1])
+                            + finalDeduct.get(players[2]) + finalDeduct.get(players[3]);
+                    finalPoints = players[i].getTotalPoints() + totalDeductPoints;
+                    players[i].setFinalPoints(finalPoints);
+                } else {
+                    finalPoints = players[i].getTotalPoints() - finalDeduct.get(players[i]);
+                    players[i].setFinalPoints(finalPoints);
+                }
+                //Find the final winner (up to this player)
+                if (finalPoints > winner.getTotalPoints()){
+                    winner = players[i];
                 }
             }
 
-            for (int i = 0; i < players.length; i++){
-                Player currentPlayer = players[i];
-                ArrayList<Tile> tilesLeft = currentPlayer.getTray();
-
-                int finalTotalPoints = currentPlayer.getTotalPoints() - deductPoints;
-                currentPlayer.setFinalPoints(finalTotalPoints);
-
-                if (finalTotalPoints > winner.getTotalPoints() ) {
-                    winner = currentPlayer;
-                }
-                else if (finalTotalPoints == winner.getTotalPoints()) {
-
-                }
-            }
         }
+        return winner;
     }
 
     public void update(){
         System.out.println("\n\n" + BoardConstructor.generateBoard(this.board) + "\n"
-        + "Player: " + players[this.currentPlayer] + "\n"
-        + "Tray: " + players[this.currentPlayer].getTray());
-
-        currentPlayer++;
+        + "Player: " + players[this.currentPlayer].getName() + "\n"
+        + "Tray: " + players[this.currentPlayer].getTray()+ "\n"
+        + "New Total Point: " + players[this.currentPlayer].getTotalPoints()) ;
     }
 
     public void printResult(){
-        String result = ;
+        Player winner = isWinner();
+        System.out.println("Congratulation! Player " + winner.getName() + "has won!");
     }
 
 
