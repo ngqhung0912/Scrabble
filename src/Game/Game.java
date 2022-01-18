@@ -6,10 +6,8 @@ package Game;
 
 import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
-
 import java.util.ArrayList;
 import java.util.Random;
-
 import java.util.List;
 
 
@@ -119,19 +117,13 @@ public class Game {
         return isEmptyTrayAndBag() || isFullBoard();
     }
 
-    public void start(){
-    }
-
-    public void update(){
-    }
-
-    public void printResult(){
-
-    }
 
     public void pass() {
-        currentPlayer++;
+        currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : currentPlayer == 2 ? 3 : 0;
     }
+
+
+
 
 
 

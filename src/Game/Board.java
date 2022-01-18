@@ -69,7 +69,6 @@ public class Board {
         squaresBoard[13][5].setType(SquareType.TRIPLE_LETTER);
         squaresBoard[13][9].setType(SquareType.TRIPLE_LETTER);
 
-        squaresBoard[7][7].setType(SquareType.CENTER);
     }
 
     public Board clone(){
