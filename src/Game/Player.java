@@ -10,14 +10,14 @@ public class Player {
      // -- Instance variables -----------------------------------------
 
      private String name;
-     private int point;
+     private int totalPoints;
      private ArrayList<Tile> tray;
 
      // -- Constructors -----------------------------------------------
 
      public Player(String name, ArrayList<Tile> tray){
           this.name = name;
-          point = 0;
+          totalPoints = 0;
           this.tray = tray;
      }
 
@@ -37,20 +37,27 @@ public class Player {
           return tray;
      }
 
+     public void setTray(ArrayList<Tile> tray) {
+          this.tray = tray;
+     }
 
      /**
       * Get the current point of the player
       * @return
       */
-     public int getPoint() {
-          return point;
+     public int getTotalPoints() {
+          return totalPoints;
+     }
+
+     public void setFinalPoints(int finalPoints) {
+          this.totalPoints = finalPoints;
      }
 
      /**
       *
       * @param point
       */
-     public void setPoint(int point){
-          this.point = point;
+     public void addPoints(int point){
+          this.totalPoints += point;
      }
 }

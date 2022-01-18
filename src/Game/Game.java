@@ -4,11 +4,11 @@ package Game;
  * @version 0.1
  */
 
+import TUI.BoardConstructor;
 import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.List;
+
+import java.util.*;
 
 
 public class Game {
@@ -38,6 +38,38 @@ public class Game {
             Player player = new Player(playerList[p], tray);
             players[p] = player;
         }
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
+    public int getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(int currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
+    public Player[] getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(Player[] players) {
+        this.players = players;
+    }
+
+    public List<Tile> getTileBag() {
+        return tileBag;
+    }
+
+    public void setTileBag(List<Tile> tileBag) {
+        this.tileBag = tileBag;
     }
 
     /**
@@ -99,6 +131,7 @@ public class Game {
             tileBag.remove(tile);
             tray.add(tile);
         }
+        player.setTray(tray);
     }
 
     /**
@@ -117,14 +150,61 @@ public class Game {
         return isEmptyTrayAndBag() || isFullBoard();
     }
 
-
     public void pass() {
         currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : currentPlayer == 2 ? 3 : 0;
     }
 
 
+    public Player isWinner(){
+        Player winner = players[0];
+        int totalDeductPoints = 0;
+        Map<Player, Integer> finalDeduct = new HashMap<Player, Integer>();
 
+        if (gameOver()){
+            for (Player currentPlayer: players){
+                ArrayList<Tile> tilesLeft = currentPlayer.getTray();
+                int deductPoints = 0;
+//                if (tilesLeft.size() == 0){
+//                    //The totalPoints will be the sum of other players unplayed tiles
+//
+//                }
+//                else {
+                    for (Tile tile: tilesLeft){
+                        deductPoints += tile.getPoint();
 
+                        //totalDeductPoints += deductPoints;
+                    }
+                }
+            }
+
+            for (int i = 0; i < players.length; i++){
+                Player currentPlayer = players[i];
+                ArrayList<Tile> tilesLeft = currentPlayer.getTray();
+
+                int finalTotalPoints = currentPlayer.getTotalPoints() - deductPoints;
+                currentPlayer.setFinalPoints(finalTotalPoints);
+
+                if (finalTotalPoints > winner.getTotalPoints() ) {
+                    winner = currentPlayer;
+                }
+                else if (finalTotalPoints == winner.getTotalPoints()) {
+
+                }
+            }
+        }
+    }
+
+    public void update(){
+        System.out.println("\n\n" + BoardConstructor.generateBoard(this.board) + "\n"
+        + "Player: " + players[this.currentPlayer] + "\n"
+        + "Tray: " + players[this.currentPlayer].getTray());
+
+        currentPlayer++;
+    }
+
+    public void printResult(){
+        String result = ;
+    }
 
 
 }
