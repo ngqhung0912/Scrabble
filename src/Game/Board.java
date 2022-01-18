@@ -81,16 +81,14 @@ public class Board {
         return copyCat;
     }
 
-//    public boolean gameOver(){
-//        return false;
-//    }
+
+
+    public Square getSquare(int i) {
+        return i < 225 ? getSquare(i / 15,i % 15 ) : null;
+    }
 
     public Square getSquare(int x, int y){
-        boolean validIn = (x >= 0) && (x <= SIZE-1) && (y >= 0) && (y <= SIZE-1) ? true : false;
-        if (validIn) {
-            return squaresBoard[x][y];
-        }
-        return null;
+        return (x >= 0) && (x <= SIZE-1) && (y >= 0) && (y <= SIZE-1) ? squaresBoard[x][y] : null;
     }
 
     /**

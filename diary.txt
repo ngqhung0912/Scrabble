@@ -13,3 +13,8 @@ To do list:
 game and run?
 - https://www.youtube.com/watch?v=aIaFFPatJjY tictactoe multiplayer
 
+18/1/2022:
+
+method newWordFormed to check all the word formed, along with the user-intended word.
+hashmap WordPlayed to store all the word previously has been played, among with their coordiates.
+
