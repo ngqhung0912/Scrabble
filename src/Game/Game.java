@@ -206,13 +206,13 @@ public class Game {
      */
     public void nextPlayer() {
         switch (players.length) {
-            case 1:
+            case 2:
                 currentPlayer = currentPlayer == 0 ? 1 : 0;
                 break;
-            case 2:
+            case 3:
                 currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : 0;
                 break;
-            case 3:
+            case 4:
                 currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : currentPlayer == 2 ? 3 : 0;
                 break;
         }
@@ -281,18 +281,31 @@ public class Game {
 
     public void play() {
         while (!gameOver()) {
-            String move[] = players[currentPlayer].determineMove();
-
-
+            String[] move = players[currentPlayer].determineMove();
+            if (move[0].equals("move")) {
+                /**
+                 * to be implement: put tiles on square,
+                 * get all possible words by get all square around it and find the tiles,
+                 * check all those words - if one is not valid then pass the turn.
+                 * If all are valid then register the move.
+                 *
+                 */
+                String direction = move[3];
+                Square startingPosition = null;
+//            Square startingPosition = getSquare(move[2]);
+                char[] word = move[1].toCharArray();
+                for (char character : word) {
+//                    startingPosition.setTile();
+//                    Square nextPosition =
+                }
+            }
+            else {
+                nextPlayer();
+            }
         }
     }
 
-    public Tile getTileBelow(Tile tile) {
-        return null;
-    }
-    public Tile getTileRight(Tile tile) {
-        return null;
-    }
+
 
     public boolean isValidMove(String move) {
         return false;
