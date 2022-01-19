@@ -74,15 +74,23 @@ public class Player {
           String[] move = null;
           String prompt = "It's player: " + name + "'s turn. " + "Input format: If you want to put a words, " +
                   "for example DOG into the board," +
-                  "in the square A1, A2 and A3 (horizontally), write your move as: DOG A1 H";
+                  "in the square A1, A2 and A3 (horizontally), write your move as: move dog A1 H";
           System.out.println(prompt);
           Scanner sc= new Scanner(System.in);
           move = sc.nextLine().split(" ");
-          while (move.length != 3) {
-               System.out.println("Invalid syntax.");
-               move = sc.nextLine().split(" ");
+          sc.close();
+          if (move[0].equals("move") && !hasTile(move[1])) {
+               move[0] = "wrongMove";
           }
           return move;
+     }
+
+     public boolean hasTile(String word) {
+          String trayWord = "";
+          for (Tile tile : tray) {
+               trayWord += tile.getLetter();
+          }
+          return trayWord.contains(word);
      }
 //     public void reset() {
 //          totalPoints = 0;
