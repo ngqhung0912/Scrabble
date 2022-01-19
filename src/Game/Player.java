@@ -1,6 +1,8 @@
 package Game;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -88,16 +90,20 @@ public class Player {
 
      public Tile determineTileFromChar(char character) {
           for (Tile tile: this.getTray()){
-               if (character == 0) {
-                    String prompt = "Please choose one of the letters below\n"
-                            + "A B C D E F G H I K L M N O V Q R S T U V W X Y Z";
+               if (character == 0 && character == tile.getLetter() ) {
+                    String prompt = "Please choose one of the letters below:\n"
+                            + "A B C D E F G H I K L M N O V Q R S T U V W X Y Z\n\n";
                     try{
                          Scanner sc = new Scanner(System.in);
-                         char input = sc.nextLine().charAt(0);
+                         char input = sc.nextLine().toUpperCase().charAt(0);
+                         sc.close();
+                         return tile;
+
                     } catch (IllegalArgumentException e) {
                          //to be implement
                               //Case 1: Player did not input an alphabetical letter
                               //Case 2: input.length() > 1
+                              //Case 3: Player input a lower case letter (use toUpperCase)
                     }
                }
                else if (tile.getLetter() == character) {
@@ -108,24 +114,47 @@ public class Player {
      }
 
      /**
-      * to be fixed.
+      * Check if the word input by the user has corresponding tiles
       * @param word
       * @return
       */
 
      public boolean hasTile(String word) {
-          String[] trayWord = new String[tray.size()];
-          for (Tile tile : tray) {
+          List<Tile> tempTray = new ArrayList<>();
+          tempTray = tray.subList(0, tray.size() -1);
+          boolean validWord = false;
 
-          }
-          for (char character : word.toCharArray())  {
+          //word > tempTray
+          if (word.length() > tempTray.size()) return false;
 
-//               if (!trayWord.contains(Character.toString(character))) return false;
+          //Check character with corresponding tile in tray
+          for(char character: word.toCharArray()) {
+               for (Tile tile: tempTray){
+                    if (character == tile.getLetter()){
+                         validWord = true;
+                         tempTray.remove(tile);
+                         break;        //break out of the inner loop
+                    }
+                    else{
+                         validWord = false;
+                         continue;
+                    }
+               }
           }
-          return true;
-     }
+          return validWord;
+
+//          String[] trayWord = new String[tray.size()];
+//          for (Tile tile : tray) {
+//
+//          }
+//          for (char character : word.toCharArray())  {
+//
+////               if (!trayWord.contains(Character.toString(character))) return false;
+//          }
+//          return true;
+//     }
 //     public void reset() {
 //          totalPoints = 0;
 //     }
-
+     }
 }
