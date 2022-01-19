@@ -106,21 +106,7 @@ public class Board {
         return getSquare(x, y);
     }
 
-    public Square getSquareAbove(){
-        return null;
-    }
 
-    public Square getSquareBelow(){
-        return null;
-    }
-
-    public Square getSquareLeft(){
-        return null;
-    }
-
-    public Square getSquareRight(){
-        return null;
-    }
 
     /**
      * Empty the board

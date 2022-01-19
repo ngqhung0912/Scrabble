@@ -11,6 +11,8 @@ public class TileDescription {
         this.points = points;
     }
 
+
+
     public char getLetter() {
         return letter;
     }
