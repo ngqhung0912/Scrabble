@@ -1,5 +1,6 @@
 package Game;
 /**
+ * This class implements the basic game functions of Scrabble.
  * @author Hung Nguyen, Nhat Tran
  * @version 0.1
  */
@@ -20,23 +21,26 @@ public class Game {
     private HashMap<Tile,String> usedWords;
 
     /**
-     * This class implements the basic game functions of Scrabble.
+     * Creates a new game
      * @param numPlayers number of players
      * @param playerList list of players' name.
+     * @requires numPlayers > 0 && numPlayers < 5
+     * @ensures creates a new board and all squares are empty
+     * @ensures A new tileBag is created for the game
+     * @ensures player.getTray() is not null
+     * @invariant players.length == numPlayers
      */
 
     public Game(int numPlayers, String[] playerList) {
-        /**
-         * hashMap usedWords contains the words that has been played, among with their starting coordinate.
-         */
+        //hashMap usedWords contains the words that has been played, among with their starting coordinate.
+
         board = new Board();
         currentPlayer = 0;
         players = new Player[numPlayers];
         tileBag = new TileGenerator().generateTiles();
         usedWords = new HashMap<Tile, String>();
-        /**
-         * create a tray for each player, then add them to the playerList.
-         */
+
+        //create a tray for each player, then add them to the playerList.
         for (int p = 0; p < numPlayers; p++) {
 
             ArrayList<Tile> tray = new ArrayList<>(7);
@@ -120,7 +124,7 @@ public class Game {
     }
 
     /**
-     *
+     * Return the description if the word exist, otherwise, return null
      * @param squares that contain words to check
      * @return null if the word does not exist, or the description of that word if it exists.
      */
@@ -134,7 +138,8 @@ public class Game {
     }
 
     /**
-     *
+     * Calculate the point for each new word made
+     * @ensures squares.length > 0
      * @param squares the squares contain the words to calculate point
      * @return point.
      */
@@ -158,14 +163,17 @@ public class Game {
                     break;
                 case NORMAL:
                     score += square.getTile().getPoint();
+                    break;
             }
         }
         return  (doubleWord ? score * 2 : tripleWord ? score * 3 : score);
     }
 
     /**
+     * @requires player is not null
      * add Tile to each player's tray
      * @param player which player to add tile to.
+     *
      */
     public void addTileToTray(Player player) {
         ArrayList<Tile> tray = player.getTray();
@@ -280,6 +288,9 @@ public class Game {
 
     //To be implemented (with network): An update method where all player can see the new board
 
+    /**
+     * Print the final result of the game
+     */
     public void printResult(){
         Player winner = isWinner();
         System.out.println("Congratulation! Player " + winner.getName() + "has won!"
@@ -287,7 +298,6 @@ public class Game {
     }
 
     public void start() {
-
 
     }
 
