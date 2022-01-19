@@ -18,3 +18,5 @@ game and run?
 method newWordFormed to check all the word formed, along with the user-intended word.
 hashmap WordPlayed to store all the word previously has been played, among with their coordiates.
 
+ComputerPlayer ideas: Copy the game, determine all possible places to place a word, then use game.determinePossibleWordCombination()
+to check which of the places have the highest score combination.

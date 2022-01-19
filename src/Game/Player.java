@@ -86,17 +86,31 @@ public class Player {
      }
 
      public Tile determineTileFromChar(char character) {
+          /**
+           * to be implement: Determine the tile from character. If the tile is 0, create
+           * a scanner to ask the user which text to choose.
+           */
+
 
           return null;
      }
 
+     /**
+      * to be fixed.
+      * @param word
+      * @return
+      */
 
      public boolean hasTile(String word) {
-          String trayWord = "";
+          String[] trayWord = new String[tray.size()];
           for (Tile tile : tray) {
-               trayWord += tile.getLetter();
+
           }
-          return trayWord.contains(word);
+          for (char character : word.toCharArray())  {
+
+//               if (!trayWord.contains(Character.toString(character))) return false;
+          }
+          return true;
      }
 //     public void reset() {
 //          totalPoints = 0;

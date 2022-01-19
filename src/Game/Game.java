@@ -8,6 +8,7 @@ import TUI.BoardConstructor;
 import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 
@@ -16,6 +17,7 @@ public class Game {
     private int currentPlayer;
     private Player[] players;
     private List<Tile> tileBag;
+    private HashMap<Tile,String> usedWords;
 
     /**
      * This class implements the basic game functions of Scrabble.
@@ -24,10 +26,14 @@ public class Game {
      */
 
     public Game(int numPlayers, String[] playerList) {
+        /**
+         * hashMap usedWords contains the words that has been played, among with their starting coordinate.
+         */
         board = new Board();
         currentPlayer = 0;
         players = new Player[numPlayers];
         tileBag = new TileGenerator().generateTiles();
+        usedWords = new HashMap<Tile, String>();
         /**
          * create a tray for each player, then add them to the playerList.
          */
@@ -115,13 +121,13 @@ public class Game {
 
     /**
      *
-     * @param tiles the tiles that contain words to check
+     * @param squares that contain words to check
      * @return null if the word does not exist, or the description of that word if it exists.
      */
-    public String wordChecker(Tile[] tiles) {
+    public String wordChecker(ArrayList<Square> squares) {
         String word = "";
-        for (Tile tile : tiles) {
-            word += tile.getLetter();
+        for (Square square : squares) {
+            word += square.getTile().getLetter();
         }
         ScrabbleWordChecker checker = new InMemoryScrabbleWordChecker();
         return checker.isValidWord(word).toString();
@@ -282,9 +288,9 @@ public class Game {
     public void play() {
         while (!gameOver()) {
             String[] move = players[currentPlayer].determineMove();
-            if (move[0].equals("move")) {
+            if (move[0].equals("move") && (move[3].equals("H") || move[3].equals("V"))) {
                 /**
-                 * to be implement: put tiles on square,
+                 * to be implement: put tiles on square (v),
                  * get all possible words by get all square around it and find the tiles,
                  * check all those words - if one is not valid then pass the turn.
                  * If all are valid then register the move.
@@ -294,13 +300,52 @@ public class Game {
                 Square startingPosition = board.getSquare(move[2]);
                 char[] word = move[1].toCharArray();
                 for (char character : word) {
-//                    Square nextPosition = direction.equals("H")
+                    Square nextPosition = direction.equals("H") ? board.getSquareRight(startingPosition) :
+                            board.getSquareBelow(startingPosition);
+                    nextPosition.setTile(players[currentPlayer].determineTileFromChar(character));
+                    startingPosition = nextPosition;
                 }
+                startingPosition = board.getSquare(move[2]);
+
+
             }
             else {
                 nextPlayer();
             }
         }
+    }
+
+    public void putWordInSquares(String word, String direction) {
+
+    }
+
+    public ArrayList<ArrayList<Square>> determinePossibleWordCombinations(Square startingPosition, String direction) {
+        ArrayList<ArrayList<Square>> wordCombinations = new ArrayList<ArrayList<Square>>();
+        ArrayList<Square> initialWord = new ArrayList<Square>();
+
+
+        initialWord.add(startingPosition);
+        Square currentPosition = startingPosition;
+
+        while (currentPosition.hasTile() || currentPosition.getxPosition() < 15) {
+
+            Square nextPosition = direction.equals("H") ? board.getSquareRight(currentPosition) :
+                    board.getSquareBelow(currentPosition);
+
+            initialWord.add(nextPosition);
+
+
+
+            currentPosition = nextPosition;
+
+        }
+
+//        currentPosition = startingPosition;
+//        while (currentPosition.hasTile() || currentPosition.getyPosition() < 15) {
+//            Square nextPositionVertical = board.getSquareBelow(startingPosition);
+//            currentPosition = nextPositionVertical;
+//        }
+        return wordCombinations;
     }
 
 
