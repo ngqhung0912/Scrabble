@@ -3,6 +3,10 @@ package Game;
 public class Controller {
     private static final String HELP = "Wrong input format. Correct input format: <numPlayers> <P1name> <P2name> ... ";
 
+    public void newGame(Game game, int numPlayers, String[] playerName) {
+        game = new Game(numPlayers,playerName);
+    }
+
     public static void main(String[] args) {
         int numPlayers = 0;
         try {
@@ -19,6 +23,7 @@ public class Controller {
         }
 
         Game game = new Game(numPlayers,playerName);
+
 
 
 

@@ -94,10 +94,10 @@ public class Board {
     /**
      * Empty the board
      */
-    public void reset(){
-        for (Square[] squareList: squaresBoard) {
-            for (Square square: squareList ) square.reset();
-        }
-    }
+//    public void reset(){
+//        for (Square[] squareList: squaresBoard) {
+//            for (Square square: squareList ) square.reset();
+//        }
+//    }
 
 }

@@ -70,14 +70,22 @@ public class Player {
       *
       * @return
       */
-     public String determineMove() {
-          String move = null;
-          System.out.println("It's player: " + name + "'s turn. " + "Input format: If you want to put a words, " +
+     public String[] determineMove() {
+          String[] move = null;
+          String prompt = "It's player: " + name + "'s turn. " + "Input format: If you want to put a words, " +
                   "for example DOG into the board," +
-                  "in the square A1, A2 and A3, write your move as: DA1 OA2 GA3");
-          Scanner sc= new Scanner(System.in); 
-          move = sc.nextLine();
+                  "in the square A1, A2 and A3 (horizontally), write your move as: DOG A1 H";
+          System.out.println(prompt);
+          Scanner sc= new Scanner(System.in);
+          move = sc.nextLine().split(" ");
+          while (move.length != 3) {
+               System.out.println("Invalid syntax.");
+               move = sc.nextLine().split(" ");
+          }
           return move;
      }
+//     public void reset() {
+//          totalPoints = 0;
+//     }
 
 }

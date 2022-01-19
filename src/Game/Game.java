@@ -204,7 +204,7 @@ public class Game {
     /**
      * To pass the play if the player decides to.
      */
-    public void pass() {
+    public void nextPlayer() {
         switch (players.length) {
             case 1:
                 currentPlayer = currentPlayer == 0 ? 1 : 0;
@@ -274,5 +274,37 @@ public class Game {
         System.out.println("Congratulation! Player " + winner.getName() + "has won!");
     }
 
+    public void start() {
 
+
+    }
+
+    public void play() {
+        while (!gameOver()) {
+            String move[] = players[currentPlayer].determineMove();
+
+
+        }
+    }
+
+    public Tile getTileBelow(Tile tile) {
+        return null;
+    }
+    public Tile getTileRight(Tile tile) {
+        return null;
+    }
+
+    public boolean isValidMove(String move) {
+        return false;
+    }
+
+//    public void reset() {
+//        board.reset();
+//        setTileBag(new TileGenerator().generateTiles());
+//        currentPlayer = 0;
+//        for (Player player : players) {
+//            player.reset();
+//            player.setTray();
+//        }
+//    }
 }
