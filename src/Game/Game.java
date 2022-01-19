@@ -6,6 +6,7 @@ package Game;
  */
 
 import TUI.BoardConstructor;
+import WordChecker.main.java.FileStreamScrabbleWordChecker;
 import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
 
@@ -45,15 +46,14 @@ public class Game {
         players = new Player[numPlayers];
         tileBag = new TileGenerator().generateTiles();
         usedWords = new ArrayList<String>();
-        checker = new InMemoryScrabbleWordChecker();
+        checker = new FileStreamScrabbleWordChecker();
         /**
          * create a tray for each player, then add them to the playerList.
          */
         for (int p = 0; p < numPlayers; p++) {
-
-            ArrayList<Tile> tray = new ArrayList<>(7);
-
-            for (int i = 0; i < tray.size(); i++) {
+            System.out.println("Pointer");
+            ArrayList<Tile> tray = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
                 int j = new Random().nextInt(tileBag.size());
                 Tile tile = tileBag.get(j);
                 tileBag.remove(tile);
@@ -207,6 +207,7 @@ public class Game {
      * @return true if the current player's tray is empty and the tile bag is empty, false otherwise.
      */
     public boolean isEmptyTrayAndBag() {
+        System.out.println("Current player is " + currentPlayer);
         return players[currentPlayer].getTray().isEmpty() && tileBag.isEmpty();
     }
 
@@ -235,6 +236,7 @@ public class Game {
         switch (players.length) {
             case 2:
                 currentPlayer = currentPlayer == 0 ? 1 : 0;
+                System.out.println("this case!");
                 break;
             case 3:
                 currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : 0;
@@ -291,11 +293,19 @@ public class Game {
     /**
      * Update the current board with the new total points of the current player
      */
+    public ArrayList<String> getLetterFromTray(ArrayList<Tile> tray) {
+        ArrayList<String> letterTray = new ArrayList<String>();
+        for (Tile tile : tray) {
+            letterTray.add(Character.toString(tile.getLetter()));
+        }
+        return letterTray;
+    }
     public void update(){
         System.out.println("\n\n" + BoardConstructor.generateBoard(this.board) + "\n"
         + "Player: " + players[this.currentPlayer].getName() + "\n"
-        + "Tray: " + players[this.currentPlayer].getTray()+ "\n"
-        + "Total Score: " + players[this.currentPlayer].getTotalPoints()) ;
+        + "Tray: " + getLetterFromTray(players[this.currentPlayer].getTray()) + "\n"
+        + "Total Score: " + players[this.currentPlayer].getTotalPoints() + "\n"
+        + "Current bag count: " + tileBag.size());
     }
 
     //To be implemented (with network): An update method where all player can see the new board
@@ -314,19 +324,23 @@ public class Game {
     }
 
     public void play() {
+        System.out.println("Welcome to Scrabble!");
         while (!gameOver()) {
-            for (currentPlayer = 0; currentPlayer < players.length; currentPlayer++) {
+            System.out.println("Let's play!");
+            for (currentPlayer = 0; currentPlayer < players.length;) {
                 update();
                 String[] move = players[currentPlayer].determineMove();
+
                 if (move[0].equals("move") && (move[3].equals("H") || move[3].equals("V"))) {
                     String direction = move[3];
                     Square startingPosition = board.getSquare(move[2]);
                     ArrayList<Square> initialWord = putWordInSquares(move[1], direction, startingPosition);
                     ArrayList<ArrayList<Square>> wordCombinations =
                             determinePossibleWordCombinations(startingPosition,direction);
+                    System.out.println("here" + wordCombinations);
                     wordCombinations.add(initialWord);
                     int turnScore = 0;
-                    whileLoop : while(true) {
+                    whileLoop: while(true) {
                         for (ArrayList<Square> wordCombination : wordCombinations) {
                             String validWord = wordChecker(wordCombination);
                             if (validWord.equals(null)) {
@@ -346,11 +360,12 @@ public class Game {
                     }
                     addTileToTray(players[currentPlayer]);
                     update();
-
                 }
                 nextPlayer();
+                System.out.println("Wrong syntax. Passing turn...");
             }
         }
+        printResult();
     }
 
     public String getWordFromSquareList(ArrayList<Square> squares) {
@@ -420,6 +435,7 @@ public class Game {
             }
             else {
                 currentPosition = board.getSquareBelow(currentPosition);
+                System.out.println(currentPosition);
 
                 Square tempCurrentPosition = currentPosition;
                 Square nextAbovePosition;
@@ -433,6 +449,7 @@ public class Game {
                     verticalWord.add(0, nextAbovePosition);
                     currentPosition = nextAbovePosition;
                 }
+
                 currentPosition = tempCurrentPosition;
 
                 while (currentPosition.hasTile() || currentPosition.getyPosition() < 15) {
@@ -452,13 +469,4 @@ public class Game {
         return false;
     }
 
-//    public void reset() {
-//        board.reset();
-//        setTileBag(new TileGenerator().generateTiles());
-//        currentPlayer = 0;
-//        for (Player player : players) {
-//            player.reset();
-//            player.setTray();
-//        }
-//    }
 }

@@ -18,6 +18,7 @@ public class Player {
      private ArrayList<Tile> tray;
      private static final String FORMAT = "Input format: If you want to put a words, for example DOG into the board, " +
              "in the square A1, A2 and A3, write your move as: DA1 OA2 GA3";
+     private static Scanner sc = new Scanner(System.in);
 
 
      // -- Constructors -----------------------------------------------
@@ -26,6 +27,8 @@ public class Player {
           this.name = name;
           totalPoints = 0;
           this.tray = tray;
+//          Scanner sc =  new Scanner(System.in);
+
      }
 
      /**
@@ -79,11 +82,15 @@ public class Player {
                   "for example DOG into the board," +
                   "in the square A1, A2 and A3 (horizontally), write your move as: move dog A1 H";
           System.out.println(prompt);
-          Scanner sc= new Scanner(System.in);
           move = sc.nextLine().split(" ");
-          sc.close();
+          while (!move[0].equals("pass") && move.length !=4){
+               System.out.println("Invalid Syntax. Please try again");
+               System.out.println(prompt);
+               move = sc.nextLine().split(" ");
+          }
           if (move[0].equals("move") && !hasTile(move[1])) {
                move[0] = "wrongMove";
+               System.out.println("wrongMove");
           }
           return move;
      }
