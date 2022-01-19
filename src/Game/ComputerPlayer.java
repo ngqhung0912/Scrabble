@@ -8,6 +8,17 @@ public class ComputerPlayer extends Player{
         super(name, tray);
     }
 
+    public void getPotentialMoves() {
+
+    }
+
+    public String determineMove() {
+
+        return null;
+    }
+
+
+
 
 
 
