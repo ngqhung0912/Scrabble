@@ -315,6 +315,7 @@ public class Game {
 
     public void play() {
         while (!gameOver()) {
+            update();
             String[] move = players[currentPlayer].determineMove();
             if (move[0].equals("move") && (move[3].equals("H") || move[3].equals("V"))) {
                 String direction = move[3];
