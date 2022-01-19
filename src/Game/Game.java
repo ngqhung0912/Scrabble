@@ -1,6 +1,6 @@
 package Game;
 /**
- * @author Hung Nguyen
+ * @author Hung Nguyen, Nhat Tran
  * @version 0.1
  */
 
@@ -16,6 +16,12 @@ public class Game {
     private int currentPlayer;
     private Player[] players;
     private List<Tile> tileBag;
+
+    /**
+     * This class implements the basic game functions of Scrabble.
+     * @param numPlayers number of players
+     * @param playerList list of players' name.
+     */
 
     public Game(int numPlayers, String[] playerList) {
         board = new Board();
@@ -40,31 +46,64 @@ public class Game {
         }
     }
 
+    /**
+     * Getter for Board
+     * @return the current playing board
+     */
+
     public Board getBoard() {
         return board;
     }
 
-
+    /**
+     * Setter for board
+     * @param board
+     */
 
     public void setBoard(Board board) {
         this.board = board;
     }
 
+    /**
+     * Get the currently playing player's index
+     * @return an int representing the current player
+     */
+
     public int getCurrentPlayer() {
         return currentPlayer;
     }
+
+    /**
+     * Set who is playing
+     * @param currentPlayer the index of the player
+     */
 
     public void setCurrentPlayer(int currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
 
+    /**
+     * Getter for list of players
+     * @return list of players
+     */
+
     public Player[] getPlayers() {
         return players;
     }
 
+    /**
+     * Setter for list of players
+     * @param players list of players
+     */
+
     public void setPlayers(Player[] players) {
         this.players = players;
     }
+
+    /**
+     * Getter for the current tile Bag.
+     * @return tile bag.
+     */
 
     public List<Tile> getTileBag() {
         return tileBag;
@@ -144,18 +183,45 @@ public class Game {
         return players[currentPlayer].getTray().isEmpty() && tileBag.isEmpty();
     }
 
+    /**
+     * To be implemented:
+     * @return true if there is no more space to put a meaningful word in, false otherwise.
+     */
+
     public boolean isFullBoard() {
         return false;
     }
+
+    /**
+     *
+     * @return true is game already over, false otherwise.
+     */
 
     public boolean gameOver() {
         return isEmptyTrayAndBag() || isFullBoard();
     }
 
+    /**
+     * To pass the play if the player decides to.
+     */
     public void pass() {
-        currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : currentPlayer == 2 ? 3 : 0;
+        switch (players.length) {
+            case 1:
+                currentPlayer = currentPlayer == 0 ? 1 : 0;
+                break;
+            case 2:
+                currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : 0;
+                break;
+            case 3:
+                currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : currentPlayer == 2 ? 3 : 0;
+                break;
+        }
     }
 
+    /**
+     * Determine who is the winner
+     * @return the winner.
+     */
 
     public Player isWinner(){
         Player winner = players[0];
