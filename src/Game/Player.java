@@ -98,11 +98,12 @@ public class Player {
      public Tile determineTileFromChar(char character) {
           for (Tile tile: this.getTray()){
                if (character == 0 && character == tile.getLetter() ) {
-                    String prompt = "Please choose one of the letters below\n"
-                            + "A B C D E F G H I K L M N O V Q R S T U V W X Y Z";
+                    String prompt = "Please choose one of the letters below:\n"
+                            + "A B C D E F G H I K L M N O V Q R S T U V W X Y Z\n\n";
                     try{
                          Scanner sc = new Scanner(System.in);
                          char input = sc.nextLine().toUpperCase().charAt(0);
+                         sc.close();
                          return tile;
 
                     } catch (IllegalArgumentException e) {
