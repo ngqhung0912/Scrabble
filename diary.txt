@@ -24,3 +24,6 @@ hashmap WordPlayed to store all the word previously has been played, among with 
 
 ComputerPlayer ideas: Copy the game, determine all possible places to place a word, then use game.determinePossibleWordCombination()
 to check which of the places have the highest score combination.
+
+- guard: starting position must be H8.
+- check if the starting position of the move already have the tile of the same kind. If not then pass the turn.

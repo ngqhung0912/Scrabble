@@ -18,11 +18,13 @@ public class Controller {
             System.out.println(HELP);
         }
         String[] playerName = new String[numPlayers];
+
         for (int i = 0; i < numPlayers; i++) {
             playerName[i] = args[i+1];
         }
 
         Game game = new Game(numPlayers,playerName);
+        game.play();
 
 
 
