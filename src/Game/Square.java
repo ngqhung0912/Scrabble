@@ -54,6 +54,13 @@ public class Square {
         this.type = type;
     }
 
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
+    }
 
     /**
      *
@@ -67,21 +74,6 @@ public class Square {
 //        tile = null;
 //    }
 
-    public Square getSquareAbove(Square currentSquare){
-        
-        return null;
-    }
 
-    public Square getSquareBelow(){
-        return null;
-    }
-
-    public Square getSquareLeft(){
-        return null;
-    }
-
-    public Square getSquareRight(){
-        return null;
-    }
 
 }

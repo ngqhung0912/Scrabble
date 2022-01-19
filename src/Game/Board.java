@@ -106,6 +106,29 @@ public class Board {
         return getSquare(x, y);
     }
 
+    public Square getSquareAbove(Square currentSquare){
+        int x = currentSquare.getxPosition();
+        int y = currentSquare.getyPosition();
+        return getSquare(x, y-1);
+    }
+
+    public Square getSquareBelow(Square currentSquare){
+        int x = currentSquare.getxPosition();
+        int y = currentSquare.getyPosition();
+        return getSquare(x, y+1);
+    }
+
+    public Square getSquareLeft(Square currentSquare){
+        int x = currentSquare.getxPosition();
+        int y = currentSquare.getyPosition();
+        return getSquare(x-1, y);
+    }
+
+    public Square getSquareRight(Square currentSquare){
+        int x = currentSquare.getxPosition();
+        int y = currentSquare.getyPosition();
+        return getSquare(x+1, y);
+    }
 
 
     /**
