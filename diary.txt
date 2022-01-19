@@ -1,4 +1,5 @@
 15/1/2022:
+- It was a productive day
 
 16/1/2022:
 - Logic for tray assigning in controller: Initialize player with
@@ -17,6 +18,9 @@ game and run?
 
 method newWordFormed to check all the word formed, along with the user-intended word.
 hashmap WordPlayed to store all the word previously has been played, among with their coordiates.
+
+19/1/2022:
+- Blank tile: implement a method to ask the user to choose a letter, then convert it to a tile
 
 ComputerPlayer ideas: Copy the game, determine all possible places to place a word, then use game.determinePossibleWordCombination()
 to check which of the places have the highest score combination.

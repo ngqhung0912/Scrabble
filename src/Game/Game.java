@@ -268,16 +268,22 @@ public class Game {
         return winner;
     }
 
+    /**
+     * Update the current board with the new total points of the current player
+     */
     public void update(){
         System.out.println("\n\n" + BoardConstructor.generateBoard(this.board) + "\n"
         + "Player: " + players[this.currentPlayer].getName() + "\n"
         + "Tray: " + players[this.currentPlayer].getTray()+ "\n"
-        + "New Total Point: " + players[this.currentPlayer].getTotalPoints()) ;
+        + "Total Score: " + players[this.currentPlayer].getTotalPoints()) ;
     }
+
+    //To be implemented (with network): An update method where all player can see the new board
 
     public void printResult(){
         Player winner = isWinner();
-        System.out.println("Congratulation! Player " + winner.getName() + "has won!");
+        System.out.println("Congratulation! Player " + winner.getName() + "has won!"
+        );
     }
 
     public void start() {

@@ -73,7 +73,4 @@ public class Square {
 //    public void reset (){
 //        tile = null;
 //    }
-
-
-
 }
