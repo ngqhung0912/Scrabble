@@ -107,13 +107,22 @@ public class Player {
           return null;
      }
 
+     /**
+      * to be fixed.
+      * @param word
+      * @return
+      */
 
      public boolean hasTile(String word) {
-          String trayWord = "";
+          String[] trayWord = new String[tray.size()];
           for (Tile tile : tray) {
-               trayWord += tile.getLetter();
+
           }
-          return trayWord.contains(word);
+          for (char character : word.toCharArray())  {
+
+//               if (!trayWord.contains(Character.toString(character))) return false;
+          }
+          return true;
      }
 //     public void reset() {
 //          totalPoints = 0;

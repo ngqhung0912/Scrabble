@@ -22,3 +22,5 @@ hashmap WordPlayed to store all the word previously has been played, among with 
 19/1/2022:
 - Blank tile: implement a method to ask the user to choose a letter, then convert it to a tile
 
+ComputerPlayer ideas: Copy the game, determine all possible places to place a word, then use game.determinePossibleWordCombination()
+to check which of the places have the highest score combination.

@@ -13,7 +13,7 @@ public class Board {
         squaresBoard = new Square[SIZE][SIZE];
 
         for (int x = 0; x < SIZE; x++)
-            for (int y = 0; y < SIZE; y++) squaresBoard[x][y] = new Square(SquareType.NORMAL);
+            for (int y = 0; y < SIZE; y++) squaresBoard[x][y] = new Square(SquareType.NORMAL, x, y);
 
 
         squaresBoard[0][0].setType(SquareType.TRIPLE_WORD);
