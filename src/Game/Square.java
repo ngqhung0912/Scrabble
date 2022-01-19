@@ -33,7 +33,9 @@ public class Square {
         this.tile = tile;
     }
 
-     /**
+
+
+    /**
      * @return the current tile on the square
      */
     public Tile getTile() {

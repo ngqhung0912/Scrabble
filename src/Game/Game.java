@@ -291,12 +291,10 @@ public class Game {
                  *
                  */
                 String direction = move[3];
-                Square startingPosition = null;
-//            Square startingPosition = getSquare(move[2]);
+                Square startingPosition = board.getSquare(move[2]);
                 char[] word = move[1].toCharArray();
                 for (char character : word) {
-//                    startingPosition.setTile();
-//                    Square nextPosition =
+//                    Square nextPosition = direction.equals("H")
                 }
             }
             else {

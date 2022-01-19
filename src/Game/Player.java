@@ -85,6 +85,12 @@ public class Player {
           return move;
      }
 
+     public Tile determineTileFromChar(char character) {
+
+          return null;
+     }
+
+
      public boolean hasTile(String word) {
           String trayWord = "";
           for (Tile tile : tray) {
