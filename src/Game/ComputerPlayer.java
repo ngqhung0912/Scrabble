@@ -12,7 +12,7 @@ public class ComputerPlayer extends Player{
 
     }
 
-    public String determineMove() {
+    public String[] determineMove() {
 
         return null;
     }
