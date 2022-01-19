@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * author Nhat Tran, Hung Nguyen
+ * @author Nhat Tran, Hung Nguyen
+ * @version 0.1
  */
 public class Player {
 
@@ -86,7 +87,23 @@ public class Player {
      }
 
      public Tile determineTileFromChar(char character) {
-
+          for (Tile tile: this.getTray()){
+               if (character == 0) {
+                    String prompt = "Please choose one of the letters below\n"
+                            + "A B C D E F G H I K L M N O V Q R S T U V W X Y Z";
+                    try{
+                         Scanner sc = new Scanner(System.in);
+                         char input = sc.nextLine().charAt(0);
+                    } catch (IllegalArgumentException e) {
+                         //to be implement
+                              //Case 1: Player did not input an alphabetical letter
+                              //Case 2: input.length() > 1
+                    }
+               }
+               else if (tile.getLetter() == character) {
+                    return tile;
+               }
+          }
           return null;
      }
 
