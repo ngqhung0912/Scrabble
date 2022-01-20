@@ -28,5 +28,11 @@ to check which of the places have the highest score combination.
 - guard: starting position must be H8.
 - check if the starting position of the move already have the tile of the same kind. If not then pass the turn.
 
+- after the first round, the player have to put their tiles next to at least 1 existing tile on the board during the remaining game
+- JUnit test: if the players use more letter of the same type then they have on the tray
+- putWordInSquare: guard - check whether the nextPosition already has a tile or not, if true, return null
+- Every player input should be turned into upper case letters
+
 
 - Current debugging progress: hasTile done.
+
