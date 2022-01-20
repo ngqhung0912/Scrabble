@@ -38,6 +38,9 @@ public class Tile {
         this.point = point;
     }
 
+
+
+
     /**
      * 0 represents a blank tile
      * @return if this tile is a blank tile or not.

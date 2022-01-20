@@ -90,13 +90,16 @@ public class Player {
           }
           if (move[0].equals("move") && !hasTile(move[1])) {
                move[0] = "wrongMove";
-               System.out.println(move[0]);
           }
+//          for (Tile tile : tray) {
+//               System.out.println("tile after detMove " + tile.getLetter());
+//          }
+
           return move;
      }
 
      public Tile determineTileFromChar(char character) {
-          for (Tile tile: this.getTray()){
+          for (Tile tile: tray){
 //               if (character == 0 && character == tile.getLetter() ) {
 //                    String prompt = "Please choose one of the letters below:\n"
 //                            + "A B C D E F G H I K L M N O V Q R S T U V W X Y Z\n\n";
@@ -115,10 +118,19 @@ public class Player {
 //               }
 //               else
                     if (tile.getLetter() == character) {
+//                         System.out.println("tile returned" + tile.getLetter());
                     return tile;
                }
           }
           return null;
+     }
+
+     private ArrayList<Tile> copyTray()  {
+          ArrayList<Tile> copycat = new ArrayList<Tile>();
+          for (Tile tile : tray) {
+               copycat.add(new Tile(tile.getLetter(),tile.getPoint()));
+          }
+          return copycat;
      }
 
      /**
@@ -129,9 +141,8 @@ public class Player {
 
      public boolean hasTile(String word) {
           List<Tile> tempTray = new ArrayList<>();
-          tempTray = tray.subList(0, tray.size() -1);
+          tempTray = copyTray();
           boolean validWord = true;
-
           //word > tempTray
           if (word.length() > tempTray.size()) return false;
 

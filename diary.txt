@@ -29,4 +29,4 @@ to check which of the places have the highest score combination.
 - check if the starting position of the move already have the tile of the same kind. If not then pass the turn.
 
 
-- Current debugging progress: determineTileFromChar @ 394 of game.
+- Current debugging progress: hasTile done.
