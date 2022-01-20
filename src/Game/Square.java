@@ -19,6 +19,11 @@ public class Square {
         this.type = type;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
+        this.tile = null;
+    }
+
+    public String getLocation() {
+        return  xPosition + " " +  yPosition;
     }
 
     /**

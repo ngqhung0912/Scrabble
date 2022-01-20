@@ -23,7 +23,7 @@ public class InMemoryScrabbleWordChecker implements  ScrabbleWordChecker{
      */
     static {
         try {
-            InputStream resourceStream = InMemoryScrabbleWordChecker.class.getResourceAsStream("/collins_scrabble_words_2019.txt");
+            InputStream resourceStream = InMemoryScrabbleWordChecker.class.getResourceAsStream("collins_scrabble_words_2019.txt");
             try (BufferedReader br = new BufferedReader(new InputStreamReader(resourceStream))) {
                 String line;
                 while ((line = br.readLine()) != null) {
