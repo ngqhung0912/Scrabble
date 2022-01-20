@@ -15,7 +15,7 @@ public class Board {
         for (int x = 0; x < SIZE; x++)
             for (int y = 0; y < SIZE; y++) squaresBoard[x][y] = new Square(SquareType.NORMAL, x, y);
 
-
+        squaresBoard[7][7].setType(SquareType.CENTER);
         squaresBoard[0][0].setType(SquareType.TRIPLE_WORD);
         squaresBoard[0][7].setType(SquareType.TRIPLE_WORD);
         squaresBoard[0][14].setType(SquareType.TRIPLE_WORD);
