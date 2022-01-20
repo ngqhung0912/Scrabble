@@ -46,7 +46,7 @@ public class Game {
         players = new Player[numPlayers];
         tileBag = new TileGenerator().generateTiles();
         usedWords = new ArrayList<String>();
-        checker = new FileStreamScrabbleWordChecker();
+        checker = new InMemoryScrabbleWordChecker();
         /**
          * create a tray for each player, then add them to the playerList.
          */
@@ -139,7 +139,9 @@ public class Game {
     public String wordChecker(ArrayList<Square> squares) {
         String word = "";
         for (Square square : squares) {
-            System.out.println("square locator: " +  square.getxPosition() + square.getyPosition());
+            System.out.println("square locator: " + square.getLocation());
+        }
+        for (Square square : squares) {
             word += Character.toString(square.getTile().getLetter());
         }
         for (String usedWord : usedWords) {
@@ -147,8 +149,13 @@ public class Game {
                 return word;
             }
         }
-//        usedWords.add(checker.isValidWord(word).toString());
         System.out.println("word:" + word);
+//        usedWords.add(checker.isValidWord(word).toString());
+
+        return checker.isValidWord(word) == null ?  null : checker.isValidWord(word).toString();
+    }
+
+    public String wordChecker(String word) {
         return !checker.isValidWord(word).equals(null) ? checker.isValidWord(word).toString() : null;
     }
 
@@ -331,14 +338,13 @@ public class Game {
             for (currentPlayer = 0; currentPlayer < players.length;) {
                 update();
                 Board validBoard = isValidMove(players[currentPlayer].determineMove());
-
                 if (validBoard != null) {
+
                     board = validBoard.clone();
                 }
                 else {
                     System.out.println("wrong move. passing turn...");
                 }
-                update();
                 nextPlayer();
 
 //                if (move[0].equals("move") && ((move[3].equals("H") || move[3].equals("V")))) {
@@ -394,6 +400,7 @@ public class Game {
 
     private ArrayList<Square> putWordInSquares(String word, String direction, Square startingPosition) {
         char[] charArray = word.toCharArray();
+
         ArrayList<Square> squares = new ArrayList<Square>();
         for (char character : charArray) {
             squares.add(startingPosition);
@@ -402,8 +409,8 @@ public class Game {
             if (nextPosition.hasTile()) {
                 return null;
             }
-//            System.out.println("current player:" + currentPlayer + " char is: " +players[currentPlayer].determineTileFromChar(character).getLetter());
             startingPosition.setTile(players[currentPlayer].determineTileFromChar(character));
+//            System.out.println("where to put " + startingPosition.getLocation() + " what to put " + startingPosition.getTile().getLetter());
             startingPosition = nextPosition;
         }
         return squares;
@@ -419,11 +426,11 @@ public class Game {
 
         firstBigWhile: while (startingPosition.hasTile() && startingPosition.getxPosition() < 15 && startingPosition.getyPosition() < 15) {
 
-            initialWord.add(currentPosition);
+//            initialWord.add(currentPosition);
 
             if (direction.equals("H")) {
                 currentPosition = board.getSquareRight(currentPosition);
-                initialWord.add(currentPosition);
+                initialWord.add(startingPosition);
                 startingPosition = currentPosition;
 
                 Square tempCurrentPosition = currentPosition;
@@ -433,26 +440,27 @@ public class Game {
                 ArrayList<Square> horizontalWord = new ArrayList<Square>();
                 horizontalWord.add(currentPosition);
 
-                firstWhileH: while (currentPosition.hasTile() && currentPosition.getxPosition() > 0) {
-                    nextLeftPosition = board.getSquareLeft(currentPosition);
-                    horizontalWord.add(0, nextLeftPosition);
-                    currentPosition = nextLeftPosition;
-                }
-                currentPosition = tempCurrentPosition;
-
-
-                secondWhileH: while (currentPosition.hasTile() && currentPosition.getxPosition() < 15) {
-                    System.out.println(currentPosition.hasTile());
-                    nextRightPosition = board.getSquareRight(currentPosition);
-                    horizontalWord.add(nextRightPosition);
-                    currentPosition = nextRightPosition;
-                }
-                if (horizontalWord.size() > 1) wordCombinations.add(horizontalWord);
+//                leftWhileH: while (currentPosition.hasTile() && currentPosition.getxPosition() > 0) {
+//                    nextLeftPosition = board.getSquareLeft(currentPosition);
+//                    horizontalWord.add(0, nextLeftPosition);
+//                    currentPosition = nextLeftPosition;
+//                }
+//                currentPosition = tempCurrentPosition;
+//
+//
+//                rightWhileH: while (currentPosition.hasTile() && currentPosition.getxPosition() < 15) {
+////                    System.out.println(currentPosition.hasTile());
+//                    nextRightPosition = board.getSquareRight(currentPosition);
+//                    horizontalWord.add(nextRightPosition);
+//                    currentPosition = nextRightPosition;
+//                }
+//                if (horizontalWord.size() > 1) wordCombinations.add(horizontalWord);
 
             }
             else {
                 currentPosition = board.getSquareBelow(currentPosition);
-                System.out.println(currentPosition);
+                initialWord.add(startingPosition);
+
 
                 Square tempCurrentPosition = currentPosition;
                 Square nextAbovePosition;
@@ -461,25 +469,23 @@ public class Game {
                 ArrayList<Square> verticalWord = new ArrayList<Square>();
                 verticalWord.add(currentPosition);
 
-                firstWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() > 0) {
-                    nextAbovePosition = board.getSquareAbove(currentPosition);
-                    verticalWord.add(0, nextAbovePosition);
-                    currentPosition = nextAbovePosition;
-                }
-
-                currentPosition = tempCurrentPosition;
-
-                secondWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() < 15) {
-                    nextBelowPosition = board.getSquareBelow(currentPosition);
-                    verticalWord.add(nextBelowPosition);
-                    currentPosition = nextBelowPosition;
-                }
-                if (verticalWord.size() > 1) wordCombinations.add(verticalWord);
+//                aboveWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() > 0) {
+//                    nextAbovePosition = board.getSquareAbove(currentPosition);
+//                    verticalWord.add(0, nextAbovePosition);
+//                    currentPosition = nextAbovePosition;
+//                }
+//
+//                currentPosition = tempCurrentPosition;
+//
+//                belowWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() < 15) {
+//                    nextBelowPosition = board.getSquareBelow(currentPosition);
+//                    verticalWord.add(nextBelowPosition);
+//                    currentPosition = nextBelowPosition;
+//                }
+//                if (verticalWord.size() > 1) wordCombinations.add(verticalWord);
             }
         }
         if (initialWord.size() > 1) wordCombinations.add(initialWord);
-
-        wordCombinations.add(initialWord);
         return wordCombinations;
     }
 
@@ -491,6 +497,9 @@ public class Game {
             Square startingPosition = copyBoard.getSquare(move[2]);
             // Here already removed tile from player's tray.
             ArrayList<Square> initialWord = putWordInSquares(move[1], direction, startingPosition);
+            if (initialWord == null) {
+                return null;
+            }
             ArrayList<ArrayList<Square>> wordCombinations =
                     determinePossibleWordCombinations(startingPosition,direction);
             wordCombinations.add(initialWord);
@@ -498,11 +507,16 @@ public class Game {
             int turnScore = 0;
             loopOverAllWordCombinations: while(true) {
                 for (ArrayList<Square> wordCombination : wordCombinations) {
+                    for (Square square : wordCombination) {
+                        System.out.println("check all combi " + square.getLocation() + ": " + (square.getTile() == null ? "" : square.getTile().getLetter()) ) ;
+                    }
+                }
+                for (ArrayList<Square> wordCombination : wordCombinations) {
                     String validWord = wordChecker(wordCombination);
-                    if (validWord.equals(null)) {
-                        nextPlayer();
-                        removeWordFromSquare(initialWord);
-                        System.out.println("The word: " + getWordFromSquareList(wordCombination) + "is invalid. Skipping your turn...");
+                    if (validWord == null) {
+//                        removeWordFromSquare(initialWord);
+//                        System.out.println("The word: " + getWordFromSquareList(wordCombination) + "is invalid. Skipping your turn...");
+//                        System.out.println("There is one invalid word. Skipping turn...");
                         return null;
                     }
                     turnScore += calculatePoints(wordCombination);

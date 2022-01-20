@@ -7,7 +7,7 @@ public class BoardConstructor  {
         StringBuilder builder = new StringBuilder();
         builder.append("    ");
         for (int x = 0; x < board.SIZE; x++) {
-            builder.append("  " + ((char)(65+x)) + (x+1) +  (x < 10 ?  " " : ""));
+            builder.append("  " + ((char)(65+x)) + (x) +  (x < 10 ?  " " : ""));
         }
         builder.append("\n");
         builder.append("    ┏");
@@ -20,7 +20,7 @@ public class BoardConstructor  {
 
 
         for (int y = 0; y < board.SIZE; y++) {
-            builder.append("" + (y<9? "  " : " ") + (y+1) + " ");
+            builder.append("" + (y<10? "  " : " ") + (y) + " ");
             builder.append("┃");
 
             for (int x = 0; x < board.SIZE; x++) {

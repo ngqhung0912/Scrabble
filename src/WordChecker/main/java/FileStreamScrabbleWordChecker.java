@@ -20,7 +20,7 @@ public class FileStreamScrabbleWordChecker implements  ScrabbleWordChecker{
 
         try {
             // Open the words files
-            InputStream resourceStream = FileStreamScrabbleWordChecker.class.getResourceAsStream("/collins_scrabble_words_2019.txt");
+            InputStream resourceStream = FileStreamScrabbleWordChecker.class.getResourceAsStream("collins_scrabble_words_2019.txt");
             try (BufferedReader br = new BufferedReader(new InputStreamReader(resourceStream))) {
                 String line;
                 // Walk through the file

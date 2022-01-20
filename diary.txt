@@ -34,5 +34,5 @@ to check which of the places have the highest score combination.
 - Every player input should be turned into upper case letters
 
 
-- Current debugging progress: hasTile done.
+- Current debugging progress: determinePossibleWordCombinations.
 
