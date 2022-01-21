@@ -51,7 +51,6 @@ public class Game {
          * create a tray for each player, then add them to the playerList.
          */
         for (int p = 0; p < numPlayers; p++) {
-            System.out.println("Pointer");
             ArrayList<Tile> tray = new ArrayList<>();
             for (int i = 0; i < 7; i++) {
                 int j = new Random().nextInt(tileBag.size());
@@ -309,7 +308,7 @@ public class Game {
         return letterTray;
     }
     public void update(){
-        System.out.println("\n\n" + BoardConstructor.generateBoard(this.board) + "\n"
+        System.out.println("\n\n" + BoardConstructor.generateBoard(board) + "\n"
         + "Player: " + players[this.currentPlayer].getName() + "\n"
         + "Tray: " + getLetterFromTray(players[this.currentPlayer].getTray()) + "\n"
         + "Total Score: " + players[this.currentPlayer].getTotalPoints() + "\n"
@@ -410,15 +409,15 @@ public class Game {
                 return null;
             }
             startingPosition.setTile(players[currentPlayer].determineTileFromChar(character));
-//            System.out.println("where to put " + startingPosition.getLocation() + " what to put " + startingPosition.getTile().getLetter());
+            System.out.println("where to put " + startingPosition.getLocation() + " what to put " + startingPosition.getTile().getLetter());
             startingPosition = nextPosition;
         }
         return squares;
     }
 
     private ArrayList<ArrayList<Square>> determinePossibleWordCombinations(Square startingPosition, String direction) {
-        ArrayList<ArrayList<Square>> wordCombinations = new ArrayList<ArrayList<Square>>();
-        ArrayList<Square> initialWord = new ArrayList<Square>();
+        ArrayList<ArrayList<Square>> wordCombinations = new ArrayList<>();
+        ArrayList<Square> initialWord = new ArrayList<>();
 
 
 //        initialWord.add(startingPosition);
@@ -439,7 +438,6 @@ public class Game {
 
                 ArrayList<Square> horizontalWord = new ArrayList<Square>();
                 horizontalWord.add(currentPosition);
-
 //                leftWhileH: while (currentPosition.hasTile() && currentPosition.getxPosition() > 0) {
 //                    nextLeftPosition = board.getSquareLeft(currentPosition);
 //                    horizontalWord.add(0, nextLeftPosition);
@@ -455,12 +453,11 @@ public class Game {
 //                    currentPosition = nextRightPosition;
 //                }
 //                if (horizontalWord.size() > 1) wordCombinations.add(horizontalWord);
-
             }
             else {
                 currentPosition = board.getSquareBelow(currentPosition);
                 initialWord.add(startingPosition);
-
+                startingPosition = currentPosition;
 
                 Square tempCurrentPosition = currentPosition;
                 Square nextAbovePosition;
@@ -468,7 +465,6 @@ public class Game {
 
                 ArrayList<Square> verticalWord = new ArrayList<Square>();
                 verticalWord.add(currentPosition);
-
 //                aboveWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() > 0) {
 //                    nextAbovePosition = board.getSquareAbove(currentPosition);
 //                    verticalWord.add(0, nextAbovePosition);
@@ -493,10 +489,10 @@ public class Game {
     public Board isValidMove(String[] move) {
         if (move[0].equals("move") && ((move[3].equals("H") || move[3].equals("V")))) {
             String direction = move[3];
-            Board copyBoard = board.clone();
-            Square startingPosition = copyBoard.getSquare(move[2]);
+            Square startingPosition = board.getSquare(move[2]);
             // Here already removed tile from player's tray.
             ArrayList<Square> initialWord = putWordInSquares(move[1], direction, startingPosition);
+            Board copyBoard = board.clone();
             if (initialWord == null) {
                 return null;
             }
@@ -529,6 +525,7 @@ public class Game {
                 tray.remove(square.getTile());
             }
             addTileToTray(players[currentPlayer]);
+            System.out.println("copyBoard: " + copyBoard.getSquare("A2").getTile());
             return copyBoard;
         }
         return null;

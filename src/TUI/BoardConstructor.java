@@ -43,6 +43,8 @@ public class BoardConstructor  {
                         break;
                 }
 
+//                System.out.println(square.hasTile() ? "this square has tile: " + square.getTile().getLetter() : "");
+
                 builder.append("  " + (square.hasTile() ? square.getTile().getLetter() : " ") + " ");
                 builder.append(ANSI.RESET);
                 builder.append("┃");

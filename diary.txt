@@ -34,5 +34,6 @@ to check which of the places have the highest score combination.
 - Every player input should be turned into upper case letters
 
 
-- Current debugging progress: determinePossibleWordCombinations.
 
+21/1/2022:
+- Current debugging progress: the word has been put twice.
