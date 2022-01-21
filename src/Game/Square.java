@@ -40,6 +40,8 @@ public class Square {
      */
     public void setTile(Tile tile) {
         this.tile = tile;
+//        System.out.println("tile set: " + this.tile );
+
     }
 
 

@@ -88,7 +88,7 @@ public class Player {
                System.out.println(prompt);
                move = sc.nextLine().split(" ");
           }
-          if (move[0].equals("move") && !hasTile(move[1])) {
+          if (move[0].equals("move") && !playerHasTile(move[1])) {
                move[0] = "wrongMove";
           }
 //          for (Tile tile : tray) {
@@ -139,7 +139,7 @@ public class Player {
       * @return
       */
 
-     public boolean hasTile(String word) {
+     public boolean playerHasTile(String word) {
           List<Tile> tempTray = new ArrayList<>();
           tempTray = copyTray();
           boolean validWord = true;
