@@ -415,7 +415,7 @@ public class Game {
                 Square nextBelowPosition = currentPosition;
                 ArrayList<Square> verticalWord = new ArrayList<Square>();
                 aboveWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() > 0) {
-                    nextAbovePosition = board.getSquareAbove(nextAbovePosition);
+                    nextAbovePosition = copyBoard.getSquareAbove(nextAbovePosition);
                     verticalWord.add(0, currentPosition);
                     currentPosition = nextAbovePosition;
                 }
@@ -423,9 +423,8 @@ public class Game {
                 currentPosition = tempCurrentPosition;
 
                 belowWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() < 15) {
-                    nextBelowPosition = board.getSquareBelow(nextBelowPosition);
-                    verticalWord.add(currentPosition);
-                    currentPosition = nextBelowPosition;
+                    verticalWord.add(nextBelowPosition);
+                    nextBelowPosition = copyBoard.getSquareBelow(nextBelowPosition);
                 }
                 if (verticalWord.size() > 1) wordCombinations.add(verticalWord);
 
@@ -440,14 +439,14 @@ public class Game {
 
                 ArrayList<Square> horizontalWord = new ArrayList<Square>();
                 leftWhileH: while (currentPosition.hasTile() && currentPosition.getxPosition() > 0) {
-                    nextLeftPosition = board.getSquareLeft(nextLeftPosition);
+                    nextLeftPosition = copyBoard.getSquareLeft(nextLeftPosition);
                     horizontalWord.add(0, currentPosition);
                     System.out.println("into the left while: " + currentPosition.getTile().getLetter());
                     currentPosition = nextLeftPosition;
                 }
 
                 rightWhileH: while (tempCurrentPosition.hasTile() && tempCurrentPosition.getxPosition() < 15) {
-                    nextRightPosition = board.getSquareRight(nextRightPosition);
+                    nextRightPosition = copyBoard.getSquareRight(nextRightPosition);
                     horizontalWord.add(tempCurrentPosition);
                     tempCurrentPosition = nextRightPosition;
                 }
@@ -471,7 +470,7 @@ public class Game {
                 ArrayList<Square> horizontalWord = new ArrayList<Square>();
                 horizontalWord.add(currentPosition);
                 leftWhileH: while (currentPosition.hasTile() && currentPosition.getxPosition() > 0) {
-                    nextLeftPosition = board.getSquareLeft(currentPosition);
+                    nextLeftPosition = copyBoard.getSquareLeft(currentPosition);
                     horizontalWord.add(0, nextLeftPosition);
                     currentPosition = nextLeftPosition;
                 }
@@ -480,7 +479,7 @@ public class Game {
 
                 rightWhileH: while (currentPosition.hasTile() && currentPosition.getxPosition() < 15) {
 //                    System.out.println(currentPosition.hasTile());
-                    nextRightPosition = board.getSquareRight(currentPosition);
+                    nextRightPosition = copyBoard.getSquareRight(currentPosition);
                     horizontalWord.add(nextRightPosition);
                     currentPosition = nextRightPosition;
                 }
@@ -496,7 +495,7 @@ public class Game {
                 ArrayList<Square> verticalWord = new ArrayList<Square>();
                 verticalWord.add(currentPosition);
                 aboveWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() > 0) {
-                    nextAbovePosition = board.getSquareAbove(currentPosition);
+                    nextAbovePosition = copyBoard.getSquareAbove(currentPosition);
                     verticalWord.add(0, nextAbovePosition);
                     currentPosition = nextAbovePosition;
                 }
