@@ -531,4 +531,17 @@ public class Game {
         return null;
     }
 
+    List<Square> occupiedSquares = new ArrayList<>();
+    List<Square> nextValidSquares = new ArrayList<>();
+
+    public List<Square> getNextValidSquares(List<Square> playSquares) {
+        for (Square square: playSquares){
+            occupiedSquares.add(square);
+            nextValidSquares.remove(square);
+        }
+
+
+        return nextValidSquares;
+    }
+
 }
