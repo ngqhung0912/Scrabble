@@ -1,9 +1,6 @@
 package Game;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * @author Nhat Tran, Hung Nguyen
@@ -91,6 +88,15 @@ public class Player {
           return move;
      }
 
+     public Map<String, String> mapLetterToSquare(String[] move){
+          Map<String , String > letterToSquare = new HashMap<>();
+          for (int i = 1; i < move.length; i++) {
+               String[] letterSquarePair = move[i].split("-");
+               letterToSquare.put(letterSquarePair[0], letterSquarePair[1]);
+          }
+          return letterToSquare;
+     }
+
      public Tile determineTileFromChar(char character) {
           for (Tile tile: tray){
 //               if (character == 0 && character == tile.getLetter() ) {
@@ -128,19 +134,19 @@ public class Player {
 
      /**
       * Check if the word input by the user has corresponding tiles
-      * @param word
+      * @param
       * @return
       */
 
-     public boolean playerHasTile(String word) {
-          List<Tile> tempTray = new ArrayList<>();
-          tempTray = copyTray();
+     public boolean playerHasTile(Map<String, String> letterToSquare) {
+          List<Tile> tempTray = copyTray();
           boolean validWord = true;
           //word > tempTray
-          if (word.length() > tempTray.size()) return false;
+          if (letterToSquare.size() > tempTray.size()) return false;
 
           //Check character with corresponding tile in tray
-          for(char character: word.toCharArray()) {
+          for(String letter: letterToSquare.keySet()) {
+               char character = letter.charAt(0);
                forTile : for (Tile tile: tempTray){
                     if (character == tile.getLetter()){
                          validWord = true;
