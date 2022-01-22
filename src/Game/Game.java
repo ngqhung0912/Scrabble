@@ -431,13 +431,14 @@ public class Game {
                 currentPosition = board.getSquareRight(currentPosition);
                 initialWord.add(startingPosition);
                 startingPosition = currentPosition;
+                System.out.println("Starting position: " + startingPosition.getTile());
 
                 Square tempCurrentPosition = currentPosition;
                 Square nextLeftPosition;
                 Square nextRightPosition;
 
-                ArrayList<Square> horizontalWord = new ArrayList<Square>();
-                horizontalWord.add(currentPosition);
+//                ArrayList<Square> horizontalWord = new ArrayList<Square>();
+//                horizontalWord.add(currentPosition);
 //                leftWhileH: while (currentPosition.hasTile() && currentPosition.getxPosition() > 0) {
 //                    nextLeftPosition = board.getSquareLeft(currentPosition);
 //                    horizontalWord.add(0, nextLeftPosition);
@@ -463,8 +464,8 @@ public class Game {
                 Square nextAbovePosition;
                 Square nextBelowPosition;
 
-                ArrayList<Square> verticalWord = new ArrayList<Square>();
-                verticalWord.add(currentPosition);
+//                ArrayList<Square> verticalWord = new ArrayList<Square>();
+//                verticalWord.add(currentPosition);
 //                aboveWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() > 0) {
 //                    nextAbovePosition = board.getSquareAbove(currentPosition);
 //                    verticalWord.add(0, nextAbovePosition);
@@ -510,9 +511,9 @@ public class Game {
                 for (ArrayList<Square> wordCombination : wordCombinations) {
                     String validWord = wordChecker(wordCombination);
                     if (validWord == null) {
-//                        removeWordFromSquare(initialWord);
+                        removeWordFromSquare(initialWord);
 //                        System.out.println("The word: " + getWordFromSquareList(wordCombination) + "is invalid. Skipping your turn...");
-//                        System.out.println("There is one invalid word. Skipping turn...");
+                        System.out.println("There is one invalid word. Skipping turn...");
                         return null;
                     }
                     turnScore += calculatePoints(wordCombination);
@@ -525,7 +526,6 @@ public class Game {
                 tray.remove(square.getTile());
             }
             addTileToTray(players[currentPlayer]);
-            System.out.println("copyBoard: " + copyBoard.getSquare("A2").getTile());
             return copyBoard;
         }
         return null;

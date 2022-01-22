@@ -78,9 +78,9 @@ public class Player {
       */
      public String[] determineMove() {
           String[] move = null;
-          String prompt = "It's player: " + name + "'s turn. " + "Input format: If you want to put a words, " +
-                  "for example DOG into the board," +
-                  "in the square A1, A2 and A3 (horizontally), write your move as: move DOG A1 H";
+          String prompt = "It's player: " + name + "'s turn. " + "\nInput format: If you want to put a words, " +
+                  "\nfor example DOG into the board," +
+                  "\nin the square A1, A2 and A3 (horizontally), \nwrite your move as: move DOG A1 H";
           System.out.println(prompt);
           move = sc.nextLine().split(" ");
           while (!move[0].equals("pass") && move.length !=4){
@@ -152,7 +152,7 @@ public class Player {
                     if (character == tile.getLetter()){
                          validWord = true;
                          tempTray.remove(tile);
-                         System.out.println(character);
+                         System.out.println("character in playerHasTile " + character);
                          break forTile;        //break out of the inner loop
                     }
                     else{
