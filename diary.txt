@@ -44,8 +44,11 @@ to check which of the places have the highest score combination.
 - new input method: Ask user to place each tiles separately into the desired square, instead of words.
 - List of implements to be done if the input method changed:
 + determineMove of player (v)
-+ checkmove of player
-+ isValidMove of game receives hashMap<string, string>
-+ putWordInSquare of game
-+ determinePossibleWordCombination no need direction
-+
++ checkmove of player (v)
++ isValidMove of game receives hashMap<string, string> (v)
++ putWordInSquare of game (v)
++ determinePossibleWordCombination (v)
+
+
+-implement linkedhashmap because it can index.
+

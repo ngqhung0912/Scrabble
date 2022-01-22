@@ -80,17 +80,17 @@ public class Player {
                   "\nin the square A1, A2 and A3 , \nwrite your move as: MOVE D-A1 O-A2 G-A3";
           System.out.println(prompt);
           move = sc.nextLine().split(" ");
-          while (!move[0].equals("PASS") || !move[0].equals("MOVE") || !move[0].equals("SHUFFLE")){
-               System.out.println("Invalid Syntax. Please try again");
-               System.out.println(prompt);
-               move = sc.nextLine().split(" ");
-          }
+//          while (!move[0].equals("PASS") || !move[0].equals("MOVE") || !move[0].equals("SHUFFLE")){
+//               System.out.println("Invalid Syntax. Please try again");
+//               System.out.println(prompt);
+//               move = sc.nextLine().split(" ");
+//          }
           return move;
      }
 
-     public Map<String, String> mapLetterToSquare(String[] move){
-          Map<String , String > letterToSquare = new HashMap<>();
-          for (int i = 1; i < move.length; i++) {
+     public LinkedHashMap<String, String> mapLetterToSquare(String[] move){
+          LinkedHashMap<String , String > letterToSquare = new LinkedHashMap<>();
+          for (int i = 0; i < move.length; i++) {
                String[] letterSquarePair = move[i].split("-");
                letterToSquare.put(letterSquarePair[0], letterSquarePair[1]);
           }
@@ -138,7 +138,7 @@ public class Player {
       * @return
       */
 
-     public boolean playerHasTile(Map<String, String> letterToSquare) {
+     public boolean playerHasTile(LinkedHashMap<String, String> letterToSquare) {
           List<Tile> tempTray = copyTray();
           boolean validWord = true;
           //word > tempTray
