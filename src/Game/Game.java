@@ -413,19 +413,12 @@ public class Game {
                 Square tempCurrentPosition = currentPosition;
                 Square nextAbovePosition = currentPosition;
                 Square nextBelowPosition = currentPosition;
-                ArrayList<Square> verticalWord = new ArrayList<Square>();
-                aboveWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() > 0) {
-                    nextAbovePosition = copyBoard.getSquareAbove(nextAbovePosition);
-                    verticalWord.add(0, currentPosition);
-                    currentPosition = nextAbovePosition;
-                }
+                ArrayList<Square> verticalWord = new ArrayList<>();
 
-                currentPosition = tempCurrentPosition;
 
-                belowWhileV: while (currentPosition.hasTile() && currentPosition.getyPosition() < 15) {
-                    verticalWord.add(nextBelowPosition);
-                    nextBelowPosition = copyBoard.getSquareBelow(nextBelowPosition);
-                }
+
+
+                
                 if (verticalWord.size() > 1) wordCombinations.add(verticalWord);
 
             }
