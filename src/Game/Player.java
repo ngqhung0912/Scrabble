@@ -78,23 +78,16 @@ public class Player {
       */
      public String[] determineMove() {
           String[] move = null;
-          String prompt = "It's player: " + name + "'s turn. " + "Input format: If you want to put a words, " +
-                  "for example DOG into the board," +
-                  "in the square A1, A2 and A3 (horizontally), write your move as: move DOG A1 H";
+          String prompt = "It's player " + name + "'s turn. " + "\nInput format: If you want to put a words, " +
+                  "\nfor example DOG into the board," +
+                  "\nin the square A1, A2 and A3 , \nwrite your move as: MOVE D-A1 O-A2 G-A3";
           System.out.println(prompt);
           move = sc.nextLine().split(" ");
-          while (!move[0].equals("pass") && move.length !=4){
+          while (!move[0].equals("PASS") || !move[0].equals("MOVE") || !move[0].equals("SHUFFLE")){
                System.out.println("Invalid Syntax. Please try again");
                System.out.println(prompt);
                move = sc.nextLine().split(" ");
           }
-          if (move[0].equals("move") && !playerHasTile(move[1])) {
-               move[0] = "wrongMove";
-          }
-//          for (Tile tile : tray) {
-//               System.out.println("tile after detMove " + tile.getLetter());
-//          }
-
           return move;
      }
 
@@ -152,7 +145,7 @@ public class Player {
                     if (character == tile.getLetter()){
                          validWord = true;
                          tempTray.remove(tile);
-                         System.out.println(character);
+                         System.out.println("character in playerHasTile " + character);
                          break forTile;        //break out of the inner loop
                     }
                     else{
