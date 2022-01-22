@@ -93,8 +93,9 @@ public class Board {
 
     public Square getSquare(String coordinate) {
         String[] dimension = coordinate.split("");
-        int y = Integer.parseInt(dimension[1]);       //The vertical coordinate
-        char c = coordinate.charAt(0);          //The horizontal coordinate  (letter format)
+
+        int y = Integer.parseInt(dimension.length == 3 ? dimension[1] + dimension[2] : dimension[1] );       //The vertical coordinate
+        char c = coordinate.charAt(0) ;          //The horizontal coordinate  (letter format)
         int x = -1;        //The horizontal coordinate (number format)
         char[] alphaArr = "ABCDEFGHIKLMNOVQRSTUVWXYZ".toCharArray();
 
@@ -113,7 +114,7 @@ public class Board {
     }
 
     public Square getSquareBelow(Square currentSquare){
-        System.out.println(currentSquare);
+        System.out.println("below square: " + currentSquare);
         int x = currentSquare.getxPosition();
         int y = currentSquare.getyPosition();
         return getSquare(x, y+1);

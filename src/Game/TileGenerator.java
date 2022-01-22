@@ -18,10 +18,10 @@ public class TileGenerator {
         input.add(new TileDescription('E', 12, 1));
         input.add(new TileDescription('F', 2, 4));
         input.add(new TileDescription('G', 2, 2));
-        input.add(new TileDescription('H', 4, 4));
+        input.add(new TileDescription('H', 2, 4));
         input.add(new TileDescription('I', 8, 1));
-        input.add(new TileDescription('J', 1, 1));
-        input.add(new TileDescription('K', 1,5));
+        input.add(new TileDescription('J', 2, 8));
+        input.add(new TileDescription('K', 2,5));
         input.add(new TileDescription('L', 4, 1));
         input.add(new TileDescription('M',2,3));
         input.add(new TileDescription('N', 6,1));
@@ -35,6 +35,7 @@ public class TileGenerator {
         input.add(new TileDescription('V',2,4));
         input.add(new TileDescription('W',2,4));
         input.add(new TileDescription('X',1,8));
+        input.add(new TileDescription('Y',2,4));
         input.add(new TileDescription('Z',1,10));
 
         /**
