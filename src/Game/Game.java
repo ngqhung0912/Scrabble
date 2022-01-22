@@ -351,6 +351,8 @@ public class Game {
                         break;
                     case "SHUFFLE":
                         // To be implemented.
+                        shuffleTray();
+                        nextPlayer();
                         break;
                 }
 
@@ -557,20 +559,28 @@ public class Game {
 
         }
 
+        public void shuffleTray(){
+            ArrayList<Tile> tray = players[currentPlayer].getTray();
+            for (Tile tile: tray) {
+                tileBag.add(tile);
+            }
+            tray.removeAll(tray);
+            addTileToTray(players[currentPlayer]);
+        }
     
 
     List<Square> occupiedSquares = new ArrayList<>();
     List<Square> nextValidSquares = new ArrayList<>();
 
-//    public List<Square> getNextValidSquares(List<Square> playSquares) {
-//        for (Square square: playSquares){
-//            occupiedSquares.add(square);
-//            nextValidSquares.remove(square);
-//        }
-//
-//
-//        return nextValidSquares;
-//
-//
-//
+    public List<Square> getNextValidSquares(List<Square> playSquares) {
+        for (Square square : playSquares) {
+            occupiedSquares.add(square);
+            nextValidSquares.remove(square);
+        }
+
+
+        return nextValidSquares;
+
+    }
+
 }
