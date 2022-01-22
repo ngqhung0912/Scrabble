@@ -47,6 +47,9 @@ public class Board {
         squaresBoard[11][14].setType(SquareType.DOUBLE_LETTER);
         squaresBoard[12][6].setType(SquareType.DOUBLE_LETTER);
         squaresBoard[12][8].setType(SquareType.DOUBLE_LETTER);
+        squaresBoard[14][3].setType(SquareType.DOUBLE_LETTER);
+        squaresBoard[14][11].setType(SquareType.DOUBLE_LETTER);
+
 
 
         for (int i = 1; i < 5; i++) {
@@ -114,7 +117,6 @@ public class Board {
     }
 
     public Square getSquareBelow(Square currentSquare){
-        System.out.println("below square: " + currentSquare);
         int x = currentSquare.getxPosition();
         int y = currentSquare.getyPosition();
         return getSquare(x, y+1);
