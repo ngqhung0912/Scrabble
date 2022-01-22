@@ -94,7 +94,7 @@ public class Board {
     public Square getSquare(String coordinate) {
         String[] dimension = coordinate.split("");
 
-        int y = Integer.parseInt(dimension[2] !=null ? dimension[1] + dimension[2] : dimension[1] );       //The vertical coordinate
+        int y = Integer.parseInt(dimension.length == 3 ? dimension[1] + dimension[2] : dimension[1] );       //The vertical coordinate
         char c = coordinate.charAt(0) ;          //The horizontal coordinate  (letter format)
         int x = -1;        //The horizontal coordinate (number format)
         char[] alphaArr = "ABCDEFGHIKLMNOVQRSTUVWXYZ".toCharArray();

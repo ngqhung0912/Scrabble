@@ -326,9 +326,6 @@ public class Game {
         );
     }
 
-    public void start() {
-
-    }
 
     public void play() {
         System.out.println("Welcome to Scrabble!");
@@ -345,40 +342,6 @@ public class Game {
                     System.out.println("wrong move. passing turn...");
                 }
                 nextPlayer();
-
-//                if (move[0].equals("move") && ((move[3].equals("H") || move[3].equals("V")))) {
-//                    String direction = move[3];
-//                    Square startingPosition = board.getSquare(move[2]);
-//                    // Here already removed tile from player's tray.
-//                    ArrayList<Square> initialWord = putWordInSquares(move[1], direction, startingPosition);
-//                    ArrayList<ArrayList<Square>> wordCombinations =
-//                            determinePossibleWordCombinations(startingPosition,direction);
-//                    wordCombinations.add(initialWord);
-//
-//                    int turnScore = 0;
-//                    loopOverAllWordCombinations: while(true) {
-//                        for (ArrayList<Square> wordCombination : wordCombinations) {
-//                            String validWord = wordChecker(wordCombination);
-//                            if (validWord.equals(null)) {
-//                                nextPlayer();
-//                                removeWordFromSquare(initialWord);
-//                                System.out.println("The word: " + getWordFromSquareList(wordCombination) + "is invalid. Skipping your turn...");
-//                                break loopOverAllWordCombinations;
-//                            }
-//                            turnScore += calculatePoints(wordCombination);
-//                        }
-//                        break loopOverAllWordCombinations;
-//                    }
-//                    players[currentPlayer].addPoints(turnScore);
-//                    for (Square square : initialWord) {
-//                        ArrayList<Tile> tray = players[currentPlayer].getTray();
-//                        tray.remove(square.getTile());
-//                    }
-//                    addTileToTray(players[currentPlayer]);
-//                    update();
-//                }
-//                nextPlayer();
-//                System.out.println("Wrong syntax. Passing turn...");
             }
         }
         printResult();
@@ -486,8 +449,8 @@ public class Game {
         return wordCombinations;
     }
 
-
-    public Board isValidMove(String[] move) {
+    
+    private Board isValidMove(String[] move) {
         if (move[0].equals("move") && ((move[3].equals("H") || move[3].equals("V")))) {
             String direction = move[3];
             Square startingPosition = board.getSquare(move[2]);
@@ -499,7 +462,6 @@ public class Game {
             }
             ArrayList<ArrayList<Square>> wordCombinations =
                     determinePossibleWordCombinations(startingPosition,direction);
-            wordCombinations.add(initialWord);
 
             int turnScore = 0;
             loopOverAllWordCombinations: while(true) {
@@ -529,6 +491,27 @@ public class Game {
             return copyBoard;
         }
         return null;
+    }
+
+    public ArrayList<Square> determinePossibleMoves(ArrayList<Square> occupiedSquare) {
+        ArrayList<Square> possibleMoves = new ArrayList<>();
+        for (Square square : occupiedSquare) {
+            if (square.getxPosition() < 14 && square.getyPosition() < 14) {
+                if (board.getSquareBelow(square).getTile() == null) {
+                    possibleMoves.add(square);
+                }
+                else if (board.getSquareRight(square).getTile() == null) {
+                    possibleMoves.add(square);
+                }
+                else if (board.getSquareAbove(square).getTile() == null) {
+                    possibleMoves.add(square);
+                }
+                else if (board.getSquareLeft(square).getTile() == null) {
+                    possibleMoves.add(square);
+                }
+            }
+        }
+        return possibleMoves;
     }
 
 }

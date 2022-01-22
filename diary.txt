@@ -36,4 +36,14 @@ to check which of the places have the highest score combination.
 
 
 21/1/2022:
-- Current debugging progress: the word has been put twice.
+- Current debugging progress: the word has been put twice. (done)
+
+22/1/2022:
+- not possible to place tile above and below
+- new input method: Ask user to place each tiles separately into the desired square, instead of words.
+- List of implements to be done if the input method changed:
++ determineMove of player:
++ isValidMove of game
++ putWordInSquare of game
++ determinePossibleWordCombination no need direction
++
