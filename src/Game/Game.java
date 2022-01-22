@@ -333,15 +333,30 @@ public class Game {
             System.out.println("Let's play!");
             for (currentPlayer = 0; currentPlayer < players.length;) {
                 update();
-                Board validBoard = isValidMove(players[currentPlayer].determineMove());
-                if (validBoard != null) {
+                String[] moves = players[currentPlayer].determineMove();
+                switch (moves[0]) {
+                    case "MOVE":
+                        String[] moveTiles = null;
+                        for (int i = 1; i < moves.length; i++) {
+                            moveTiles[i-1] = moves[i];
+                        }
+                        Board validBoard = isValidMove(players[currentPlayer].mapLetterToSquare(moveTiles));
+                        if (validBoard != null) {
+                            board = validBoard.clone();
+                        }
+                        else {
+                            System.out.println("wrong move. passing turn...");
+                        }
+                        nextPlayer();
+                        break;
+                    case "PASS":
+                        nextPlayer();
+                        break;
+                    case "SHUFFLE":
+                        // To be implemented.
+                        break;
+                }
 
-                    board = validBoard.clone();
-                }
-                else {
-                    System.out.println("wrong move. passing turn...");
-                }
-                nextPlayer();
             }
         }
         printResult();
@@ -359,6 +374,7 @@ public class Game {
             board.getSquare(square.getxPosition(),square.getyPosition()).setTile(null);
         }
     }
+
 
     private ArrayList<Square> putWordInSquares(String word, String direction, Square startingPosition) {
         char[] charArray = word.toCharArray();
@@ -449,49 +465,109 @@ public class Game {
         return wordCombinations;
     }
 
-    
-    private Board isValidMove(String[] move) {
-        if (move[0].equals("move") && ((move[3].equals("H") || move[3].equals("V")))) {
-            String direction = move[3];
-            Square startingPosition = board.getSquare(move[2]);
-            // Here already removed tile from player's tray.
-            ArrayList<Square> initialWord = putWordInSquares(move[1], direction, startingPosition);
-            Board copyBoard = board.clone();
-            if (initialWord == null) {
-                return null;
-            }
-            ArrayList<ArrayList<Square>> wordCombinations =
-                    determinePossibleWordCombinations(startingPosition,direction);
-
-            int turnScore = 0;
-            loopOverAllWordCombinations: while(true) {
-                for (ArrayList<Square> wordCombination : wordCombinations) {
-                    for (Square square : wordCombination) {
-                        System.out.println("check all combi " + square.getLocation() + ": " + (square.getTile() == null ? "" : square.getTile().getLetter()) ) ;
-                    }
-                }
-                for (ArrayList<Square> wordCombination : wordCombinations) {
-                    String validWord = wordChecker(wordCombination);
-                    if (validWord == null) {
-                        removeWordFromSquare(initialWord);
-//                        System.out.println("The word: " + getWordFromSquareList(wordCombination) + "is invalid. Skipping your turn...");
-                        System.out.println("There is one invalid word. Skipping turn...");
-                        return null;
-                    }
-                    turnScore += calculatePoints(wordCombination);
-                }
-                break loopOverAllWordCombinations;
-            }
-            players[currentPlayer].addPoints(turnScore);
-            for (Square square : initialWord) {
-                ArrayList<Tile> tray = players[currentPlayer].getTray();
-                tray.remove(square.getTile());
-            }
-            addTileToTray(players[currentPlayer]);
-            return copyBoard;
+    private Board isValidMove(HashMap<String, String> moves) {
+        Board copyBoard = board.clone();
+        String direction = determineMoveDirection(moves);
+        ArrayList<Square> initialWord = new ArrayList<>();
+        for (Map.Entry<String, String> move : moves.entrySet()) {
+            char character = move.getKey().toCharArray()[0];
+            Square location = copyBoard.getSquare(move.getValue());
+            location.setTile(players[currentPlayer].determineTileFromChar(character));
+            initialWord.add(location);
         }
-        return null;
+        ArrayList<ArrayList<Square>> wordCombinations =
+                determinePossibleWordCombinations(initialWord.get(0), direction);
+        int turnScore = 0;
+        loopOverAllWordCombinations: while(true) {
+            for (ArrayList<Square> wordCombination : wordCombinations) {
+                for (Square square : wordCombination) {
+                    System.out.println("check all combi " + square.getLocation() + ": " + (square.getTile() == null ? "" : square.getTile().getLetter()) ) ;
+                }
+            }
+            for (ArrayList<Square> wordCombination : wordCombinations) {
+                String validWord = wordChecker(wordCombination);
+                if (validWord == null) {
+                    removeWordFromSquare(initialWord);
+//                        System.out.println("The word: " + getWordFromSquareList(wordCombination) + "is invalid. Skipping your turn...");
+                    System.out.println("There is one invalid word. Skipping turn...");
+                    return null;
+                }
+                turnScore += calculatePoints(wordCombination);
+            }
+            break loopOverAllWordCombinations;
+        }
+        players[currentPlayer].addPoints(turnScore);
+        for (Square square : initialWord) {
+            ArrayList<Tile> tray = players[currentPlayer].getTray();
+            tray.remove(square.getTile());
+        }
+        addTileToTray(players[currentPlayer]);
+        return copyBoard;
     }
+
+    private String determineMoveDirection(HashMap<String, String> moves) {
+        if (moves.size() == 1) {
+            return "H";
+        }
+        ArrayList<String> column = new ArrayList<>();
+
+        for (Map.Entry<String, String> move : moves.entrySet()){
+            column.add(move.getValue().split("")[0]);
+        }
+        if (column.get(0).equals(column.get(1))) {
+            return "H";
+        }
+        else {
+            return "V";
+        }
+
+
+
+        }
+
+    
+//    private Board isValidMove(String[] move) {
+//        if (move[0].equals("move") && ((move[3].equals("H") || move[3].equals("V")))) {
+//            String direction = move[3];
+//            Square startingPosition = board.getSquare(move[2]);
+//            // Here already removed tile from player's tray.
+//            ArrayList<Square> initialWord = putWordInSquares(move[1], direction, startingPosition);
+//            Board copyBoard = board.clone();
+//            if (initialWord == null) {
+//                return null;
+//            }
+//            ArrayList<ArrayList<Square>> wordCombinations =
+//                    determinePossibleWordCombinations(startingPosition,direction);
+//
+//            int turnScore = 0;
+//            loopOverAllWordCombinations: while(true) {
+//                for (ArrayList<Square> wordCombination : wordCombinations) {
+//                    for (Square square : wordCombination) {
+//                        System.out.println("check all combi " + square.getLocation() + ": " + (square.getTile() == null ? "" : square.getTile().getLetter()) ) ;
+//                    }
+//                }
+//                for (ArrayList<Square> wordCombination : wordCombinations) {
+//                    String validWord = wordChecker(wordCombination);
+//                    if (validWord == null) {
+//                        removeWordFromSquare(initialWord);
+////                        System.out.println("The word: " + getWordFromSquareList(wordCombination) + "is invalid. Skipping your turn...");
+//                        System.out.println("There is one invalid word. Skipping turn...");
+//                        return null;
+//                    }
+//                    turnScore += calculatePoints(wordCombination);
+//                }
+//                break loopOverAllWordCombinations;
+//            }
+//            players[currentPlayer].addPoints(turnScore);
+//            for (Square square : initialWord) {
+//                ArrayList<Tile> tray = players[currentPlayer].getTray();
+//                tray.remove(square.getTile());
+//            }
+//            addTileToTray(players[currentPlayer]);
+//            return copyBoard;
+//        }
+//        return null;
+//    }
 
     List<Square> occupiedSquares = new ArrayList<>();
     List<Square> nextValidSquares = new ArrayList<>();
@@ -505,25 +581,25 @@ public class Game {
 
         return nextValidSquares;
 
-    public ArrayList<Square> determinePossibleMoves(ArrayList<Square> occupiedSquare) {
-        ArrayList<Square> possibleMoves = new ArrayList<>();
-        for (Square square : occupiedSquare) {
-            if (square.getxPosition() < 14 && square.getyPosition() < 14) {
-                if (board.getSquareBelow(square).getTile() == null) {
-                    possibleMoves.add(square);
-                }
-                else if (board.getSquareRight(square).getTile() == null) {
-                    possibleMoves.add(square);
-                }
-                else if (board.getSquareAbove(square).getTile() == null) {
-                    possibleMoves.add(square);
-                }
-                else if (board.getSquareLeft(square).getTile() == null) {
-                    possibleMoves.add(square);
-                }
-            }
-        }
-        return possibleMoves;
+//    public ArrayList<Square> determinePossibleMoves(ArrayList<Square> occupiedSquare) {
+//        ArrayList<Square> possibleMoves = new ArrayList<>();
+//        for (Square square : occupiedSquare) {
+//            if (square.getxPosition() < 14 && square.getyPosition() < 14) {
+//                if (board.getSquareBelow(square).getTile() == null) {
+//                    possibleMoves.add(square);
+//                }
+//                else if (board.getSquareRight(square).getTile() == null) {
+//                    possibleMoves.add(square);
+//                }
+//                else if (board.getSquareAbove(square).getTile() == null) {
+//                    possibleMoves.add(square);
+//                }
+//                else if (board.getSquareLeft(square).getTile() == null) {
+//                    possibleMoves.add(square);
+//                }
+//            }
+//        }
+//        return possibleMoves;
 
     }
 
