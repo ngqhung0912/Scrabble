@@ -105,7 +105,7 @@ public class Player {
 //                    try{
 //                         Scanner sc = new Scanner(System.in);
 //                         char input = sc.nextLine().toUpperCase().charAt(0);
-//                         sc.close();
+//                         //sc.close();
 //                         return tile;
 //
 //                    } catch (IllegalArgumentException e) {
@@ -175,4 +175,6 @@ public class Player {
 //          totalPoints = 0;
 //     }
      }
+
+
 }
