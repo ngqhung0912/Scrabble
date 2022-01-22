@@ -33,7 +33,8 @@ to check which of the places have the highest score combination.
 - putWordInSquare: guard - check whether the nextPosition already has a tile or not, if true, return null
 - Every player input should be turned into upper case letters
 
-
+22/1/2022
+- the square for new word input hasn't been append to other squares
 
 21/1/2022:
 - Current debugging progress: the word has been put twice. (done)
