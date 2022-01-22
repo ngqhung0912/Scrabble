@@ -581,26 +581,6 @@ public class Game {
 
         return nextValidSquares;
 
-//    public ArrayList<Square> determinePossibleMoves(ArrayList<Square> occupiedSquare) {
-//        ArrayList<Square> possibleMoves = new ArrayList<>();
-//        for (Square square : occupiedSquare) {
-//            if (square.getxPosition() < 14 && square.getyPosition() < 14) {
-//                if (board.getSquareBelow(square).getTile() == null) {
-//                    possibleMoves.add(square);
-//                }
-//                else if (board.getSquareRight(square).getTile() == null) {
-//                    possibleMoves.add(square);
-//                }
-//                else if (board.getSquareAbove(square).getTile() == null) {
-//                    possibleMoves.add(square);
-//                }
-//                else if (board.getSquareLeft(square).getTile() == null) {
-//                    possibleMoves.add(square);
-//                }
-//            }
-//        }
-//        return possibleMoves;
 
-    }
 
 }
