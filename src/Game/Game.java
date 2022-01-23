@@ -26,6 +26,8 @@ public class Game {
     private List<Tile> tileBag;
     private ArrayList<String> usedWords;
     private ScrabbleWordChecker checker;
+    List<Square> occupiedSquares = new ArrayList<>();
+    List<Square> nextValidSquares = new ArrayList<>();
     private String previousMove;
     private int passCount;
 
@@ -519,7 +521,8 @@ public class Game {
             playSquares.add(location);
         }
 
-        isValidPlacement(playSquares);
+        //Check the player choice of square validation
+        if (!isValidPlacement(playSquares, copyBoard)) return null;
 
         ArrayList<ArrayList<Square>> wordCombinations =
                 determinePossibleWordCombinations(initialWord.get(0), direction,copyBoard);
@@ -549,6 +552,7 @@ public class Game {
             tray.remove(square.getTile());
         }
         addTileToTray(players[currentPlayer]);
+        getNextValidSquares(playSquares, direction, copyBoard);
         return copyBoard;
     }
 
@@ -582,23 +586,55 @@ public class Game {
     }
     
 
-    List<Square> occupiedSquares = new ArrayList<>();
-    List<Square> nextValidSquares = new ArrayList<>();
 
-    public List<Square> getNextValidSquares(List<Square> playSquares) {
+
+    public List<Square> getNextValidSquares(List<Square> playSquares, String direction, Board copyBoard) {
 
         for (Square square : playSquares) {
             occupiedSquares.add(square);
             nextValidSquares.remove(square);
         }
+
+        for (int i = 0; i < playSquares.size(); i++) {
+            if(direction.equals("H")) {
+                if (i == 0 && copyBoard.getSquareLeft(playSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareLeft(playSquares.get(i)));
+
+                else if (i == playSquares.size() -1 && copyBoard.getSquareRight(playSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareRight(playSquares.get(i)));
+
+                if (copyBoard.getSquareAbove(playSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareAbove(playSquares.get(i)));
+                if (board.getSquareBelow(playSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareBelow(playSquares.get(i)));
+            }
+
+            else {
+                if (i == 0 && copyBoard.getSquareAbove(playSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareAbove(playSquares.get(i)));
+
+                else if (i == playSquares.size() -1 && copyBoard.getSquareBelow(playSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareBelow(playSquares.get(i)));
+
+                if (copyBoard.getSquareRight(playSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareRight(playSquares.get(i)));
+                if (copyBoard.getSquareLeft(playSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareLeft(playSquares.get(i)));
+            }
+        }
+        System.out.println("Next valid squares: " + nextValidSquares.toString());
         return nextValidSquares;
 
     }
 
-    public boolean isValidPlacement(List<Square> playSquares){
-        Square centralSquare = board.getSquare("H7");
+    public boolean isValidPlacement(List<Square> playSquares, Board copyBoard){
+        Square centralSquare = copyBoard.getSquare("H7");
         if (tileBag.size() == 86 && playSquares.contains(centralSquare)) return true;
-        else if (playSquares.contains(nextValidSquares)) return true;
+        for (Square playSquare: playSquares){
+            if (tileBag.size() != 86 && nextValidSquares.contains(playSquare)) return true;
+        }
+        System.out.println("Invalid placement. In the first round, player has to put one tile on H7 square.\n" +
+                "During the remaining game, at least one tile placed by the player has to connect to one of the tiles on the board.");
         return false;
     }
 
