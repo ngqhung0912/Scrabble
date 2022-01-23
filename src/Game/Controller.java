@@ -28,10 +28,4 @@ public class Controller {
         Game game = new Game(numPlayers,playerName);
         game.play();
     }
-
-
-
-
-
-
 }

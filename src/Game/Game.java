@@ -573,9 +573,16 @@ public class Game {
             nextValidSquares.remove(square);
         }
 
-
         return nextValidSquares;
 
+    }
+
+    public boolean isValidPlacement(List<Square> playSquares, List<Square> nextValidSquares){
+        Square centralSquare =
+        if (tileBag.size() == 86) {
+            if (playSquares.contains(playSquares.))
+        }
+        return false;
     }
 
 }
