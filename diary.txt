@@ -20,7 +20,7 @@ method newWordFormed to check all the word formed, along with the user-intended 
 hashmap WordPlayed to store all the word previously has been played, among with their coordiates.
 
 19/1/2022:
-- Blank tile: implement a method to ask the user to choose a letter, then convert it to a tile
+- Blank tile: implement a method to ask the user to choose a letter, then convert it to a tile (v)
 
 ComputerPlayer ideas: Copy the game, determine all possible places to place a word, then use game.determinePossibleWordCombination()
 to check which of the places have the highest score combination.
@@ -49,6 +49,16 @@ to check which of the places have the highest score combination.
 + putWordInSquare of game (v)
 + determinePossibleWordCombination (v)
 
+- implement linkedhashmap because it can index.
 
--implement linkedhashmap because it can index.
+- if the word has 2 letters of the same type, it will skip the first letter (v)
+- turnScore: add score for invalid wordCombination
+- Cannot append an input with an existing tile on the board (v)
+- Cannot put tiles in 2 non-consecutive squares (v)
+- Some methods blow up after a few rounds
 
+- After 4 consecutive PASS => GAMEOVER
+- Only calculate the score for word made from the tile place
+- The Scanner has a little buffer (1KB char buffer) as opposed to the BufferedReader (8KB byte buffer), but it's more
+  than enough. BufferedReader is a bit faster as compared to scanner because scanner does parsing of input data and
+  BufferedReader simply reads sequence of characters

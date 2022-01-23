@@ -38,8 +38,9 @@ public class Tile {
         this.point = point;
     }
 
-
-
+    public void setLetter(char letter) {
+        this.letter = letter;
+    }
 
     /**
      * 0 represents a blank tile

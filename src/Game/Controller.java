@@ -1,5 +1,7 @@
 package Game;
 
+import java.io.IOException;
+
 public class Controller {
     private static final String HELP = "Wrong input format. Correct input format: <numPlayers> <P1name> <P2name> ... ";
 
@@ -7,7 +9,7 @@ public class Controller {
         game = new Game(numPlayers,playerName);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int numPlayers = 0;
         try {
             numPlayers = Integer.parseInt(args[0]);
@@ -26,10 +28,4 @@ public class Controller {
         Game game = new Game(numPlayers,playerName);
         game.play();
     }
-
-
-
-
-
-
 }
