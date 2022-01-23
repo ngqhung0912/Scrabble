@@ -1,5 +1,8 @@
 package Game;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 /**
@@ -15,7 +18,8 @@ public class Player {
      private ArrayList<Tile> tray;
      private static final String FORMAT = "Input format: If you want to put a words, for example DOG into the board, " +
              "in the square A1, A2 and A3, write your move as: DA1 OA2 GA3";
-     private static Scanner sc = new Scanner(System.in);
+     //private static Scanner sc = new Scanner(System.in);
+     private static BufferedReader bf;
 
 
      // -- Constructors -----------------------------------------------
@@ -24,7 +28,7 @@ public class Player {
           this.name = name;
           totalPoints = 0;
           this.tray = tray;
-//          Scanner sc =  new Scanner(System.in);
+          bf = new BufferedReader(new InputStreamReader(System.in));
 
      }
 
@@ -73,13 +77,13 @@ public class Player {
       *
       * @return
       */
-     public String[] determineMove() {
+     public String[] determineMove() throws IOException {
           String[] move = null;
           String prompt = "It's player " + name + "'s turn. " + "\nInput format: If you want to put a words, " +
                   "\nfor example DOG into the board," +
                   "\nin the square A1, A2 and A3 , \nwrite your move as: MOVE D-A1 O-A2 G-A3";
           System.out.println(prompt);
-          move = sc.nextLine().split(" ");
+          move = bf.readLine().split(" ");
 //          while (!move[0].equals("PASS") || !move[0].equals("MOVE") || !move[0].equals("SHUFFLE")){
 //               System.out.println("Invalid Syntax. Please try again");
 //               System.out.println(prompt);
@@ -92,7 +96,7 @@ public class Player {
           LinkedHashMap<String , String > letterToSquare = new LinkedHashMap<>();
           for (int i = 0; i < move.length; i++) {
                String[] letterSquarePair = move[i].split("-");
-               letterToSquare.put(letterSquarePair[0], letterSquarePair[1]);
+               letterToSquare.put(letterSquarePair[1], letterSquarePair[0]);
           }
           return letterToSquare;
      }

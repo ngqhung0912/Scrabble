@@ -8,7 +8,7 @@ public class TileGenerator {
         /**
          * @invariant inititialCapacity == 26
          */
-        List<TileDescription> input = new ArrayList<>(27);
+        List<TileDescription> input = new ArrayList<>();
 
         input.add(new TileDescription('0', 2, 0));
         input.add(new TileDescription('A', 9, 1));
@@ -37,6 +37,9 @@ public class TileGenerator {
         input.add(new TileDescription('X',1,8));
         input.add(new TileDescription('Y',2,4));
         input.add(new TileDescription('Z',1,10));
+
+
+
 
         /**
          * @invariant initialCapacity == 100

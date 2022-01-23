@@ -10,6 +10,7 @@ import WordChecker.main.java.FileStreamScrabbleWordChecker;
 import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -61,6 +62,7 @@ public class Game {
             Player player = new Player(playerList[p], tray);
             players[p] = player;
         }
+
     }
 
     /**
@@ -202,6 +204,7 @@ public class Game {
         int missingTile = bagSize == 0 ? 0 : bagSize < (7 - tray.size()) ? bagSize : 7 - tray.size();
 
         for (int i = 0; i < missingTile; i++) {
+            bagSize = tileBag.size();
             int j = new Random().nextInt(bagSize);
             Tile tile = tileBag.get(j);
             tileBag.remove(tile);
@@ -327,7 +330,7 @@ public class Game {
     }
 
 
-    public void play() {
+    public void play() throws IOException {
         System.out.println("Welcome to Scrabble!");
         while (!gameOver()) {
             System.out.println("Let's play!");
@@ -404,100 +407,85 @@ public class Game {
         }
 
 
-        traversingRightandBelow : while (startingPosition.getxPosition() <15
+        traversingRightandBelow : while (startingPosition != null
+                && startingPosition.getxPosition() < 15
                 && startingPosition.getyPosition() < 15
                 && startingPosition.hasTile()) {
 
             Square currentPosition = startingPosition;
+
+
             if (direction.equals("H")) {
+                ArrayList<Square> verticalWord = new ArrayList<>();
+                verticalWord.add(currentPosition);
+                Square nextAbovePosition = currentPosition;
+                Square nextBelowPosition = currentPosition;
+
+                AboveWhileH: while(nextAbovePosition.getyPosition() > 0 && copyBoard.getSquareAbove(nextAbovePosition).hasTile()) {
+                    verticalWord.add(0,copyBoard.getSquareAbove(nextAbovePosition));
+                    nextAbovePosition = copyBoard.getSquareAbove(nextAbovePosition);
+                }
+
+                belowWhileH: while(nextBelowPosition.getyPosition() < 15 && copyBoard.getSquareBelow(nextBelowPosition).hasTile()) {
+                    verticalWord.add(copyBoard.getSquareBelow(nextBelowPosition));
+                    nextBelowPosition = copyBoard.getSquareBelow(nextBelowPosition);
+                }
                 currentPosition = copyBoard.getSquareRight(currentPosition);
                 initialWord.add(startingPosition);
                 startingPosition = currentPosition;
-                Square tempCurrentPosition = currentPosition;
-                Square nextAbovePosition = currentPosition;
-                Square nextBelowPosition = currentPosition;
-                ArrayList<Square> verticalWord = new ArrayList<>();
-                verticalWord.add(currentPosition);
 
-                AboveWhileH: while(copyBoard.getSquareAbove(nextAbovePosition).hasTile() && nextAbovePosition.getyPosition() > 0 ) {
-                    verticalWord.add(0,copyBoard.getSquareAbove(nextAbovePosition));
-                }
-
-                belowWhileH: while(copyBoard.getSquareBelow(nextBelowPosition).hasTile() && nextBelowPosition.getyPosition() < 15) {
-                    verticalWord.add(copyBoard.getSquareBelow(nextBelowPosition));
-                }
 
                 if (verticalWord.size() > 1) wordCombinations.add(verticalWord);
-
             }
             else if (direction.equals("V")) {
-                currentPosition = copyBoard.getSquareBelow(currentPosition);
-                initialWord.add(startingPosition);
-                startingPosition = currentPosition;
-                Square tempCurrentPosition = currentPosition;
+                ArrayList<Square> horizontalWord = new ArrayList<>();
+                horizontalWord.add(currentPosition);
+
                 Square nextLeftPosition = currentPosition;
                 Square nextRightPosition = currentPosition;
 
-                ArrayList<Square> horizontalWord = new ArrayList<>();
 
                 leftWhileV: while(nextLeftPosition.getxPosition() > 0 && copyBoard.getSquareLeft(nextLeftPosition).hasTile()) {
                     horizontalWord.add(0,copyBoard.getSquareLeft(nextLeftPosition));
+                    nextLeftPosition = copyBoard.getSquareLeft(nextLeftPosition);
                 }
 
                 rightWhileV: while(nextRightPosition.getxPosition() < 15 && copyBoard.getSquareRight(nextRightPosition).hasTile()) {
                     horizontalWord.add(copyBoard.getSquareRight(nextRightPosition));
+                    nextRightPosition = copyBoard.getSquareRight(nextRightPosition);
                 }
+                currentPosition = copyBoard.getSquareBelow(currentPosition);
+                initialWord.add(startingPosition);
+                startingPosition = currentPosition;
 
                 if (horizontalWord.size() > 1) wordCombinations.add(horizontalWord);
-
             }
+
+
+
         }
-//        traversingLeftandAbove: while (otherSideStartingPosition != null
-//                && otherSideStartingPosition.getxPosition() > 0
-//                && otherSideStartingPosition.getyPosition() > 0
-//                && otherSideStartingPosition.hasTile()) {
-//            Square currentPosition = otherSideStartingPosition;
-//            if (direction.equals("H")) {
-//                currentPosition = copyBoard.getSquareLeft(currentPosition);
-//                initialWord.add(0,otherSideStartingPosition);
-//                otherSideStartingPosition = currentPosition;
-//                Square tempCurrentPosition = currentPosition;
-//                Square nextAbovePosition = currentPosition;
-//                Square nextBelowPosition = currentPosition;
-//
-//                ArrayList<Square> verticalWord = new ArrayList<Square>();
-//                verticalWord.add(currentPosition);
-//                AboveWhileH: while(copyBoard.getSquareAbove(nextAbovePosition).hasTile() && nextAbovePosition.getyPosition() > 0 ) {
-//                    verticalWord.add(0,copyBoard.getSquareAbove(nextAbovePosition));
-//                }
-//
-//                belowWhileH: while(copyBoard.getSquareBelow(nextBelowPosition).hasTile() && nextBelowPosition.getyPosition() < 15) {
-//                    verticalWord.add(copyBoard.getSquareBelow(nextBelowPosition));
-//                }
-//
-//                if (verticalWord.size() > 1) wordCombinations.add(verticalWord);
-//            }
-//            else if (direction.equals("V")) {
-//                currentPosition = copyBoard.getSquareAbove(currentPosition);
-//                initialWord.add(0,otherSideStartingPosition);
-//                otherSideStartingPosition = currentPosition;
-//                Square nextLeftPosition = currentPosition;
-//                Square nextRightPosition = currentPosition;
-//
-//                ArrayList<Square> horizontalWord = new ArrayList<>();
-//
-//                leftWhileV: while(nextLeftPosition.getxPosition() > 0 && copyBoard.getSquareLeft(nextLeftPosition).hasTile()) {
-//                    horizontalWord.add(0,copyBoard.getSquareLeft(nextLeftPosition));
-//                }
-//
-//                rightWhileV: while(nextRightPosition.getxPosition() < 15 && copyBoard.getSquareRight(nextRightPosition).hasTile()) {
-//                    horizontalWord.add(copyBoard.getSquareRight(nextRightPosition));
-//                }
-//
-//                if (horizontalWord.size() > 1) wordCombinations.add(horizontalWord);
-//            }
-//
-//        }
+        traversingLeftandAbove: while (otherSideStartingPosition != null
+                && otherSideStartingPosition.getxPosition() >= 0
+                && otherSideStartingPosition.getyPosition() >= 0
+                && otherSideStartingPosition.hasTile()) {
+            Square currentPosition = otherSideStartingPosition;
+            System.out.println("got into traversing left and above: ");
+            if (direction.equals("H")) {
+                currentPosition = copyBoard.getSquareLeft(currentPosition);
+                initialWord.add(0,otherSideStartingPosition);
+                otherSideStartingPosition = currentPosition;
+            }
+            else if (direction.equals("V")) {
+                currentPosition = copyBoard.getSquareAbove(currentPosition);
+                initialWord.add(0,otherSideStartingPosition);
+                otherSideStartingPosition = currentPosition;
+            }
+            if (startingPosition == null) {
+                break traversingLeftandAbove;
+            }
+
+
+        }
 
         if (initialWord.size() > 1) wordCombinations.add(initialWord);
         return wordCombinations;
@@ -506,16 +494,23 @@ public class Game {
     private Board isValidMove(LinkedHashMap<String, String> moves) {
         Board copyBoard = board.clone();
         String direction = determineMoveDirection(moves);
+
         ArrayList<Square> initialWord = new ArrayList<>();
+
         for (Map.Entry<String, String> move : moves.entrySet()) {
-            char character = move.getKey().toCharArray()[0];
-            Square location = copyBoard.getSquare(move.getValue());
+            char character = move.getValue().toCharArray()[0];
+            Square location = copyBoard.getSquare(move.getKey());
             location.setTile(players[currentPlayer].determineTileFromChar(character));
             initialWord.add(location);
         }
 
         ArrayList<ArrayList<Square>> wordCombinations =
                 determinePossibleWordCombinations(initialWord.get(0), direction,copyBoard);
+
+        if (wordCombinations.size() == 0) {
+            System.out.println("nothing to check");
+            return null;
+        }
         int turnScore = 0;
         for (ArrayList<Square> wordCombination : wordCombinations) {
             for (Square square : wordCombination) {
@@ -546,7 +541,7 @@ public class Game {
         ArrayList<String> column = new ArrayList<>();
 
         for (Map.Entry<String, String> move : moves.entrySet()){
-            column.add(move.getValue().split("")[0]);
+            column.add(move.getKey().split("")[0]);
         }
         if (!column.get(0).equals(column.get(1))) {
             return "H";
@@ -559,14 +554,14 @@ public class Game {
 
         }
 
-        public void shuffleTray(){
-            ArrayList<Tile> tray = players[currentPlayer].getTray();
-            for (Tile tile: tray) {
-                tileBag.add(tile);
-            }
-            tray.removeAll(tray);
-            addTileToTray(players[currentPlayer]);
+    public void shuffleTray(){
+        ArrayList<Tile> tray = players[currentPlayer].getTray();
+        for (Tile tile: tray) {
+            tileBag.add(tile);
         }
+        tray.removeAll(tray);
+        addTileToTray(players[currentPlayer]);
+    }
     
 
     List<Square> occupiedSquares = new ArrayList<>();

@@ -100,7 +100,7 @@ public class Board {
         int y = Integer.parseInt(dimension.length == 3 ? dimension[1] + dimension[2] : dimension[1] );       //The vertical coordinate
         char c = coordinate.charAt(0) ;          //The horizontal coordinate  (letter format)
         int x = -1;        //The horizontal coordinate (number format)
-        char[] alphaArr = "ABCDEFGHIKLMNOVQRSTUVWXYZ".toCharArray();
+        char[] alphaArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
         for (int j = 0; j < alphaArr.length; j++){         // int j - index of alphaArr
             if (c == alphaArr[j]) {
