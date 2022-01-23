@@ -1,0 +1,64 @@
+15/1/2022:
+- It was a productive day
+
+16/1/2022:
+- Logic for tray assigning in controller: Initialize player with
+- Save all words by players in the board in a dictionary, then re-loop the dictionary to find it later if there
+is a word connected to that tile.
+
+17/1/2022:
+To do list:
+- Implementing the input controller.
+- When will game ends?
+- Do our game run both locally and on a network, or only on network? i.e. you have use 4 different terminals to connect to
+game and run?
+- https://www.youtube.com/watch?v=aIaFFPatJjY tictactoe multiplayer
+
+18/1/2022:
+
+method newWordFormed to check all the word formed, along with the user-intended word.
+hashmap WordPlayed to store all the word previously has been played, among with their coordiates.
+
+19/1/2022:
+- Blank tile: implement a method to ask the user to choose a letter, then convert it to a tile (v)
+
+ComputerPlayer ideas: Copy the game, determine all possible places to place a word, then use game.determinePossibleWordCombination()
+to check which of the places have the highest score combination.
+
+- guard: starting position must be H8.
+- check if the starting position of the move already have the tile of the same kind. If not then pass the turn.
+
+- after the first round, the player have to put their tiles next to at least 1 existing tile on the board during the remaining game
+- JUnit test: if the players use more letter of the same type then they have on the tray
+- putWordInSquare: guard - check whether the nextPosition already has a tile or not, if true, return null
+- Every player input should be turned into upper case letters
+
+22/1/2022
+- the square for new word input hasn't been append to other squares
+
+21/1/2022:
+- Current debugging progress: the word has been put twice. (done)
+
+22/1/2022:
+- not possible to place tile above and below
+- new input method: Ask user to place each tiles separately into the desired square, instead of words.
+- List of implements to be done if the input method changed:
++ determineMove of player (v)
++ checkmove of player (v)
++ isValidMove of game receives hashMap<string, string> (v)
++ putWordInSquare of game (v)
++ determinePossibleWordCombination (v)
+
+- implement linkedhashmap because it can index.
+
+- if the word has 2 letters of the same type, it will skip the first letter (v)
+- turnScore: add score for invalid wordCombination
+- Cannot append an input with an existing tile on the board (v)
+- Cannot put tiles in 2 non-consecutive squares (v)
+- Some methods blow up after a few rounds
+
+- After 4 consecutive PASS => GAMEOVER
+- Only calculate the score for word made from the tile place
+- The Scanner has a little buffer (1KB char buffer) as opposed to the BufferedReader (8KB byte buffer), but it's more
+  than enough. BufferedReader is a bit faster as compared to scanner because scanner does parsing of input data and
+  BufferedReader simply reads sequence of characters

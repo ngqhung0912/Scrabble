@@ -25,6 +25,9 @@ xcuserdata/
 # IDE
 *.idea
 *.iml
+*.ipr
+*.iws
+
  
 # Generated files
 /web-app/WEB-INF
@@ -45,3 +48,19 @@ CVS
 Backup[ ]of[ ]*.pages/
 Backup[ ]of[ ]*.key/
 Backup[ ]of[ ]*.numbers/
+
+=======
+# Visual Paradigm
+*.bak_000f
+*.lck
+>>>>>>> ccae4103c4c2d3213fffd2017c0883348dc56259
+.vpprefdata/
+*.vpp~*
+*.vpp.working
+*.vpp.working-journal
+*.lock
+tmp/*
+
+*.vpp.lck
+
+*.vpp.bak_*
