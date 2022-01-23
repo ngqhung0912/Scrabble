@@ -81,14 +81,10 @@ public class Player {
           String[] move = null;
           String prompt = "It's player " + name + "'s turn. " + "\nInput format: If you want to put a words, " +
                   "\nfor example DOG into the board," +
-                  "\nin the square A1, A2 and A3 , \nwrite your move as: MOVE D-A1 O-A2 G-A3";
+                  "\nin the square A1, A2 and A3 , \nwrite your move as: MOVE D-A1 O-A2 G-A3" +
+                  "\ntype SHUFFLE to shuffle your tray and type PASS to end your turn immediately.";
           System.out.println(prompt);
           move = bf.readLine().split(" ");
-//          while (!move[0].equals("PASS") || !move[0].equals("MOVE") || !move[0].equals("SHUFFLE")){
-//               System.out.println("Invalid Syntax. Please try again");
-//               System.out.println(prompt);
-//               move = sc.nextLine().split(" ");
-//          }
           return move;
      }
 
@@ -103,26 +99,23 @@ public class Player {
 
      public Tile determineTileFromChar(char character) {
           for (Tile tile: tray){
-//               if (character == 0 && character == tile.getLetter() ) {
-//                    String prompt = "Please choose one of the letters below:\n"
-//                            + "A B C D E F G H I K L M N O V Q R S T U V W X Y Z\n\n";
-//                    try{
-//                         Scanner sc = new Scanner(System.in);
-//                         char input = sc.nextLine().toUpperCase().charAt(0);
-//                         //sc.close();
-//                         return tile;
-//
-//                    } catch (IllegalArgumentException e) {
-//                         //to be implement
-//                              //Case 1: Player did not input an alphabetical letter
-//                              //Case 2: input.length() > 1
-//                              //Case 3: Player input a lower case letter (use toUpperCase)
-//                    }
-//               }
-//               else
+               if (character == '#' && character == tile.getLetter() ) {
+                    String prompt = "Please choose one of the letters below:\n"
+                            + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n\n";
+                    try{
+                         System.out.println(prompt);
+                         Scanner sc = new Scanner(System.in);
+                         char input = sc.nextLine().charAt(0);
+                         tile.setLetter(input);
+                         return tile;
+
+                    } catch (IllegalArgumentException e) {
+                    }
+               }
+               else {
                     if (tile.getLetter() == character) {
-//                         System.out.println("tile returned" + tile.getLetter());
-                    return tile;
+                         return tile;
+                    }
                }
           }
           return null;
@@ -165,19 +158,6 @@ public class Player {
           }
           return validWord;
 
-//          String[] trayWord = new String[tray.size()];
-//          for (Tile tile : tray) {
-//
-//          }
-//          for (char character : word.toCharArray())  {
-//
-////               if (!trayWord.contains(Character.toString(character))) return false;
-//          }
-//          return true;
-//     }
-//     public void reset() {
-//          totalPoints = 0;
-//     }
      }
 
 
