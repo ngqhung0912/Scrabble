@@ -175,6 +175,9 @@ public class Game {
         boolean tripleWord = false;
         for (Square square : squares) {
             switch (square.getType()) {
+                case CENTER:
+                    doubleWord = true;
+                    break;
                 case DOUBLE_LETTER:
                     score += square.getTile().getPoint()*2;
                     break;
@@ -299,7 +302,7 @@ public class Game {
 
         Player winner = players[0];
         for (int i = 1; i < players.length;) {
-P            int compare = winner.compareTo(players[i]);
+            int compare = winner.compareTo(players[i]);
             if (compare < 0) {
                 winner = players[i];
             } else if (compare == 0) {

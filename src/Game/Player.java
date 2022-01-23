@@ -109,7 +109,7 @@ public class Player implements Comparable<Player> {
           for (Tile tile: tray){
                if (character == '#' && character == tile.getLetter() ) {
                     String prompt = "Please choose one of the letters below:\n"
-                            + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n\n";
+                            + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n";
                     try{
                          System.out.println(prompt);
                          Scanner sc = new Scanner(System.in);
