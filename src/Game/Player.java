@@ -9,7 +9,7 @@ import java.util.*;
  * @author Nhat Tran, Hung Nguyen
  * @version 0.1
  */
-public class Player {
+public class Player implements Comparable<Player> {
 
      // -- Instance variables -----------------------------------------
 
@@ -82,7 +82,7 @@ public class Player {
           String prompt = "It's player " + name + "'s turn. " + "\nInput format: If you want to put a words, " +
                   "\nfor example DOG into the board," +
                   "\nin the square A1, A2 and A3 , \nwrite your move as: MOVE D-A1 O-A2 G-A3" +
-                  "\ntype SHUFFLE to shuffle your tray and type PASS to end your turn immediately.";
+                  "\ntype SWAP to SWAP one more more letter(s) in your tray, and type PASS to end your turn immediately.";
           System.out.println(prompt);
           move = bf.readLine().split(" ");
           return move;
@@ -95,6 +95,14 @@ public class Player {
                letterToSquare.put(letterSquarePair[1], letterSquarePair[0]);
           }
           return letterToSquare;
+     }
+     public ArrayList<Tile> determineTileToShuffle(char[] chars) {
+          ArrayList<Tile> shuffledTile = new ArrayList<>();
+          for (char character : chars) {
+               Tile tile = determineTileFromChar(character);
+               shuffledTile.add(tile);
+          }
+          return shuffledTile;
      }
 
      public Tile determineTileFromChar(char character) {
@@ -161,4 +169,7 @@ public class Player {
      }
 
 
+     public int compareTo(Player o) {
+          return this.totalPoints - o.totalPoints;
+     }
 }
