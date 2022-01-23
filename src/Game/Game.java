@@ -175,6 +175,9 @@ public class Game {
         boolean tripleWord = false;
         for (Square square : squares) {
             switch (square.getType()) {
+                case CENTER:
+                    score += square.getTile().getPoint()*2;
+                    break;
                 case DOUBLE_LETTER:
                     score += square.getTile().getPoint()*2;
                     break;
@@ -345,7 +348,7 @@ public class Game {
             loopingOverTheGame: for (currentPlayer = 0; currentPlayer < players.length;) {
                 update();
                 String[] moves = players[currentPlayer].determineMove();
-                System.out.println("Current pass count is: " + (passCount+1));
+                System.out.println("Current pass count is: " + (passCount));
                 switch (moves[0]) {
                     case "MOVE":
                         String[] moveTiles = new String[moves.length-1];
@@ -522,7 +525,7 @@ public class Game {
         }
 
         //Check the player choice of square validation
-        if (!isValidPlacement(playSquares, copyBoard)) return null;
+        if (!isValidPlacement(playSquares, direction, copyBoard)) return null;
 
         ArrayList<ArrayList<Square>> wordCombinations =
                 determinePossibleWordCombinations(initialWord.get(0), direction,copyBoard);
@@ -584,52 +587,59 @@ public class Game {
         tray.removeAll(tray);
         addTileToTray(players[currentPlayer]);
     }
-    
+
+
 
 
 
     public List<Square> getNextValidSquares(List<Square> playSquares, String direction, Board copyBoard) {
+        List<Square> occupiedSquares = new ArrayList<>();
+        List<Square> nextValidSquares = new ArrayList<>();
 
-        for (Square square : playSquares) {
-            occupiedSquares.add(square);
-            nextValidSquares.remove(square);
+        for (int i = 0; i < (copyBoard.SIZE * copyBoard.SIZE) ; i++) {
+            if(copyBoard.getSquare(i).hasTile()) occupiedSquares.add(copyBoard.getSquare(i));
         }
 
+        for (Square square : playSquares) {
+            occupiedSquares.remove(square);
+        }
+        if (occupiedSquares.size() == 0) return null;
         for (int i = 0; i < playSquares.size(); i++) {
             if(direction.equals("H")) {
-                if (i == 0 && copyBoard.getSquareLeft(playSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareLeft(playSquares.get(i)));
+                if (i == 0 && copyBoard.getSquareLeft(occupiedSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareLeft(occupiedSquares.get(i)));
 
-                else if (i == playSquares.size() -1 && copyBoard.getSquareRight(playSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareRight(playSquares.get(i)));
+                else if (i == playSquares.size() -1 && copyBoard.getSquareRight(occupiedSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareRight(occupiedSquares.get(i)));
 
-                if (copyBoard.getSquareAbove(playSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareAbove(playSquares.get(i)));
-                if (board.getSquareBelow(playSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareBelow(playSquares.get(i)));
+                if (copyBoard.getSquareAbove(occupiedSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareAbove(occupiedSquares.get(i)));
+                if (copyBoard.getSquareBelow(occupiedSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareBelow(occupiedSquares.get(i)));
             }
 
             else {
-                if (i == 0 && copyBoard.getSquareAbove(playSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareAbove(playSquares.get(i)));
+                if (i == 0 && copyBoard.getSquareAbove(occupiedSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareAbove(occupiedSquares.get(i)));
 
-                else if (i == playSquares.size() -1 && copyBoard.getSquareBelow(playSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareBelow(playSquares.get(i)));
+                else if (i == occupiedSquares.size() -1 && copyBoard.getSquareBelow(occupiedSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareBelow(occupiedSquares.get(i)));
 
-                if (copyBoard.getSquareRight(playSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareRight(playSquares.get(i)));
-                if (copyBoard.getSquareLeft(playSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareLeft(playSquares.get(i)));
+                if (copyBoard.getSquareRight(occupiedSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareRight(occupiedSquares.get(i)));
+                if (copyBoard.getSquareLeft(occupiedSquares.get(i)).getTile() == null)
+                    nextValidSquares.add(copyBoard.getSquareLeft(occupiedSquares.get(i)));
             }
         }
-        System.out.println("Next valid squares: " + nextValidSquares.toString());
         return nextValidSquares;
 
     }
 
-    public boolean isValidPlacement(List<Square> playSquares, Board copyBoard){
+    public boolean isValidPlacement(List<Square> playSquares, String direction, Board copyBoard){
         Square centralSquare = copyBoard.getSquare("H7");
+        List<Square> nextValidSquares = getNextValidSquares(playSquares, direction, copyBoard);
         if (tileBag.size() == 86 && playSquares.contains(centralSquare)) return true;
+
         for (Square playSquare: playSquares){
             if (tileBag.size() != 86 && nextValidSquares.contains(playSquare)) return true;
         }
