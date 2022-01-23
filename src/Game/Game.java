@@ -26,6 +26,8 @@ public class Game {
     private List<Tile> tileBag;
     private ArrayList<String> usedWords;
     private ScrabbleWordChecker checker;
+    private String previousMove;
+    private int passCount;
 
 
     /**
@@ -40,7 +42,7 @@ public class Game {
      */
 
     public Game(int numPlayers, String[] playerList) {
-        //hashMap usedWords contains the words that has been played, among with their starting coordinate.
+        //hashMap usedrds contains the words that has been played, among with their starting coordinate.
 
         board = new Board();
         currentPlayer = 0;
@@ -48,6 +50,8 @@ public class Game {
         tileBag = new TileGenerator().generateTiles();
         usedWords = new ArrayList<String>();
         checker = new InMemoryScrabbleWordChecker();
+        passCount = 0;
+        previousMove = "";
         /**
          * create a tray for each player, then add them to the playerList.
          */
@@ -156,9 +160,6 @@ public class Game {
         return checker.isValidWord(word) == null ?  null : checker.isValidWord(word).toString();
     }
 
-    public String wordChecker(String word) {
-        return !checker.isValidWord(word).equals(null) ? checker.isValidWord(word).toString() : null;
-    }
 
     /**
      * Calculate the point for each new word made
@@ -180,16 +181,18 @@ public class Game {
                     break;
                 case DOUBLE_WORD:
                     doubleWord = true;
+                    score += square.getTile().getPoint();
                     break;
                 case TRIPLE_WORD:
                     tripleWord = true;
+                    score += square.getTile().getPoint();
                     break;
                 case NORMAL:
                     score += square.getTile().getPoint();
                     break;
             }
         }
-        return  (doubleWord ? score * 2 : tripleWord ? score * 3 : score);
+        return  (doubleWord && !tripleWord ? score * 2 : tripleWord && !doubleWord ? score * 3 : doubleWord && tripleWord ? score * 6 : score);
     }
 
     /**
@@ -237,7 +240,8 @@ public class Game {
      */
 
     public boolean gameOver() {
-        return isEmptyTrayAndBag() || isFullBoard();
+        System.out.println("GAME IS: " + (passCount > 5));
+        return isEmptyTrayAndBag() || isFullBoard() || passCount > 5;
     }
 
     /**
@@ -254,6 +258,7 @@ public class Game {
             case 4:
                 currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : currentPlayer == 2 ? 3 : 0;
                 break;
+
         }
     }
 
@@ -294,6 +299,7 @@ public class Game {
                 if (finalPoints > winner.getTotalPoints()){
                     winner = players[i];
                 }
+
             }
 
         }
@@ -332,11 +338,12 @@ public class Game {
 
     public void play() throws IOException {
         System.out.println("Welcome to Scrabble!");
-        while (!gameOver()) {
+//        while (!gameOver()) {
             System.out.println("Let's play!");
-            for (currentPlayer = 0; currentPlayer < players.length;) {
+            loopingOverTheGame: for (currentPlayer = 0; currentPlayer < players.length;) {
                 update();
                 String[] moves = players[currentPlayer].determineMove();
+                System.out.println("Current pass count is: " + (passCount+1));
                 switch (moves[0]) {
                     case "MOVE":
                         String[] moveTiles = new String[moves.length-1];
@@ -348,19 +355,25 @@ public class Game {
                             board = validBoard.clone();
                         }
                         nextPlayer();
+                        passCount = 0;
                         break;
                     case "PASS":
                         nextPlayer();
+                        passCount++;
                         break;
                     case "SHUFFLE":
                         // To be implemented.
                         shuffleTray();
                         nextPlayer();
+                        passCount = 0;
                         break;
+                }
+                if (gameOver()) {
+                    break loopingOverTheGame;
                 }
 
             }
-        }
+//        }
         printResult();
     }
 
@@ -527,6 +540,7 @@ public class Game {
                 System.out.println("The word: " + getWordFromSquareList(wordCombination) + " is invalid. Skipping your turn...");
                 return null;
             }
+
             turnScore += calculatePoints(wordCombination);
         }
         players[currentPlayer].addPoints(turnScore);
