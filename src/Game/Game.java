@@ -507,12 +507,17 @@ public class Game {
         Board copyBoard = board.clone();
         String direction = determineMoveDirection(moves);
         ArrayList<Square> initialWord = new ArrayList<>();
+        ArrayList<Square> playSquares = new ArrayList<>();
+
         for (Map.Entry<String, String> move : moves.entrySet()) {
             char character = move.getKey().toCharArray()[0];
             Square location = copyBoard.getSquare(move.getValue());
             location.setTile(players[currentPlayer].determineTileFromChar(character));
             initialWord.add(location);
+            playSquares.add(location);
         }
+
+        isValidPlacement(playSquares);
 
         ArrayList<ArrayList<Square>> wordCombinations =
                 determinePossibleWordCombinations(initialWord.get(0), direction,copyBoard);
@@ -559,28 +564,34 @@ public class Game {
 
         }
 
-        public void shuffleTray(){
-            ArrayList<Tile> tray = players[currentPlayer].getTray();
-            for (Tile tile: tray) {
-                tileBag.add(tile);
-            }
-            tray.removeAll(tray);
-            addTileToTray(players[currentPlayer]);
+    public void shuffleTray(){
+        ArrayList<Tile> tray = players[currentPlayer].getTray();
+        for (Tile tile: tray) {
+            tileBag.add(tile);
         }
+        tray.removeAll(tray);
+        addTileToTray(players[currentPlayer]);
+    }
     
 
     List<Square> occupiedSquares = new ArrayList<>();
     List<Square> nextValidSquares = new ArrayList<>();
 
     public List<Square> getNextValidSquares(List<Square> playSquares) {
+
         for (Square square : playSquares) {
             occupiedSquares.add(square);
             nextValidSquares.remove(square);
         }
-
-
         return nextValidSquares;
 
+    }
+
+    public boolean isValidPlacement(List<Square> playSquares){
+        Square centralSquare = board.getSquare("H7");
+        if (tileBag.size() == 86 && playSquares.contains(centralSquare)) return true;
+        else if (playSquares.contains(nextValidSquares)) return true;
+        return false;
     }
 
 }
