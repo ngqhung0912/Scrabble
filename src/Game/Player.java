@@ -9,7 +9,7 @@ import java.util.*;
  * @author Nhat Tran, Hung Nguyen
  * @version 0.1
  */
-public class Player {
+public class Player implements Comparable<Player> {
 
      // -- Instance variables -----------------------------------------
 
@@ -82,7 +82,7 @@ public class Player {
           String prompt = "It's player " + name + "'s turn. " + "\nInput format: If you want to put a words, " +
                   "\nfor example DOG into the board," +
                   "\nin the square A1, A2 and A3 , \nwrite your move as: MOVE D-A1 O-A2 G-A3" +
-                  "\ntype SHUFFLE to shuffle your tray and type PASS to end your turn immediately.";
+                  "\ntype SWAP to SWAP one more more letter(s) in your tray, and type PASS to end your turn immediately.";
           System.out.println(prompt);
           move = bf.readLine().split(" ");
           return move;
@@ -96,12 +96,20 @@ public class Player {
           }
           return letterToSquare;
      }
+     public ArrayList<Tile> determineTileToShuffle(char[] chars) {
+          ArrayList<Tile> shuffledTile = new ArrayList<>();
+          for (char character : chars) {
+               Tile tile = determineTileFromChar(character);
+               shuffledTile.add(tile);
+          }
+          return shuffledTile;
+     }
 
      public Tile determineTileFromChar(char character) {
           for (Tile tile: tray){
                if (character == '#' && character == tile.getLetter() ) {
                     String prompt = "Please choose one of the letters below:\n"
-                            + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n\n";
+                            + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n";
                     try{
                          System.out.println(prompt);
                          Scanner sc = new Scanner(System.in);
@@ -161,4 +169,7 @@ public class Player {
      }
 
 
+     public int compareTo(Player o) {
+          return this.totalPoints - o.totalPoints;
+     }
 }
