@@ -23,7 +23,7 @@ public class Square {
     }
 
     public String getLocation() {
-        return  xPosition + " " +  yPosition;
+        return  xPosition + "" +  yPosition;
     }
 
     /**
@@ -40,10 +40,8 @@ public class Square {
      */
     public void setTile(Tile tile) {
         this.tile = tile;
-//        System.out.println("tile set: " + this.tile );
 
     }
-
 
 
     /**
