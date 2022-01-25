@@ -79,6 +79,7 @@ public class Board {
         for (int x = 0; x < SIZE; x++) {
             for (int y = 0; y < SIZE; y++) {
                 copyCat.squaresBoard[x][y].setTile(this.squaresBoard[x][y].getTile());
+                copyCat.squaresBoard[x][y].setType(this.squaresBoard[x][y].getType());
             }
         }
         return copyCat;
@@ -96,7 +97,6 @@ public class Board {
 
     public Square getSquare(String coordinate) {
         String[] dimension = coordinate.split("");
-
         int y = Integer.parseInt(dimension.length == 3 ? dimension[1] + dimension[2] : dimension[1] );       //The vertical coordinate
         char c = coordinate.charAt(0) ;          //The horizontal coordinate  (letter format)
         int x = -1;        //The horizontal coordinate (number format)
@@ -135,13 +135,5 @@ public class Board {
     }
 
 
-    /**
-     * Empty the board
-     */
-//    public void reset(){
-//        for (Square[] squareList: squaresBoard) {
-//            for (Square square: squareList ) square.reset();
-//        }
-//    }
 
 }
