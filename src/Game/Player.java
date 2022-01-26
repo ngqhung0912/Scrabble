@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
+import TUI.PlayerView;
+
 /**
  * @author Nhat Tran, Hung Nguyen
  * @version 0.1
@@ -20,6 +22,7 @@ public class Player implements Comparable<Player> {
              "in the square A1, A2 and A3, write your move as: DA1 OA2 GA3";
      //private static Scanner sc = new Scanner(System.in);
      private static BufferedReader bf;
+     private static PlayerView textUI;
 
 
      // -- Constructors -----------------------------------------------
@@ -29,7 +32,7 @@ public class Player implements Comparable<Player> {
           totalPoints = 0;
           this.tray = tray;
           bf = new BufferedReader(new InputStreamReader(System.in));
-
+          textUI = new PlayerView();
      }
 
      /**
@@ -78,14 +81,11 @@ public class Player implements Comparable<Player> {
       * @return
       */
      public String[] determineMove() throws IOException {
-          String[] move = null;
           String prompt = "It's player " + name + "'s turn. " + "\nInput format: If you want to put a words, " +
                   "\nfor example DOG into the board," +
-                  "\nin the square A1, A2 and A3 , \nwrite your move as: MOVE D-A1 O-A2 G-A3" +
+                  "\nin the square A1, A2 and A3 , write your move as: MOVE D-A1 O-A2 G-A3" +
                   "\ntype SWAP to SWAP one more more letter(s) in your tray, and type PASS to end your turn immediately.";
-          System.out.println(prompt);
-          move = bf.readLine().split(" ");
-          return move;
+          return textUI.getString(prompt).split(" ");
      }
 
      public LinkedHashMap<String, String> mapLetterToSquare(String[] move){
@@ -107,7 +107,6 @@ public class Player implements Comparable<Player> {
                          System.out.println("Wrong input format. Move should be D-H7 O-H8 G-H9 and so on.");
                          return null;
                     }
-
                }
                letterToSquare.put(letterSquarePair[1], letterSquarePair[0]);
           }
@@ -128,19 +127,18 @@ public class Player implements Comparable<Player> {
                     String prompt = "Please choose one of the letters below:\n"
                             + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n";
                     try{
-                         System.out.println(prompt);
-                         Scanner sc = new Scanner(System.in);
-                         char input = sc.nextLine().charAt(0);
+                         char input = textUI.getChar(prompt);
                          tile.setLetter(input);
                          return tile;
 
                     } catch (IllegalArgumentException e) {
+                         return null;
+                    } catch (IOException e) {
+                         return null;
                     }
                }
-               else {
-                    if (tile.getLetter() == character) {
-                         return tile;
-                    }
+               else if (tile.getLetter() == character) {
+                    return tile;
                }
           }
           return null;

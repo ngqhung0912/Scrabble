@@ -431,9 +431,17 @@ public class Game {
         ArrayList<Square> initialWord = new ArrayList<>();
         Square otherSideStartingPosition = null;
 
-        if (startingPosition.getxPosition() > 0 && startingPosition.getyPosition() > 0) {
-            otherSideStartingPosition = direction.equals("H") ? copyBoard.getSquareLeft(startingPosition)
+        if (startingPosition.getxPosition() > 0 && startingPosition.getyPosition() > 0 ) {
+            if (inputWord.size() > 1) otherSideStartingPosition = direction.equals("H") ? copyBoard.getSquareLeft(startingPosition)
                     : copyBoard.getSquareAbove(startingPosition);
+            else {
+                if (copyBoard.getSquareLeft(startingPosition) == null) {
+                    otherSideStartingPosition = copyBoard.getSquareAbove(startingPosition) == null ? null :
+                            copyBoard.getSquareAbove(startingPosition);
+                } else {
+                    otherSideStartingPosition = copyBoard.getSquareLeft(startingPosition);
+                }
+            }
         }
         traversingRightandBelow : while (startingPosition != null
                 && startingPosition.getxPosition() < 15
@@ -441,6 +449,7 @@ public class Game {
                 && startingPosition.hasTile()) {
 
             Square currentPosition = startingPosition;
+            initialWord.add(startingPosition);
 
             for (Square square : occupiedSquares) {
                 if (currentPosition.getLocation().equals(square.getLocation())) {
@@ -467,7 +476,6 @@ public class Game {
                     nextBelowPosition = copyBoard.getSquareBelow(nextBelowPosition);
                 }
                 currentPosition = copyBoard.getSquareRight(currentPosition);
-                initialWord.add(startingPosition);
 
 
                 if (verticalWord.size() > 1) wordCombinations.add(verticalWord);
@@ -489,7 +497,6 @@ public class Game {
                     nextRightPosition = copyBoard.getSquareRight(nextRightPosition);
                 }
                 currentPosition = copyBoard.getSquareBelow(currentPosition);
-                initialWord.add(startingPosition);
 
                 if (horizontalWord.size() > 1) wordCombinations.add(horizontalWord);
             }
@@ -513,9 +520,9 @@ public class Game {
                 initialWord.add(0,otherSideStartingPosition);
                 otherSideStartingPosition = currentPosition;
             }
-            if (startingPosition == null) {
-                break traversingLeftandAbove;
-            }
+//            if (startingPosition == null) {
+//                break traversingLeftandAbove;
+//            }
         }
 
         for (Square square : inputWord) {
@@ -624,46 +631,47 @@ public class Game {
 
         for (int i = 0; i < playSquares.size(); i++) {
             Square currentSquare = playSquares.get(i);
+            try {
+                if (currentSquare.getxPosition() >= 0 && currentSquare.getxPosition() < 15 &&
+                        currentSquare.getyPosition() >= 0 && currentSquare.getyPosition() < 15) {
+                    if(direction.equals("H")) {
+                        if (i == 0 && copyBoard.getSquareLeft(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareLeft(currentSquare));
 
-            if (currentSquare.getxPosition() > 0 && currentSquare.getxPosition() < 14 &&
-                    currentSquare.getyPosition() > 0 && currentSquare.getyPosition() < 14) {
-                if(direction.equals("H")) {
-                    if (i == 0 && copyBoard.getSquareLeft(currentSquare).getTile() == null)
-                        nextValidSquares.add(copyBoard.getSquareLeft(currentSquare));
+                        else if (i == playSquares.size() -1 && copyBoard.getSquareRight(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareRight(currentSquare));
 
-                    else if (i == playSquares.size() -1 && copyBoard.getSquareRight(currentSquare).getTile() == null)
-                        nextValidSquares.add(copyBoard.getSquareRight(currentSquare));
+                        if (copyBoard.getSquareAbove(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareAbove(currentSquare));
+                        if (copyBoard.getSquareBelow(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareBelow(currentSquare));
+                    }
+                    else {
+                        if (i == 0 && copyBoard.getSquareAbove(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareAbove(currentSquare));
 
-                    if (copyBoard.getSquareAbove(currentSquare).getTile() == null)
-                        nextValidSquares.add(copyBoard.getSquareAbove(currentSquare));
-                    if (copyBoard.getSquareBelow(currentSquare).getTile() == null)
-                        nextValidSquares.add(copyBoard.getSquareBelow(currentSquare));
+                        else if (i == playSquares.size() -1 &&  copyBoard.getSquareBelow(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareBelow(currentSquare));
+
+                        if (copyBoard.getSquareRight(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareRight(currentSquare));
+                        if (copyBoard.getSquareLeft(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareLeft(currentSquare));
+                    }
+
                 }
 
-                else {
-                    if (i == 0 && copyBoard.getSquareAbove(currentSquare).getTile() == null)
-                        nextValidSquares.add(copyBoard.getSquareAbove(currentSquare));
-
-                    else if (i == playSquares.size() -1 &&  copyBoard.getSquareBelow(currentSquare).getTile() == null)
-                        nextValidSquares.add(copyBoard.getSquareBelow(currentSquare));
-
-                    if (copyBoard.getSquareRight(currentSquare).getTile() == null)
-                        nextValidSquares.add(copyBoard.getSquareRight(currentSquare));
-                    if (copyBoard.getSquareLeft(currentSquare).getTile() == null)
-                        nextValidSquares.add(copyBoard.getSquareLeft(currentSquare));
-                }
-
-            }
-            else {
+            } catch (NullPointerException e) {
                 continue;
             }
+
         }
         return nextValidSquares;
 
     }
 
     public boolean isValidPlacement(List<Square> playSquares, String direction, Board copyBoard){
-//        List<Square> nextValidSquares = getNextValidSquares(playSquares, direction, copyBoard);
+        nextValidSquares = getNextValidSquares(playSquares, direction, copyBoard);
         Square centralSquare = copyBoard.getSquare("H7");
         if (usedWords.size() == 0 && playSquares.contains(centralSquare)) return true;
         for (Square playSquare: playSquares){
