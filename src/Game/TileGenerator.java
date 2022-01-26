@@ -44,7 +44,7 @@ public class TileGenerator {
         /**
          * @invariant initialCapacity == 100
          */
-        List<Tile> tiles = new ArrayList<>(100);
+        List<Tile> tiles = new ArrayList<>();
         for(TileDescription tileDescription: input){
             for(int i = 0; i < tileDescription.getQuantity(); i++){
                 tiles.add(new Tile(tileDescription.getLetter(), tileDescription.getPoints()));

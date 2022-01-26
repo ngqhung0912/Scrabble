@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
+import TUI.PlayerView;
+
 /**
  * @author Nhat Tran, Hung Nguyen
  * @version 0.1
  */
-public class Player {
+public class Player implements Comparable<Player> {
 
      // -- Instance variables -----------------------------------------
 
@@ -20,6 +22,7 @@ public class Player {
              "in the square A1, A2 and A3, write your move as: DA1 OA2 GA3";
      //private static Scanner sc = new Scanner(System.in);
      private static BufferedReader bf;
+     private static PlayerView textUI;
 
 
      // -- Constructors -----------------------------------------------
@@ -29,7 +32,7 @@ public class Player {
           totalPoints = 0;
           this.tray = tray;
           bf = new BufferedReader(new InputStreamReader(System.in));
-
+          textUI = new PlayerView();
      }
 
      /**
@@ -78,23 +81,44 @@ public class Player {
       * @return
       */
      public String[] determineMove() throws IOException {
-          String[] move = null;
           String prompt = "It's player " + name + "'s turn. " + "\nInput format: If you want to put a words, " +
                   "\nfor example DOG into the board," +
-                  "\nin the square A1, A2 and A3 , \nwrite your move as: MOVE D-A1 O-A2 G-A3" +
-                  "\ntype SHUFFLE to shuffle your tray and type PASS to end your turn immediately.";
-          System.out.println(prompt);
-          move = bf.readLine().split(" ");
-          return move;
+                  "\nin the square A1, A2 and A3 , write your move as: MOVE D-A1 O-A2 G-A3" +
+                  "\ntype SWAP to SWAP one more more letter(s) in your tray, and type PASS to end your turn immediately.";
+          return textUI.getString(prompt).split(" ");
      }
 
      public LinkedHashMap<String, String> mapLetterToSquare(String[] move){
           LinkedHashMap<String , String > letterToSquare = new LinkedHashMap<>();
           for (int i = 0; i < move.length; i++) {
                String[] letterSquarePair = move[i].split("-");
+               if (letterSquarePair.length < 2) {
+                    return null;
+               }
+               String[] coordinate = letterSquarePair[1].split("");
+               if (coordinate.length > 3) {
+                    System.out.println("Coordinate's length should not be greater than 3.");
+                    return null;
+               }
+               for (int j = 1; j < coordinate.length; j++) {
+                    try {
+                         Integer.parseInt(coordinate[j]);
+                    } catch (NumberFormatException e) {
+                         System.out.println("Wrong input format. Move should be D-H7 O-H8 G-H9 and so on.");
+                         return null;
+                    }
+               }
                letterToSquare.put(letterSquarePair[1], letterSquarePair[0]);
           }
           return letterToSquare;
+     }
+     public ArrayList<Tile> determineTileToShuffle(char[] chars) {
+          ArrayList<Tile> shuffledTile = new ArrayList<>();
+          for (char character : chars) {
+               Tile tile = determineTileFromChar(character);
+               shuffledTile.add(tile);
+          }
+          return shuffledTile;
      }
 
      public Tile determineTileFromChar(char character) {
@@ -103,19 +127,18 @@ public class Player {
                     String prompt = "Please choose one of the letters below:\n"
                             + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n";
                     try{
-                         System.out.println(prompt);
-                         Scanner sc = new Scanner(System.in);
-                         char input = sc.nextLine().charAt(0);
+                         char input = textUI.getChar(prompt);
                          tile.setLetter(input);
                          return tile;
 
                     } catch (IllegalArgumentException e) {
+                         return null;
+                    } catch (IOException e) {
+                         return null;
                     }
                }
-               else {
-                    if (tile.getLetter() == character) {
-                         return tile;
-                    }
+               else if (tile.getLetter() == character) {
+                    return tile;
                }
           }
           return null;
@@ -148,7 +171,6 @@ public class Player {
                     if (character == tile.getLetter()){
                          validWord = true;
                          tempTray.remove(tile);
-                         System.out.println("character in playerHasTile " + character);
                          break forTile;        //break out of the inner loop
                     }
                     else{
@@ -161,4 +183,7 @@ public class Player {
      }
 
 
+     public int compareTo(Player o) {
+          return this.totalPoints - o.totalPoints;
+     }
 }

@@ -26,8 +26,9 @@ public class Game {
     private List<Tile> tileBag;
     private ArrayList<String> usedWords;
     private ScrabbleWordChecker checker;
-    private String previousMove;
     private int passCount;
+    private List<Square> occupiedSquares;
+    private List<Square> nextValidSquares;
 
 
     /**
@@ -51,7 +52,8 @@ public class Game {
         usedWords = new ArrayList<String>();
         checker = new InMemoryScrabbleWordChecker();
         passCount = 0;
-        previousMove = "";
+        occupiedSquares = new ArrayList<>();
+        nextValidSquares = new ArrayList<>();
         /**
          * create a tray for each player, then add them to the playerList.
          */
@@ -144,9 +146,6 @@ public class Game {
     public String wordChecker(ArrayList<Square> squares) {
         String word = "";
         for (Square square : squares) {
-            System.out.println("square locator: " + square.getLocation());
-        }
-        for (Square square : squares) {
             word += Character.toString(square.getTile().getLetter());
         }
         for (String usedWord : usedWords) {
@@ -154,10 +153,14 @@ public class Game {
                 return word;
             }
         }
-        System.out.println("word:" + word);
-//        usedWords.add(checker.isValidWord(word).toString());
-
-        return checker.isValidWord(word) == null ?  null : checker.isValidWord(word).toString();
+        if (checker.isValidWord(word) != null) {
+            usedWords.add(checker.isValidWord(word).toString());
+            System.out.println(checker.isValidWord(word).toString());
+            return checker.isValidWord(word).toString();
+        }
+        else {
+            return null;
+        }
     }
 
 
@@ -174,7 +177,7 @@ public class Game {
         for (Square square : squares) {
             switch (square.getType()) {
                 case CENTER:
-                    score += square.getTile().getPoint()*2;
+                    doubleWord = true;
                     break;
                 case DOUBLE_LETTER:
                     score += square.getTile().getPoint()*2;
@@ -224,7 +227,6 @@ public class Game {
      * @return true if the current player's tray is empty and the tile bag is empty, false otherwise.
      */
     public boolean isEmptyTrayAndBag() {
-        System.out.println("Current player is " + currentPlayer);
         return players[currentPlayer].getTray().isEmpty() && tileBag.isEmpty();
     }
 
@@ -243,7 +245,6 @@ public class Game {
      */
 
     public boolean gameOver() {
-        System.out.println("GAME IS: " + (passCount > 5));
         return isEmptyTrayAndBag() || isFullBoard() || passCount > 5;
     }
 
@@ -271,42 +272,48 @@ public class Game {
      */
 
     public Player isWinner(){
-        Player winner = players[0];
-        Map<Player, Integer> finalDeduct = new HashMap<Player, Integer>();
+        Map<Player, Integer> finalDeduct = new HashMap<>();
+
         ArrayList<Tile> tilesLeft = null;
 
-        if (gameOver()) {
-            //Create a map of players with their deduct points
-            for (Player currentPlayer : players) {
-                tilesLeft = currentPlayer.getTray();
-                int deductPoints = 0;
-                for (Tile tile : tilesLeft) {
-                    deductPoints += tile.getPoint();
-                }
-                finalDeduct.put(currentPlayer, deductPoints);
+        //Create a map of players with their deduct points
+        for (Player currentPlayer : players) {
+            tilesLeft = currentPlayer.getTray();
+            int deductPoints = 0;
+            for (Tile tile : tilesLeft) {
+                deductPoints += tile.getPoint();
             }
-
-
-            for (int i = 0; i < players.length; i++) {
-                int finalPoints = 0;
-                //Calculate final score for each player
-                if (tilesLeft.size() == 0) {
-                    int totalDeductPoints = finalDeduct.get(players[0]) + finalDeduct.get(players[1])
-                            + finalDeduct.get(players[2]) + finalDeduct.get(players[3]);
-                    finalPoints = players[i].getTotalPoints() + totalDeductPoints;
-                } else {
-                    finalPoints = players[i].getTotalPoints() - finalDeduct.get(players[i]);
-                }
-                players[i].setFinalPoints(finalPoints);
-                //Find the final winner (up to this player)
-                if (finalPoints > winner.getTotalPoints()){
-                    winner = players[i];
-                }
-
-            }
-
+            finalDeduct.put(currentPlayer, deductPoints);
         }
-        return winner;
+
+
+        for (int i = 0; i < players.length; i++) {
+            int finalPoints = 0;
+            if (tilesLeft.size() == 0) {
+                int totalDeductPoints = finalDeduct.get(players[0]) + finalDeduct.get(players[1])
+                        + finalDeduct.get(players[2]) + finalDeduct.get(players[3]);
+                finalPoints = players[i].getTotalPoints() + totalDeductPoints;
+            } else {
+                finalPoints = players[i].getTotalPoints() - finalDeduct.get(players[i]);
+            }
+            players[i].setFinalPoints(finalPoints);
+        }
+
+        Player winner = players[0];
+        for (int i = 1; i < players.length;) {
+            int compare = winner.compareTo(players[i]);
+            if (compare < 0) {
+                winner = players[i];
+            } else if (compare == 0) {
+                if (winner.getTotalPoints() + finalDeduct.get(winner) < players[i].getTotalPoints() + finalDeduct.get(players[i])) {
+                    winner = players[i];
+                } else if (winner.getTotalPoints() + finalDeduct.get(winner) == players[i].getTotalPoints() + finalDeduct.get(players[i])) {
+                    return null;
+                }
+            }
+            i++;
+        }
+    return winner;
     }
 
     /**
@@ -333,50 +340,56 @@ public class Game {
      * Print the final result of the game
      */
     public void printResult(){
-        Player winner = isWinner();
-        System.out.println("Congratulations! Player " + winner.getName() + "has won!"
-        );
+//        Player winner = isWinner() ;
+        if (isWinner() != null) System.out.println("Congratulations! Player " + isWinner().getName() + " has won!");
+        else System.out.println("It's a draw!");
     }
 
 
     public void play() throws IOException {
         System.out.println("Welcome to Scrabble!");
-//        while (!gameOver()) {
-            System.out.println("Let's play!");
-            loopingOverTheGame: for (currentPlayer = 0; currentPlayer < players.length;) {
-                update();
-                String[] moves = players[currentPlayer].determineMove();
-                System.out.println("Current pass count is: " + (passCount));
-                switch (moves[0]) {
-                    case "MOVE":
-                        String[] moveTiles = new String[moves.length-1];
-                        for (int i = 1; i < moves.length; i++) {
-                            moveTiles[i-1] = moves[i];
-                        }
-                        Board validBoard = isValidMove(players[currentPlayer].mapLetterToSquare(moveTiles));
-                        if (validBoard != null) {
-                            board = validBoard.clone();
-                        }
-                        nextPlayer();
-                        passCount = 0;
-                        break;
-                    case "PASS":
-                        nextPlayer();
-                        passCount++;
-                        break;
-                    case "SHUFFLE":
-                        // To be implemented.
-                        shuffleTray();
-                        nextPlayer();
-                        passCount = 0;
-                        break;
-                }
-                if (gameOver()) {
-                    break loopingOverTheGame;
-                }
-
+        System.out.println("Let's play!");
+        loopingOverTheGame: for (currentPlayer = 0; currentPlayer < players.length;) {
+            update();
+            String[] moves = players[currentPlayer].determineMove();
+            switch (moves[0]) {
+                case "MOVE":
+                    String[] moveTiles = new String[moves.length-1];
+                    for (int i = 1; i < moves.length; i++) {
+                        moveTiles[i-1] = moves[i];
+                    }
+                    Board validBoard = isValidMove(players[currentPlayer].mapLetterToSquare(moveTiles));
+                    if (validBoard != null) {
+                        board = validBoard.clone();
+                    }
+                    nextPlayer();
+                    passCount = 0;
+                    break;
+                case "PASS":
+                    nextPlayer();
+                    passCount++;
+                    System.out.println("This is the " + passCount + " consecutive pass move(s).");
+                    break;
+                case "SWAP":
+                    char[] shuffledTilesChar = new char[moves.length-1];
+                    for (int i = 1; i < moves.length; i++) {
+                        shuffledTilesChar[i-1] = moves[i].charAt(0);
+                    }
+                    ArrayList<Tile> shuffledTiles = players[currentPlayer].determineTileToShuffle(shuffledTilesChar);
+                    shuffleTray(shuffledTiles);
+                    nextPlayer();
+                    passCount = 0;
+                    break;
+                default:
+                    System.out.println("Wrong input format. skipping turn...");
+                    nextPlayer();
+                    break;
             }
-//        }
+            if (gameOver()) {
+                break loopingOverTheGame;
+            }
+
+        }
         printResult();
     }
 
@@ -406,30 +419,45 @@ public class Game {
                 return null;
             }
             startingPosition.setTile(players[currentPlayer].determineTileFromChar(character));
-            System.out.println("where to put " + startingPosition.getLocation() + " what to put " + startingPosition.getTile().getLetter());
             startingPosition = nextPosition;
         }
         return squares;
     }
 
-    private ArrayList<ArrayList<Square>> determinePossibleWordCombinations(Square startingPosition, String direction, Board copyBoard) {
+    private ArrayList<ArrayList<Square>> determinePossibleWordCombinations(ArrayList<Square> inputWord, String direction, Board copyBoard) {
+        Square startingPosition = inputWord.get(0);
+
         ArrayList<ArrayList<Square>> wordCombinations = new ArrayList<>();
         ArrayList<Square> initialWord = new ArrayList<>();
         Square otherSideStartingPosition = null;
 
-        if (startingPosition.getxPosition() > 0 && startingPosition.getyPosition() > 0) {
-            otherSideStartingPosition = direction.equals("H") ? copyBoard.getSquareLeft(startingPosition)
+        if (startingPosition.getxPosition() > 0 && startingPosition.getyPosition() > 0 ) {
+            if (inputWord.size() > 1) otherSideStartingPosition = direction.equals("H") ? copyBoard.getSquareLeft(startingPosition)
                     : copyBoard.getSquareAbove(startingPosition);
+            else {
+                if (copyBoard.getSquareLeft(startingPosition) == null) {
+                    otherSideStartingPosition = copyBoard.getSquareAbove(startingPosition) == null ? null :
+                            copyBoard.getSquareAbove(startingPosition);
+                } else {
+                    otherSideStartingPosition = copyBoard.getSquareLeft(startingPosition);
+                }
+            }
         }
-
-
         traversingRightandBelow : while (startingPosition != null
                 && startingPosition.getxPosition() < 15
                 && startingPosition.getyPosition() < 15
                 && startingPosition.hasTile()) {
 
             Square currentPosition = startingPosition;
+            initialWord.add(startingPosition);
 
+            for (Square square : occupiedSquares) {
+                if (currentPosition.getLocation().equals(square.getLocation())) {
+                    startingPosition = direction.equals("H") ? copyBoard.getSquareRight(startingPosition)
+                            : copyBoard.getSquareBelow(startingPosition);
+                    continue traversingRightandBelow;
+                }
+            }
 
 
             if (direction.equals("H")) {
@@ -437,6 +465,7 @@ public class Game {
                 verticalWord.add(currentPosition);
                 Square nextAbovePosition = currentPosition;
                 Square nextBelowPosition = currentPosition;
+
 
                 AboveWhileH: while(nextAbovePosition.getyPosition() > 0 && copyBoard.getSquareAbove(nextAbovePosition).hasTile()) {
                     verticalWord.add(0,copyBoard.getSquareAbove(nextAbovePosition));
@@ -448,8 +477,6 @@ public class Game {
                     nextBelowPosition = copyBoard.getSquareBelow(nextBelowPosition);
                 }
                 currentPosition = copyBoard.getSquareRight(currentPosition);
-                initialWord.add(startingPosition);
-                startingPosition = currentPosition;
 
 
                 if (verticalWord.size() > 1) wordCombinations.add(verticalWord);
@@ -461,7 +488,6 @@ public class Game {
                 Square nextLeftPosition = currentPosition;
                 Square nextRightPosition = currentPosition;
 
-
                 leftWhileV: while(nextLeftPosition.getxPosition() > 0 && copyBoard.getSquareLeft(nextLeftPosition).hasTile()) {
                     horizontalWord.add(0,copyBoard.getSquareLeft(nextLeftPosition));
                     nextLeftPosition = copyBoard.getSquareLeft(nextLeftPosition);
@@ -472,12 +498,11 @@ public class Game {
                     nextRightPosition = copyBoard.getSquareRight(nextRightPosition);
                 }
                 currentPosition = copyBoard.getSquareBelow(currentPosition);
-                initialWord.add(startingPosition);
-                startingPosition = currentPosition;
 
                 if (horizontalWord.size() > 1) wordCombinations.add(horizontalWord);
             }
 
+            startingPosition = currentPosition;
 
 
         }
@@ -486,7 +511,6 @@ public class Game {
                 && otherSideStartingPosition.getyPosition() >= 0
                 && otherSideStartingPosition.hasTile()) {
             Square currentPosition = otherSideStartingPosition;
-            System.out.println("got into traversing left and above: ");
             if (direction.equals("H")) {
                 currentPosition = copyBoard.getSquareLeft(currentPosition);
                 initialWord.add(0,otherSideStartingPosition);
@@ -497,10 +521,15 @@ public class Game {
                 initialWord.add(0,otherSideStartingPosition);
                 otherSideStartingPosition = currentPosition;
             }
-            if (startingPosition == null) {
-                break traversingLeftandAbove;
-            }
+//            if (startingPosition == null) {
+//                break traversingLeftandAbove;
+//            }
+        }
 
+        for (Square square : inputWord) {
+            if (!initialWord.contains(square)) {
+                return null;
+            }
         }
 
         if (initialWord.size() > 1) wordCombinations.add(initialWord);
@@ -508,6 +537,9 @@ public class Game {
     }
 
     private Board isValidMove(LinkedHashMap<String, String> moves) {
+        if (moves == null) {
+            return null;
+        }
         Board copyBoard = board.clone();
         String direction = determineMoveDirection(moves);
 
@@ -517,7 +549,11 @@ public class Game {
         for (Map.Entry<String, String> move : moves.entrySet()) {
             char character = move.getValue().toCharArray()[0];
             Square location = copyBoard.getSquare(move.getKey());
-            location.setTile(players[currentPlayer].determineTileFromChar(character));
+            Tile tile = players[currentPlayer].determineTileFromChar(character);
+            if (tile == null) {
+                return null;
+            }
+            location.setTile(tile);
             initialWord.add(location);
             playSquares.add(location);
         }
@@ -526,31 +562,29 @@ public class Game {
         if (!isValidPlacement(playSquares, direction, copyBoard)) return null;
 
         ArrayList<ArrayList<Square>> wordCombinations =
-                determinePossibleWordCombinations(initialWord.get(0), direction,copyBoard);
+                determinePossibleWordCombinations(initialWord, direction,copyBoard);
 
-        if (wordCombinations.size() == 0) {
-            System.out.println("nothing to check");
+        if (wordCombinations == null || wordCombinations.size() == 0) {
+            System.out.println("Wrong input format.");
             return null;
         }
         int turnScore = 0;
         for (ArrayList<Square> wordCombination : wordCombinations) {
-            for (Square square : wordCombination) {
-                System.out.println("check all combi " + square.getLocation() + ": " + (square.getTile() == null ? "" : square.getTile().getLetter()) ) ;
-            }
-        }
-        for (ArrayList<Square> wordCombination : wordCombinations) {
             String validWord = wordChecker(wordCombination);
             if (validWord == null) {
-                System.out.println("The word: " + getWordFromSquareList(wordCombination) + " is invalid. Skipping your turn...");
+                System.out.println("The word " + getWordFromSquareList(wordCombination) + " is invalid. Skipping your turn...");
                 return null;
             }
-
             turnScore += calculatePoints(wordCombination);
+        }
+        if (initialWord.size() == 7) {
+            turnScore += 50;
         }
         players[currentPlayer].addPoints(turnScore);
         for (Square square : initialWord) {
             ArrayList<Tile> tray = players[currentPlayer].getTray();
             tray.remove(square.getTile());
+            square.setType(SquareType.NORMAL);
         }
         addTileToTray(players[currentPlayer]);
         getNextValidSquares(playSquares, direction, copyBoard);
@@ -577,12 +611,12 @@ public class Game {
 
         }
 
-    public void shuffleTray(){
-        ArrayList<Tile> tray = players[currentPlayer].getTray();
-        for (Tile tile: tray) {
+    public void shuffleTray(ArrayList<Tile> shuffledTiles){
+
+        for (Tile tile: shuffledTiles) {
             tileBag.add(tile);
+            players[currentPlayer].getTray().remove(tile);
         }
-        tray.removeAll(tray);
         addTileToTray(players[currentPlayer]);
     }
 
@@ -603,44 +637,56 @@ public class Game {
         }
         if (occupiedSquares.size() == 0) return null;
         for (int i = 0; i < playSquares.size(); i++) {
-            if(direction.equals("H")) {
-                if (i == 0 && copyBoard.getSquareLeft(occupiedSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareLeft(occupiedSquares.get(i)));
+            Square currentSquare = playSquares.get(i);
+            try {
+                if (currentSquare.getxPosition() >= 0 && currentSquare.getxPosition() < 15 &&
+                        currentSquare.getyPosition() >= 0 && currentSquare.getyPosition() < 15) {
+                    if(direction.equals("H")) {
+                        if (i == 0 && copyBoard.getSquareLeft(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareLeft(currentSquare));
 
-                else if (i == playSquares.size() -1 && copyBoard.getSquareRight(occupiedSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareRight(occupiedSquares.get(i)));
+                        else if (i == playSquares.size() -1 && copyBoard.getSquareRight(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareRight(currentSquare));
 
-                if (copyBoard.getSquareAbove(occupiedSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareAbove(occupiedSquares.get(i)));
-                if (copyBoard.getSquareBelow(occupiedSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareBelow(occupiedSquares.get(i)));
+                        if (copyBoard.getSquareAbove(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareAbove(currentSquare));
+                        if (copyBoard.getSquareBelow(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareBelow(currentSquare));
+                    }
+                    else {
+                        if (i == 0 && copyBoard.getSquareAbove(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareAbove(currentSquare));
+
+                        else if (i == playSquares.size() -1 &&  copyBoard.getSquareBelow(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareBelow(currentSquare));
+
+                        if (copyBoard.getSquareRight(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareRight(currentSquare));
+                        if (copyBoard.getSquareLeft(currentSquare).getTile() == null)
+                            nextValidSquares.add(copyBoard.getSquareLeft(currentSquare));
+                    }
+
+                }
+
+            } catch (NullPointerException e) {
+                continue;
             }
 
-            else {
-                if (i == 0 && copyBoard.getSquareAbove(occupiedSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareAbove(occupiedSquares.get(i)));
-
-                else if (i == occupiedSquares.size() -1 && copyBoard.getSquareBelow(occupiedSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareBelow(occupiedSquares.get(i)));
-
-                if (copyBoard.getSquareRight(occupiedSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareRight(occupiedSquares.get(i)));
-                if (copyBoard.getSquareLeft(occupiedSquares.get(i)).getTile() == null)
-                    nextValidSquares.add(copyBoard.getSquareLeft(occupiedSquares.get(i)));
-            }
         }
         return nextValidSquares;
 
     }
 
     public boolean isValidPlacement(List<Square> playSquares, String direction, Board copyBoard){
+        nextValidSquares = getNextValidSquares(playSquares, direction, copyBoard);
         Square centralSquare = copyBoard.getSquare("H7");
-        List<Square> nextValidSquares = getNextValidSquares(playSquares, direction, copyBoard);
-
-        if (tileBag.size() == 86 && playSquares.contains(centralSquare)) return true;
-
+        if (usedWords.size() == 0 && playSquares.contains(centralSquare)) return true;
         for (Square playSquare: playSquares){
-            if (tileBag.size() != 86 && nextValidSquares.contains(playSquare)) return true;
+            if (usedWords.size() != 0) {
+                for (Square validSquare : nextValidSquares) {
+                    if (validSquare.getLocation().equals(playSquare.getLocation())) return true;
+                }
+            }
         }
         System.out.println("Invalid placement. In the first round, player has to put one tile on H7 square.\n" +
                 "During the remaining game, at least one tile placed by the player has to connect to one of the tiles on the board.");

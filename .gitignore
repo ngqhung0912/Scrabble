@@ -27,6 +27,7 @@ xcuserdata/
 *.iml
 *.ipr
 *.iws
+*.class
 
  
 # Generated files

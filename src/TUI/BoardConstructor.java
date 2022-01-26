@@ -17,8 +17,6 @@ public class BoardConstructor  {
         builder.append("━━━━┓");
         builder.append("\n");
 
-
-
         for (int y = 0; y < board.SIZE; y++) {
             builder.append("" + (y<10? "  " : " ") + (y) + " ");
             builder.append("┃");
@@ -41,9 +39,10 @@ public class BoardConstructor  {
                     case DOUBLE_WORD:
                         builder.append(ANSI.YELLOW_BACKGROUND);
                         break;
+//                    case NORMAL:
+//                        builder.append(ANSI.BLACK_BACKGROUND_BRIGHT);
                 }
 
-//                System.out.println(square.hasTile() ? "this square has tile: " + square.getTile().getLetter() : "");
 
                 builder.append("  " + (square.hasTile() ? square.getTile().getLetter() : " ") + " ");
                 builder.append(ANSI.RESET);
@@ -79,6 +78,5 @@ public class BoardConstructor  {
     }
     public static void main(String[] args) {
         Board board = new Board();
-        System.out.println(generateBoard(board));
     }
 }
