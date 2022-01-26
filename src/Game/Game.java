@@ -459,6 +459,7 @@ public class Game {
                 }
             }
 
+
             if (direction.equals("H")) {
                 ArrayList<Square> verticalWord = new ArrayList<>();
                 verticalWord.add(currentPosition);
@@ -618,17 +619,23 @@ public class Game {
         }
         addTileToTray(players[currentPlayer]);
     }
-    
+
+
 
 
 
     public List<Square> getNextValidSquares(List<Square> playSquares, String direction, Board copyBoard) {
+        List<Square> occupiedSquares = new ArrayList<>();
+        List<Square> nextValidSquares = new ArrayList<>();
 
-        for (Square square : playSquares) {
-            occupiedSquares.add(square);
-            nextValidSquares.remove(square);
+        for (int i = 0; i < (copyBoard.SIZE * copyBoard.SIZE) ; i++) {
+            if(copyBoard.getSquare(i).hasTile()) occupiedSquares.add(copyBoard.getSquare(i));
         }
 
+        for (Square square : playSquares) {
+            occupiedSquares.remove(square);
+        }
+        if (occupiedSquares.size() == 0) return null;
         for (int i = 0; i < playSquares.size(); i++) {
             Square currentSquare = playSquares.get(i);
             try {
