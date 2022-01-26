@@ -26,8 +26,6 @@ public class Game {
     private List<Tile> tileBag;
     private ArrayList<String> usedWords;
     private ScrabbleWordChecker checker;
-    List<Square> occupiedSquares = new ArrayList<>();
-    List<Square> nextValidSquares = new ArrayList<>();
     private String previousMove;
     private int passCount;
 
@@ -433,6 +431,7 @@ public class Game {
             Square currentPosition = startingPosition;
 
 
+
             if (direction.equals("H")) {
                 ArrayList<Square> verticalWord = new ArrayList<>();
                 verticalWord.add(currentPosition);
@@ -501,7 +500,6 @@ public class Game {
             if (startingPosition == null) {
                 break traversingLeftandAbove;
             }
-
 
         }
 
@@ -638,6 +636,7 @@ public class Game {
     public boolean isValidPlacement(List<Square> playSquares, String direction, Board copyBoard){
         Square centralSquare = copyBoard.getSquare("H7");
         List<Square> nextValidSquares = getNextValidSquares(playSquares, direction, copyBoard);
+
         if (tileBag.size() == 86 && playSquares.contains(centralSquare)) return true;
 
         for (Square playSquare: playSquares){
