@@ -1,5 +1,5 @@
 package TUI;
-import Game.*;
+import GameLogic.*;
 
 
 public class BoardConstructor  {

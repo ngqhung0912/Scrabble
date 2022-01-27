@@ -1,17 +1,19 @@
-package Game;
+package NetworkGame;
+
+import GameLogic.Tile;
+import TUI.LocalView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
-
-import TUI.PlayerView;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 /**
  * @author Nhat Tran, Hung Nguyen
  * @version 0.1
  */
-public class Player implements Comparable<Player> {
+public class NetworkPlayer implements Comparable<NetworkPlayer> {
 
      // -- Instance variables -----------------------------------------
 
@@ -22,17 +24,17 @@ public class Player implements Comparable<Player> {
              "in the square A1, A2 and A3, write your move as: DA1 OA2 GA3";
      //private static Scanner sc = new Scanner(System.in);
      private static BufferedReader bf;
-     private static PlayerView textUI;
+     private static LocalView textUI;
 
 
      // -- Constructors -----------------------------------------------
 
-     public Player(String name, ArrayList<Tile> tray){
+     public NetworkPlayer(String name, ArrayList<Tile> tray){
           this.name = name;
           totalPoints = 0;
           this.tray = tray;
           bf = new BufferedReader(new InputStreamReader(System.in));
-          textUI = new PlayerView();
+          textUI = new LocalView();
      }
 
      /**
@@ -112,6 +114,7 @@ public class Player implements Comparable<Player> {
           }
           return letterToSquare;
      }
+
      public ArrayList<Tile> determineTileToShuffle(char[] chars) {
           ArrayList<Tile> shuffledTile = new ArrayList<>();
           for (char character : chars) {
@@ -144,46 +147,7 @@ public class Player implements Comparable<Player> {
           return null;
      }
 
-     private ArrayList<Tile> copyTray()  {
-          ArrayList<Tile> copycat = new ArrayList<Tile>();
-          for (Tile tile : tray) {
-               copycat.add(new Tile(tile.getLetter(),tile.getPoint()));
-          }
-          return copycat;
-     }
-
-     /**
-      * Check if the word input by the user has corresponding tiles
-      * @param
-      * @return
-      */
-
-     public boolean playerHasTile(LinkedHashMap<String, String> letterToSquare) {
-          List<Tile> tempTray = copyTray();
-          boolean validWord = true;
-          //word > tempTray
-          if (letterToSquare.size() > tempTray.size()) return false;
-
-          //Check character with corresponding tile in tray
-          for(String letter: letterToSquare.keySet()) {
-               char character = letter.charAt(0);
-               forTile : for (Tile tile: tempTray){
-                    if (character == tile.getLetter()){
-                         validWord = true;
-                         tempTray.remove(tile);
-                         break forTile;        //break out of the inner loop
-                    }
-                    else{
-                         validWord = false;
-                    }
-               }
-          }
-          return validWord;
-
-     }
-
-
-     public int compareTo(Player o) {
+     public int compareTo(NetworkPlayer o) {
           return this.totalPoints - o.totalPoints;
      }
 }

@@ -2,7 +2,7 @@
 - It was a productive day
 
 16/1/2022:
-- Logic for tray assigning in controller: Initialize player with
+- Logic for tray assigning in controller: Initialize localPlayer with
 - Save all words by players in the board in a dictionary, then re-loop the dictionary to find it later if there
 is a word connected to that tile.
 
@@ -28,10 +28,10 @@ to check which of the places have the highest score combination.
 - guard: starting position must be H8.
 - check if the starting position of the move already have the tile of the same kind. If not then pass the turn.
 
-- after the first round, the player have to put their tiles next to at least 1 existing tile on the board during the remaining game
+- after the first round, the localPlayer have to put their tiles next to at least 1 existing tile on the board during the remaining game
 - JUnit test: if the players use more letter of the same type then they have on the tray
 - putWordInSquare: guard - check whether the nextPosition already has a tile or not, if true, return null
-- Every player input should be turned into upper case letters
+- Every localPlayer input should be turned into upper case letters
 
 22/1/2022
 - the square for new word input hasn't been append to other squares
@@ -43,8 +43,8 @@ to check which of the places have the highest score combination.
 - not possible to place tile above and below
 - new input method: Ask user to place each tiles separately into the desired square, instead of words.
 - List of implements to be done if the input method changed:
-+ determineMove of player (v)
-+ checkmove of player (v)
++ determineMove of localPlayer (v)
++ checkmove of localPlayer (v)
 + isValidMove of game receives hashMap<string, string> (v)
 + putWordInSquare of game (v)
 + determinePossibleWordCombination (v)
@@ -63,4 +63,15 @@ to check which of the places have the highest score combination.
   than enough. BufferedReader is a bit faster as compared to scanner because scanner does parsing of input data and
   BufferedReader simply reads sequence of characters
 
+23/1/2022: We were tired.
+24/1/2022: I was super sick.
+25/1/2022: Networking day.
+26/1/2022
+- Restructure class LocalPlayer and NetworkPlayer extends Interface player. deadline today (V)
+- Restructure class LocalController to control local game (Like a local server). deadline today (V)
+- Implement + Server
+            + Client
+            + ClientHandler
+            + NetworkView
 
+- Bug: Cannot place tiles when all the tiles is on the left of the current word, i.e BAL on the left of D.

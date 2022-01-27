@@ -1,7 +1,4 @@
-package Networking;
-
-import Exceptions.ExitProgram;
-import Exceptions.ServerUnavailableException;
+package NetworkGame;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,13 +14,6 @@ public class ClientTUI {
         this.client = client;
     }
 
-    public void start() throws ServerUnavailableException {
-
-    }
-
-    public void handleUserInput(String input) throws ExitProgram, ServerUnavailableException {
-
-    }
 
     public void showMessage(String message) {
         System.out.println(message);

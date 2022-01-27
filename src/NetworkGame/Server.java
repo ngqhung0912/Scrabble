@@ -1,17 +1,15 @@
-package Networking;
+package NetworkGame;
 
-import Game.Game;
+import GameLogic.Game;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Server implements Runnable{
     private Game game;
     private ServerSocket ss;
-    private List<ClientHandler> clients;
+//    private List<ClientHandler> clients;
     private int next_client_no;
     private int numPlayers;
     private BufferedReader in;
@@ -19,8 +17,8 @@ public class Server implements Runnable{
     private ServerTUI view;
 
     public Server(ServerSocket ss){
-        next_client_no = 1;
-        clients = new ArrayList<>();
+        next_client_no = 0;
+//        clients = new ArrayList<>();
         view = new ServerTUI();
 
     }
@@ -46,11 +44,15 @@ public class Server implements Runnable{
 //                    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 //                    out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-                    ClientHandler clientHandler = new ClientHandler(socket, this, name);
-                    Thread clientThread = new Thread(clientHandler);
-                    clientThread.start();
+//                    ClientHandler clientHandler = new ClientHandler(socket, this, name);
+//                    Thread clientThread = new Thread(clientHandler);
+//                    clientThread.start();
+//                    clients.add(clientHandler);
 
-                    clients.add(clientHandler);
+//                    if (numPlayers == 3) {
+//                        GameView.start(numPlayers, players);
+//                    }
+
                 }
 
             } catch (IOException e) {
@@ -73,8 +75,5 @@ public class Server implements Runnable{
         }
 
     }
-
-
-
 
 }
