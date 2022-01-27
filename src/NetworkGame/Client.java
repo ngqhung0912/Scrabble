@@ -1,13 +1,11 @@
-package Networking;
+package NetworkGame;
 
 import Exceptions.ExitProgram;
 import Exceptions.ServerUnavailableException;
-import Game.Player;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Client {
     private Socket serverSock;

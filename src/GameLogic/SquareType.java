@@ -1,4 +1,4 @@
-package Game;
+package GameLogic;
 
 public enum SquareType {
     DOUBLE_LETTER,

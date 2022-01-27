@@ -1,4 +1,4 @@
-package Networking;
+package NetworkGame;
 
 /**
  * PROTOCOL GROUP A

@@ -1,4 +1,4 @@
-package Game;
+package GameLogic;
 
 /**
  * Tile for the Scrabble game - Module 2 Project.

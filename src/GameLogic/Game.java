@@ -1,4 +1,4 @@
-package Game;
+package GameLogic;
 /**
  * This class implements the basic game functions of Scrabble.
  * @author Hung Nguyen, Nhat Tran
@@ -6,12 +6,11 @@ package Game;
  */
 
 import TUI.BoardConstructor;
-import WordChecker.main.java.FileStreamScrabbleWordChecker;
+import TUI.LocalView;
 import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -21,20 +20,21 @@ import java.util.*;
 
 public class Game {
     private Board board;
-    private int currentPlayer;
     private Player[] players;
     private List<Tile> tileBag;
     private ArrayList<String> usedWords;
     private ScrabbleWordChecker checker;
-    private int passCount;
     private List<Square> occupiedSquares;
     private List<Square> nextValidSquares;
+    private LocalView textUI;
+    private int numPlayer;
+    private int currentPlayer;
+    private int passCount;
 
 
     /**
      * Creates a new game
-     * @param numPlayers number of players
-     * @param playerList list of players' name.
+     * @param players number of players
      * @requires numPlayers > 0 && numPlayers < 5
      * @ensures creates a new board and all squares are empty
      * @ensures A new tileBag is created for the game
@@ -42,22 +42,21 @@ public class Game {
      * @invariant players.length == numPlayers
      */
 
-    public Game(int numPlayers, String[] playerList) {
-        //hashMap usedrds contains the words that has been played, among with their starting coordinate.
-
+    public Game(Player[] players, LocalView textUI) {
         board = new Board();
-        currentPlayer = 0;
-        players = new Player[numPlayers];
+        this.numPlayer = players.length;
+        this.players = players;
         tileBag = new TileGenerator().generateTiles();
-        usedWords = new ArrayList<String>();
+        usedWords = new ArrayList<>();
         checker = new InMemoryScrabbleWordChecker();
-        passCount = 0;
         occupiedSquares = new ArrayList<>();
         nextValidSquares = new ArrayList<>();
-        /**
-         * create a tray for each player, then add them to the playerList.
-         */
-        for (int p = 0; p < numPlayers; p++) {
+        this.textUI = textUI;
+        currentPlayer = 0;
+        passCount = 0;
+
+        for (Player player : players)
+        {
             ArrayList<Tile> tray = new ArrayList<>();
             for (int i = 0; i < 7; i++) {
                 int j = new Random().nextInt(tileBag.size());
@@ -65,77 +64,22 @@ public class Game {
                 tileBag.remove(tile);
                 tray.add(tile);
             }
-            Player player = new Player(playerList[p], tray);
-            players[p] = player;
+            player.setTray(tray);
         }
-
     }
 
-    /**
-     * Getter for Board
-     * @return the current playing board
-     */
 
-    public Board getBoard() {
-        return board;
+
+    public void resetPassCount() {
+        this.passCount = 0;
     }
 
-    /**
-     * Setter for board
-     * @param board
-     */
-
-    public void setBoard(Board board) {
-        this.board = board;
+    public void incrementPassCount() {
+        this.passCount++;
     }
 
-    /**
-     * Get the currently playing player's index
-     * @return an int representing the current player
-     */
-
-    public int getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    /**
-     * Set who is playing
-     * @param currentPlayer the index of the player
-     */
-
-    public void setCurrentPlayer(int currentPlayer) {
-        this.currentPlayer = currentPlayer;
-    }
-
-    /**
-     * Getter for list of players
-     * @return list of players
-     */
-
-    public Player[] getPlayers() {
-        return players;
-    }
-
-    /**
-     * Setter for list of players
-     * @param players list of players
-     */
-
-    public void setPlayers(Player[] players) {
-        this.players = players;
-    }
-
-    /**
-     * Getter for the current tile Bag.
-     * @return tile bag.
-     */
-
-    public List<Tile> getTileBag() {
-        return tileBag;
-    }
-
-    public void setTileBag(List<Tile> tileBag) {
-        this.tileBag = tileBag;
+    public int getPassCount() {
+        return passCount;
     }
 
     /**
@@ -155,14 +99,13 @@ public class Game {
         }
         if (checker.isValidWord(word) != null) {
             usedWords.add(checker.isValidWord(word).toString());
-            System.out.println(checker.isValidWord(word).toString());
+            textUI.showMessage(checker.isValidWord(word).toString());
             return checker.isValidWord(word).toString();
         }
         else {
             return null;
         }
     }
-
 
     /**
      * Calculate the point for each new word made
@@ -221,7 +164,6 @@ public class Game {
         }
         player.setTray(tray);
     }
-
     /**
      *
      * @return true if the current player's tray is empty and the tile bag is empty, false otherwise.
@@ -251,8 +193,8 @@ public class Game {
     /**
      * To pass the play if the player decides to.
      */
-    public void nextPlayer() {
-        switch (players.length) {
+    public int setCurrentPlayer() {
+        switch (numPlayer) {
             case 2:
                 currentPlayer = currentPlayer == 0 ? 1 : 0;
                 break;
@@ -262,8 +204,8 @@ public class Game {
             case 4:
                 currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : currentPlayer == 2 ? 3 : 0;
                 break;
-
         }
+        return currentPlayer;
     }
 
     /**
@@ -277,13 +219,13 @@ public class Game {
         ArrayList<Tile> tilesLeft = null;
 
         //Create a map of players with their deduct points
-        for (Player currentPlayer : players) {
-            tilesLeft = currentPlayer.getTray();
+        for (Player currentLocalPlayer : players) {
+            tilesLeft = currentLocalPlayer.getTray();
             int deductPoints = 0;
             for (Tile tile : tilesLeft) {
                 deductPoints += tile.getPoint();
             }
-            finalDeduct.put(currentPlayer, deductPoints);
+            finalDeduct.put(currentLocalPlayer, deductPoints);
         }
 
 
@@ -326,72 +268,99 @@ public class Game {
         }
         return letterTray;
     }
+
     public void update(){
-        System.out.println("\n\n" + BoardConstructor.generateBoard(board) + "\n"
+        textUI.showMessage("\n\n" + BoardConstructor.generateBoard(board) + "\n"
         + "Player: " + players[this.currentPlayer].getName() + "\n"
         + "Tray: " + getLetterFromTray(players[this.currentPlayer].getTray()) + "\n"
         + "Total Score: " + players[this.currentPlayer].getTotalPoints() + "\n"
         + "Current bag count: " + tileBag.size());
     }
 
-    //To be implemented (with network): An update method where all player can see the new board
+    //    //To be implemented (with network): An update method where all player can see the new board
 
     /**
      * Print the final result of the game
      */
     public void printResult(){
-//        Player winner = isWinner() ;
-        if (isWinner() != null) System.out.println("Congratulations! Player " + isWinner().getName() + " has won!");
-        else System.out.println("It's a draw!");
+        if (isWinner() != null) textUI.showMessage("Congratulations! Player " + isWinner().getName() + " has won!");
+        else textUI.showMessage("It's a draw!");
+    }
+    public void makeMove(String[] moveTiles) throws IOException {
+        Board validBoard = isValidMove(mapLetterToSquare(moveTiles));
+        if (validBoard != null) {
+            board = validBoard.clone();
+        }
+        resetPassCount();
     }
 
+    public LinkedHashMap<String, String> mapLetterToSquare(String[] move){
+        LinkedHashMap<String , String > letterToSquare = new LinkedHashMap<>();
+        for (int i = 0; i < move.length; i++) {
+            String[] letterSquarePair = move[i].split("-");
+            if (letterSquarePair.length < 2) {
+                return null;
+            }
+            String[] coordinate = letterSquarePair[1].split("");
+            if (coordinate.length > 3) {
+                System.out.println("Coordinate's length should not be greater than 3.");
+                return null;
+            }
+            for (int j = 1; j < coordinate.length; j++) {
+                try {
+                    Integer.parseInt(coordinate[j]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Wrong input format. Move should be D-H7 O-H8 G-H9 and so on.");
+                    return null;
+                }
+            }
+            letterToSquare.put(letterSquarePair[1], letterSquarePair[0]);
+        }
+        return letterToSquare;
+    }
 
-    public void play() throws IOException {
-        System.out.println("Welcome to Scrabble!");
-        System.out.println("Let's play!");
-        loopingOverTheGame: for (currentPlayer = 0; currentPlayer < players.length;) {
-            update();
-            String[] moves = players[currentPlayer].determineMove();
-            switch (moves[0]) {
-                case "MOVE":
-                    String[] moveTiles = new String[moves.length-1];
-                    for (int i = 1; i < moves.length; i++) {
-                        moveTiles[i-1] = moves[i];
-                    }
-                    Board validBoard = isValidMove(players[currentPlayer].mapLetterToSquare(moveTiles));
-                    if (validBoard != null) {
-                        board = validBoard.clone();
-                    }
-                    nextPlayer();
-                    passCount = 0;
-                    break;
-                case "PASS":
-                    nextPlayer();
-                    passCount++;
-                    System.out.println("This is the " + passCount + " consecutive pass move(s).");
-                    break;
-                case "SWAP":
-                    char[] shuffledTilesChar = new char[moves.length-1];
-                    for (int i = 1; i < moves.length; i++) {
-                        shuffledTilesChar[i-1] = moves[i].charAt(0);
-                    }
-                    ArrayList<Tile> shuffledTiles = players[currentPlayer].determineTileToShuffle(shuffledTilesChar);
-                    shuffleTray(shuffledTiles);
-                    nextPlayer();
-                    passCount = 0;
-                    break;
-                default:
-                    System.out.println("Wrong input format. skipping turn...");
-                    nextPlayer();
-                    break;
+    public void swapTray(char[] chars) {
+        if (tileBag.isEmpty()) incrementPassCount();
+        else {
+            ArrayList<Tile> shuffledTiles = new ArrayList<>();
+            for (char character : chars) {
+                Tile tile = determineTileFromChar(character);
+                shuffledTiles.add(tile);
             }
-            if (gameOver()) {
-                break loopingOverTheGame;
+            for (Tile tile: shuffledTiles) {
+                tileBag.add(tile);
+                players[currentPlayer].getTray().remove(tile);
             }
+            addTileToTray(players[currentPlayer]);
+            resetPassCount();
 
         }
-        printResult();
     }
+
+    public Tile determineTileFromChar(char character) {
+        ArrayList<Tile> tray = players[currentPlayer].getTray();
+        for (Tile tile: tray){
+            if (character == '#' && character == tile.getLetter() ) {
+                String prompt = "Please choose one of the letters below:\n"
+                        + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n";
+                try{
+                    char input = textUI.getChar(prompt);
+                    tile.setLetter(input);
+                    return tile;
+
+                } catch (IllegalArgumentException e) {
+                    return null;
+                } catch (IOException e) {
+                    return null;
+                }
+            }
+            else if (tile.getLetter() == character) {
+                return tile;
+            }
+        }
+        return null;
+    }
+
 
     public String getWordFromSquareList(ArrayList<Square> squares) {
         String word = "";
@@ -399,30 +368,6 @@ public class Game {
         return word;
     }
 
-
-    private void removeWordFromSquare(ArrayList<Square> squares) {
-        for (Square square : squares ) {
-            board.getSquare(square.getxPosition(),square.getyPosition()).setTile(null);
-        }
-    }
-
-
-    private ArrayList<Square> putWordInSquares(String word, String direction, Square startingPosition) {
-        char[] charArray = word.toCharArray();
-
-        ArrayList<Square> squares = new ArrayList<Square>();
-        for (char character : charArray) {
-            squares.add(startingPosition);
-            Square nextPosition = direction.equals("H") ? board.getSquareRight(startingPosition) :
-                    board.getSquareBelow(startingPosition);
-            if (nextPosition.hasTile()) {
-                return null;
-            }
-            startingPosition.setTile(players[currentPlayer].determineTileFromChar(character));
-            startingPosition = nextPosition;
-        }
-        return squares;
-    }
 
     private ArrayList<ArrayList<Square>> determinePossibleWordCombinations(ArrayList<Square> inputWord, String direction, Board copyBoard) {
         Square startingPosition = inputWord.get(0);
@@ -549,7 +494,7 @@ public class Game {
         for (Map.Entry<String, String> move : moves.entrySet()) {
             char character = move.getValue().toCharArray()[0];
             Square location = copyBoard.getSquare(move.getKey());
-            Tile tile = players[currentPlayer].determineTileFromChar(character);
+            Tile tile = determineTileFromChar(character);
             if (tile == null) {
                 return null;
             }
@@ -565,14 +510,14 @@ public class Game {
                 determinePossibleWordCombinations(initialWord, direction,copyBoard);
 
         if (wordCombinations == null || wordCombinations.size() == 0) {
-            System.out.println("Wrong input format.");
+            textUI.showMessage("Wrong input format.");
             return null;
         }
         int turnScore = 0;
         for (ArrayList<Square> wordCombination : wordCombinations) {
             String validWord = wordChecker(wordCombination);
             if (validWord == null) {
-                System.out.println("The word " + getWordFromSquareList(wordCombination) + " is invalid. Skipping your turn...");
+                textUI.showMessage("The word " + getWordFromSquareList(wordCombination) + " is invalid. Skipping your turn...");
                 return null;
             }
             turnScore += calculatePoints(wordCombination);
@@ -610,18 +555,6 @@ public class Game {
 
 
         }
-
-    public void shuffleTray(ArrayList<Tile> shuffledTiles){
-
-        for (Tile tile: shuffledTiles) {
-            tileBag.add(tile);
-            players[currentPlayer].getTray().remove(tile);
-        }
-        addTileToTray(players[currentPlayer]);
-    }
-
-
-
 
 
     public List<Square> getNextValidSquares(List<Square> playSquares, String direction, Board copyBoard) {
@@ -688,9 +621,8 @@ public class Game {
                 }
             }
         }
-        System.out.println("Invalid placement. In the first round, player has to put one tile on H7 square.\n" +
+        textUI.showMessage("Invalid placement. In the first round, player has to put one tile on H7 square.\n" +
                 "During the remaining game, at least one tile placed by the player has to connect to one of the tiles on the board.");
         return false;
     }
-
 }

@@ -1,12 +1,19 @@
 package TUI;
 
-import java.io.*;
+import Exceptions.ExitProgram;
+import Exceptions.ServerUnavailableException;
+import GameLogic.Board;
+import GameLogic.Tile;
+import LocalGame.LocalPlayer;
 
- public class PlayerView {
+import java.io.*;
+import java.util.ArrayList;
+
+public class LocalView {
 
     private static BufferedReader bf;
 
-     public PlayerView() {
+     public LocalView() {
          bf = new BufferedReader(new InputStreamReader(System.in));
      }
 
@@ -22,4 +29,12 @@ import java.io.*;
          showMessage(prompt);
          return bf.readLine().charAt(0);
      }
+     public void start() throws ServerUnavailableException {
+
+     }
+
+     public void handleUserInput(String input) throws ExitProgram, ServerUnavailableException {
+
+     }
+
  }

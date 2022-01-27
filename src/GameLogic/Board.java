@@ -1,4 +1,4 @@
-package Game;
+package GameLogic;
 
 public class Board {
     // -- Instance variables -----------------------------------------
