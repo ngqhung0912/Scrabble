@@ -13,6 +13,7 @@ public class Client {
     private BufferedWriter out;
 
     public Client() {
+
         ClientTUI view = new ClientTUI(this);
     }
 
@@ -20,7 +21,7 @@ public class Client {
 
     }
 
-    public void ClientSideConnection() throws ExitProgram {
+    public void clientSideConnection() throws ExitProgram {
         clearConnection();
         while (serverSock == null) {
             String host = "localhost";
