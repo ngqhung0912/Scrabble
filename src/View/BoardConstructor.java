@@ -1,5 +1,5 @@
-package TUI;
-import GameLogic.*;
+package View;
+import Model.*;
 
 
 public class BoardConstructor  {
@@ -39,8 +39,6 @@ public class BoardConstructor  {
                     case DOUBLE_WORD:
                         builder.append(ANSI.YELLOW_BACKGROUND);
                         break;
-//                    case NORMAL:
-//                        builder.append(ANSI.BLACK_BACKGROUND_BRIGHT);
                 }
 
 
@@ -72,11 +70,6 @@ public class BoardConstructor  {
             builder.append("\n");
             builder.append(ANSI.RESET);
         }
-
-
         return builder.toString();
-    }
-    public static void main(String[] args) {
-        Board board = new Board();
     }
 }

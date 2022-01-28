@@ -1,11 +1,9 @@
-package GameLogic;
-
-import TUI.LocalView;
+package Model;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public abstract class Player implements Comparable<Player> {
+public abstract class Player implements Comparable<Player>, PlayerInterface {
     protected String name;
     protected int id;
     protected int totalPoints;

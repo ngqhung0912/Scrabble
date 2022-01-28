@@ -1,13 +1,10 @@
-package LocalGame;
+package LocalController;
 
-import GameLogic.Board;
-import GameLogic.Game;
-import GameLogic.Player;
-import GameLogic.Tile;
-import TUI.LocalView;
+import Model.Game;
+import Model.Player;
+import View.LocalView;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class LocalController {
     private static final String HELP = "Wrong input format. Correct input format: <numPlayers> <P1name> <P2name> ... ";
@@ -15,11 +12,6 @@ public class LocalController {
     private static Player[] localPlayers;
     private static Game game;
     private static LocalView textUI;
-
-
-
-
-
 
     public static void main(String[] args) throws IOException {
         textUI = new LocalView();
@@ -33,21 +25,17 @@ public class LocalController {
             System.out.println(HELP);
         }
 
-
         String[] playerName = new String[numPlayers];
-
         localPlayers = new LocalPlayer[numPlayers];
 
         for (int i = 0; i < numPlayers; i++) {
             playerName[i] = args[i+1];
-            localPlayers[i] = new LocalPlayer(playerName[i], i);
+            localPlayers[i] = new LocalPlayer(playerName[i], i, textUI);
         }
+        game = new Game(localPlayers);
 
-
-        game = new Game(localPlayers, textUI);
-
-        loopingOverTheGame: for (currentPlayer = 0; currentPlayer < localPlayers.length;) {
-            game.update();
+        loopingOverTheGame: while (true){
+            textUI.update(game);
             String[] moves = localPlayers[currentPlayer].determineMove();
             switch (moves[0]) {
                 case "MOVE":
@@ -75,6 +63,6 @@ public class LocalController {
                 break loopingOverTheGame;
             }
         }
-        game.printResult();
+        textUI.printResult(game);
     }
 }

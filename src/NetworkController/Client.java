@@ -1,4 +1,4 @@
-package NetworkGame;
+package NetworkController;
 
 import Exceptions.ExitProgram;
 import Exceptions.ServerUnavailableException;

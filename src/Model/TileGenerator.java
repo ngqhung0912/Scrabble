@@ -1,4 +1,4 @@
-package GameLogic;
+package Model;
 
 import java.util.ArrayList;
 import java.util.List;
