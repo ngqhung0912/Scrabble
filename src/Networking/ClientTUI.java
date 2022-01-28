@@ -43,7 +43,7 @@ public class ClientTUI {
     }
 
     public String getString(String question) throws IOException {
-        System.out.println(question);
+        showMessage(question);
         String line = bf.readLine();
 
         return line;

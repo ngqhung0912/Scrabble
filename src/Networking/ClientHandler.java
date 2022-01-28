@@ -2,25 +2,29 @@ package Networking;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class ClientHandler implements Runnable{
     //public static ArrayList<ClientHandler> clientHandlers;
     private Socket socket;
-    private BufferedReader in;
-    private BufferedWriter out;
-
     private Server server;
     private String clientName;
+    private BufferedReader handlerReader;
+    private BufferedWriter handlerWriter;
+    private boolean gameStarted;
+    //private String gameJoined;
 
     public ClientHandler(Socket socket, Server server, String clientName){
         try {
-            this.socket = socket;
-            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
             this.server = server;
+            this.socket = socket;
             this.clientName = clientName;
+
+            this.handlerReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.handlerWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+
+            //gameJoined = null;
+            gameStarted = false;
+
         } catch (IOException e) {
             shutDown();
         }
@@ -33,16 +37,16 @@ public class ClientHandler implements Runnable{
         String command;
 
         try {
-            command = in.readLine();
+            command = handlerReader.readLine();
             while (command != null) {
                 System.out.println();
-                hand
+
             }
         }
 
         while (socket.isConnected()) {
             try {
-                command = in.readLine();
+                command = handlerReader.readLine();
                 broadcastMessage(command);
 
             } catch (IOException e) {
@@ -53,6 +57,6 @@ public class ClientHandler implements Runnable{
     }
 
     public void handleCommand(String command) throws IOException {
-        String[] input
+        String[] input = command.split(ProtocolMessages.)
     }
 }

@@ -19,7 +19,7 @@ public class Server implements Runnable{
     private ServerTUI view;
 
     public Server(ServerSocket ss){
-        next_client_no = 1;
+        next_client_no = 0;
         clients = new ArrayList<>();
         view = new ServerTUI();
 
@@ -41,7 +41,8 @@ public class Server implements Runnable{
                     System.out.println("Waiting for connections...");
                     Socket socket = ss.accept();
                     numPlayers++;
-                    System.out.println("Player " + numPlayers + " has connected!");
+                    System.out.println("Please enter your name");
+                    String name = (new BufferedReader(new InputStreamReader(socket.getInputStream()))).readLine();
 
 //                    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 //                    out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
