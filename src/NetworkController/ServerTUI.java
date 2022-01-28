@@ -1,4 +1,4 @@
-package NetworkGame;
+package NetworkController;
 
 import java.io.PrintWriter;
 

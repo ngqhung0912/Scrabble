@@ -1,4 +1,4 @@
-package GameLogic;
+package Model;
 
 public class Board {
     // -- Instance variables -----------------------------------------
@@ -84,8 +84,6 @@ public class Board {
         }
         return copyCat;
     }
-
-
 
     public Square getSquare(int i) {
         return i < 225 ? getSquare(i / 15,i % 15 ) : null;

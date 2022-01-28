@@ -1,9 +1,9 @@
-package LocalGame;
+package LocalController;
 
 import java.io.IOException;
 
-import GameLogic.Player;
-import TUI.LocalView;
+import Model.Player;
+import View.LocalView;
 
 /**
  * @author Nhat Tran, Hung Nguyen
@@ -13,17 +13,18 @@ public class LocalPlayer extends Player  {
 
      // -- Instance variables -----------------------------------------
 
-     protected static LocalView textUI;
+     private static LocalView textUI;
      // -- Constructors -----------------------------------------------
-     public LocalPlayer(String name, int id){
+     public LocalPlayer(String name, int id, LocalView textUI){
           super(name, id);
-          textUI = new LocalView();
+          this.textUI = textUI;
      }
      /**
-      * to be thinking: The handler of "validmove" should be in Player or in Board?
+      *
       *
       * @return
       */
+     @Override
      public String[] determineMove() throws IOException {
           String prompt = "It's player " + name + "'s turn. " + "\nInput format: If you want to put a words, " +
                   "\nfor example DOG into the board," +

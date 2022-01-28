@@ -1,4 +1,4 @@
-package GameLogic;
+package Model;
 
 public class TileDescription {
     private char letter;

@@ -1,4 +1,4 @@
-package TUI;
+package View;
 
 public interface ANSI {
 	// Reset

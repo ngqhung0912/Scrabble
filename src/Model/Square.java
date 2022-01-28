@@ -1,4 +1,4 @@
-package GameLogic;
+package Model;
 
 /**
  * @author Hung Nguyen
