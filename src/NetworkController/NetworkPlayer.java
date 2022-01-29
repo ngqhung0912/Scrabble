@@ -12,13 +12,13 @@ import java.io.IOException;
 public class NetworkPlayer extends Player {
      private NetworkView networkUI;
 
-     public NetworkPlayer(String name, int id, NetworkView networkUI) {
+     public NetworkPlayer(String name, int id, ClientHandler handler) {
           super(name, id);
-          this.networkUI = networkUI;
      }
 
      @Override
      public String[] determineMove() throws IOException {
+          //decode user's move from client handler.
           return new String[0];
      }
 }

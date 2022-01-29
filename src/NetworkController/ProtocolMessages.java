@@ -54,6 +54,14 @@ public class ProtocolMessages {
 	/** Used to inform every client connected who has to make a move */
 	public static final String TURN = "TURN";
 
+
+	/** Used to inform client about entering details for the blank tiles */
+	public static final String BLANK = "B";
+
+
+
+
+
 	/** -> This is sent by the client to indicate a move on the board. 
 	 * 	-> The move will then have to be validated by the server
 	 * 	-> This message is then broadcasted by the server to all 

@@ -30,7 +30,7 @@ public class LocalController {
 
         for (int i = 0; i < numPlayers; i++) {
             playerName[i] = args[i+1];
-            localPlayers[i] = new LocalPlayer(playerName[i], i, textUI);
+            localPlayers[i] = new LocalPlayer(playerName[i], i);
         }
         game = new Game(localPlayers);
 

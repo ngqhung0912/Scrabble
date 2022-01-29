@@ -15,9 +15,9 @@ public class LocalPlayer extends Player  {
 
      private static LocalView textUI;
      // -- Constructors -----------------------------------------------
-     public LocalPlayer(String name, int id, LocalView textUI){
+     public LocalPlayer(String name, int id){
           super(name, id);
-          this.textUI = textUI;
+          this.textUI = new LocalView();
      }
      /**
       *
@@ -29,7 +29,7 @@ public class LocalPlayer extends Player  {
           String prompt = "It's player " + name + "'s turn. " + "\nInput format: If you want to put a words, " +
                   "\nfor example DOG into the board," +
                   "\nin the square A1, A2 and A3 , write your move as: MOVE D-A1 O-A2 G-A3" +
-                  "\ntype SWAP to SWAP one more more letter(s) in your tray, and type PASS to end your turn immediately.";
+                  "\ntype SWAP to SWAP one more more letter(s) in your tray.";
           return textUI.getString(prompt).split(" ");
      }
 
