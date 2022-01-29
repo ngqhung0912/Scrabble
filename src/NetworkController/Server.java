@@ -75,8 +75,12 @@ public class Server implements Runnable{
     public void run() {
         while (true) {
             try {
+                view.showMessage("Waiting for connection...");
                 Socket clientSocket = serverSocket.accept();
+                view.showMessage("Player " + clientID + " has connected!!!");
                 ClientHandler client = new ClientHandler(clientSocket,this,clientID);
+                Thread clientThread = new Thread(client);
+                clientThread.start();
                 clients.add(client);
                 clientID++;
                 // if enough client then start game
@@ -84,7 +88,7 @@ public class Server implements Runnable{
                 if (numPlayers == 4) {
                     // broadcast welcome message
                     timeLimitFeature = checkHasTimeLimit();
-                    startGame();
+                    broadcastStartGame();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -92,38 +96,32 @@ public class Server implements Runnable{
         }
     }
 
-    public void startGame() throws IOException {
-        loopingUntilAllClientsReady: while (true) {
-            if (checkReadyStatus()) {
-                // broadcast to all that server is ready.
-                // maybe also sleep a bit?
-                networkPlayers = new NetworkPlayer[clients.size()];
-                for (int i = 0; i < numPlayers; i++) {
-                    networkPlayers[i] = new NetworkPlayer(clients.get(i).toString(), i, view);
-                }
-                game = new Game(networkPlayers);
-                loopingOverAllPlayers: while (true) {
-                    if (game.gameOver()) {
-                        view.printResult(game);
-                        break loopingOverAllPlayers;
-                    }
-                    else {
-                        view.update(game);
-
-                    }
-                }
-            } else {
-                // broadcast to all asking them to ready then sleep a bit.
-            }
-        }
+    public void play() throws IOException {
 
     }
+    protected void broadcastStartGame() {
+        for (ClientHandler client : clients) {
+            client.sendMessageToClient(ProtocolMessages.START + ProtocolMessages.SEPARATOR +
+                    client + ProtocolMessages.AS);
+        }
+    }
 
-    public void requestMove(int id) {
+    protected void requestMove(int id) {
         clients.get(id).sendMessageToClient(ProtocolMessages.MOVE);
     }
 
-    public static void main(String[] args) {
+    protected void broadcastMove() {
+
+    }
+
+    protected int getNextClient(int currentClientID) {
+        return currentClientID < 3 ? currentClientID++ : 0;
+    }
+
+
+    public static void main(String[] args) throws IOException {
+        Server server = new Server(new ServerSocket(8888));
+        server.run();
 
     }
 }

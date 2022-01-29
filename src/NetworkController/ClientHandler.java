@@ -49,11 +49,14 @@ public class ClientHandler implements Runnable{
 
 
 
+
+
+
     @Override
     public void run() {
         try {
             String message = in.readLine();
-            view.showMessage("message from " + this.clientName + ": " + message);
+            view.showMessage("message from " + this.clientId + ": " + message);
             String[] messages = message.split(ProtocolMessages.SEPARATOR);
             handleCommand(messages);
 
@@ -73,12 +76,10 @@ public class ClientHandler implements Runnable{
                             server.getJoinedPlayersName() + ProtocolMessages.SEPARATOR
                             + server.getAcceptedFunctions() );
                     setName(command[1]);
+                    view.showMessage("name set " + this.clientName);
                     if (command.length > 2) {
                         List<String> featureList = Arrays.asList(command);
                         if (featureList.contains(ProtocolMessages.CHAT_FLAG)) hasChatFunction = true;
-
-                        if (featureList.contains(ProtocolMessages.TEAM_PLAY_FLAG)) hasMultiplayer = true;
-                        else sendMessageToClient("You are unwelcome here.");
 
                         if (featureList.contains(ProtocolMessages.TURN_TIME_FLAG)) hasTimeLimit = true;
 
@@ -91,12 +92,16 @@ public class ClientHandler implements Runnable{
                 isReady = true;
                 break;
             case ProtocolMessages.ABORT:
+                //shutdown;
                 break;
 
             case ProtocolMessages.MOVE:
+                // check if it's this client's turn or not. If not then send error.
+                // if yes, then send to server "doMove".
                 break;
 
             case ProtocolMessages.PASS:
+                // same as above
                 break;
 
             default:
@@ -128,15 +133,29 @@ public class ClientHandler implements Runnable{
     }
 
     protected void sendMessageToClient(String message) {
-
+        try {
+            out.write(message);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void sendErrorToClient(String error, String message) {
+        try {
+            out.write(error + ProtocolMessages.SEPARATOR +message);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 
     }
     protected int getClientId() {
         return clientId;
     }
+
 
 
 }

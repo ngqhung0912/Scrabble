@@ -186,20 +186,7 @@ public class Game {
     /**
      * To pass the play if the player decides to.
      */
-    public int setCurrentPlayer() {
-        switch (numPlayer) {
-            case 2:
-                currentPlayer = currentPlayer == 0 ? 1 : 0;
-                break;
-            case 3:
-                currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : 0;
-                break;
-            case 4:
-                currentPlayer = currentPlayer == 0 ? 1 : currentPlayer == 1 ? 2 : currentPlayer == 2 ? 3 : 0;
-                break;
-        }
-        return currentPlayer;
-    }
+    public int setCurrentPlayer() { return currentPlayer < numPlayer-1 ? currentPlayer++ : 0; }
 
     /**
      * Determine who is the winner
@@ -326,14 +313,14 @@ public class Game {
                 String prompt = "Please choose one of the letters below:\n"
                         + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n";
                 try{
-                    char input = UI.getChar(prompt);
-                    tile.setLetter(input);
+//                    char input = UI.getChar(prompt);
+//                    tile.setLetter(input);
                     return tile;
 
                 } catch (IllegalArgumentException e) {
                     return null;
-                } catch (IOException e) {
-                    return null;
+//                } catch (IOException e) {
+//                    return null;
                 }
             }
             else if (tile.getLetter() == character) {

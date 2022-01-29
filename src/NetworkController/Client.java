@@ -2,6 +2,7 @@ package NetworkController;
 
 import Exceptions.ExitProgram;
 import Exceptions.ServerUnavailableException;
+import View.NetworkView;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -10,22 +11,25 @@ import java.net.Socket;
 public class Client {
     private Socket serverSock;
     private BufferedReader in;
-    private BufferedWriter out;
+    private static BufferedWriter out;
+    private NetworkView view;
 
     public Client() {
-
-        ClientTUI view = new ClientTUI(this);
+        view = new NetworkView();
     }
 
-    public void start(){
-
+    public void start() throws ExitProgram, IOException, ServerUnavailableException {
+        clientSideConnection();
+        while (true) {
+            sendMessage(handleUserInput());
+        }
     }
 
     public void clientSideConnection() throws ExitProgram {
         clearConnection();
         while (serverSock == null) {
             String host = "localhost";
-            int port = 0;
+            int port = 8888;
 
             try {
                 InetAddress address = InetAddress.getByName(host);
@@ -39,8 +43,6 @@ public class Client {
                 System.out.println("ERROR: could not create a socket on "
                         + host + " and port " + port + ".");
             }
-
-
         }
     }
 
@@ -50,7 +52,14 @@ public class Client {
         out = null;
     }
 
-    public synchronized void sendMessage(String msg) throws ServerUnavailableException {
+    public String handleUserInput() throws IOException {
+        String prompt = "Say hello!";
+        return view.getString(prompt);
+
+    }
+
+
+    public static synchronized void sendMessage(String msg) throws ServerUnavailableException {
         if (out != null) {
             try {
                 out.write(msg);
@@ -127,5 +136,18 @@ public class Client {
 
     public void doAbort(){
 
+    }
+
+    public static void main(String[] args)  {
+        Client client = new Client();
+        try {
+            client.start();
+        } catch (ExitProgram e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ServerUnavailableException e) {
+            e.printStackTrace();
+        }
     }
 }
