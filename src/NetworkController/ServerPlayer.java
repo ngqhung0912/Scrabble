@@ -1,7 +1,7 @@
 package NetworkController;
 
 import Model.Player;
-import View.NetworkView;
+
 
 import java.io.IOException;
 
@@ -9,16 +9,26 @@ import java.io.IOException;
  * @author  Hung Nguyen
  * @version 0.1
  */
-public class NetworkPlayer extends Player {
-     private NetworkView networkUI;
+public class ServerPlayer extends Player {
 
-     public NetworkPlayer(String name, int id, ClientHandler handler) {
+     private boolean aborted;
+
+     public ServerPlayer(String name, int id) {
           super(name, id);
+          aborted = false;
      }
 
      @Override
      public String[] determineMove() throws IOException {
           //decode user's move from client handler.
           return new String[0];
+     }
+
+     public boolean isAborted() {
+          return aborted;
+     }
+
+     public void setAborted(boolean aborted) {
+          this.aborted = aborted;
      }
 }

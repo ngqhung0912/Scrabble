@@ -75,3 +75,12 @@ to check which of the places have the highest score combination.
             + NetworkView
 
 - Bug: Cannot place tiles when all the tiles is on the left of the current word, i.e BAL on the left of D.
+
+
+29/1/2022:
+dear diary,
+
+today was a really productive day. We got a lot of work done - and also 6 episodes of the Office.
+
+- is our handling of error correct? error | errorname?
+

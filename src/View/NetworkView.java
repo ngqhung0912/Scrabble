@@ -42,6 +42,4 @@ public class NetworkView extends View {
         }
         return addr;
     }
-
-
 }

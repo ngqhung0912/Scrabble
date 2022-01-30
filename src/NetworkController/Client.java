@@ -55,7 +55,6 @@ public class Client {
     public String handleUserInput() throws IOException {
         String prompt = "Say hello!";
         return view.getString(prompt);
-
     }
 
 
