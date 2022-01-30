@@ -26,6 +26,14 @@ public abstract class Player implements Comparable<Player>, PlayerInterface {
     }
 
     /**
+     *
+     * @return
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
      * Return the tray with the current tiles belongs to the player
      * @return tray - The tray with the current tiles belongs to the player
      */
@@ -62,4 +70,6 @@ public abstract class Player implements Comparable<Player>, PlayerInterface {
     }
 
     public abstract String[] determineMove() throws IOException;
+
+
 }
