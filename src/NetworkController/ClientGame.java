@@ -218,6 +218,16 @@ public class ClientGame {
         return index;
     }
 
+    /**
+     * Update the current board with the new total points of the current player
+     */
+    public ArrayList<String> getLetterFromTray(ArrayList<Tile> tray) {
+        ArrayList<String> letterTray = new ArrayList<String>();
+        for (Tile tile : tray) {
+            letterTray.add(Character.toString(tile.getLetter()));
+        }
+        return letterTray;
+    }
 
 
     private LinkedHashMap<String, String> mapLetterToSquare(String[] move){

@@ -34,16 +34,16 @@ public class Client {
         boolean running = true;
         name = view.getString("Welcome to Scrabble!\n Please enter your name: ");
 
-            clearConnection();
-            clientSideConnection();
-            handleHello(); //To be implemented: handle ERROR.INVALIDNAME
+        clearConnection();
+        clientSideConnection();
+        handleHello();
 
-
-        while (true) {
+        while (serverSock.isConnected()) {
             String serverCommand = readLineFromServer();
             handleServerCommand(serverCommand);
-
+            view.update(game);
         }
+
     }
 
     public void clientSideConnection() throws ExitProgram {
@@ -178,8 +178,6 @@ public class Client {
                 }
                 break;
 
-//
-
         }
     }
 
@@ -199,7 +197,7 @@ public class Client {
         }
     }
 
-    public String readLineFromServer() throws ServerUnavailableException{
+    public String readLineFromServer() throws ServerUnavailableException, IOException {
         if (in != null) {
             try {
                 // Read and return answer from Server
@@ -209,7 +207,7 @@ public class Client {
                 }
                 return answer;
             } catch (IOException e) {
-                throw new ServerUnavailableException("Server not detected.");
+                throw new IOException("Illegal input. Please try again");
             }
         } else {
             throw new ServerUnavailableException("Server not detected.");
@@ -298,14 +296,17 @@ public class Client {
 
     public static void main(String[] args)  {
         Client client = new Client();
+        NetworkView view = client.view;
+
         try {
             client.start();
         } catch (ExitProgram e) {
-            e.printStackTrace();
+            view.showMessage("Exit program");
+            client.shutDown();
         } catch (IOException e) {
-            e.printStackTrace();
+            view.showMessage("Illegal input. Please try again");
         } catch (ServerUnavailableException e) {
-            e.printStackTrace();
+            view.showMessage("No server detected. Shutting down the connection...");
         }
     }
 }
