@@ -58,6 +58,9 @@ public class ClientHandler implements Runnable{
                 view.showMessage("message from " + this.clientId + ": " + message);
                 String[] messages = message.split(ProtocolMessages.SEPARATOR);
                 handleCommand(messages);
+                if (serverGame.gameOver()) {
+                    server.broadcastWinner();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -70,7 +73,7 @@ public class ClientHandler implements Runnable{
         switch(command[0]) {
             case ProtocolMessages.HELLO:
                 if (command.length < 2)    {
-                    sendErrorToClient(ProtocolMessages.ERROR);
+                    sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
                 }
                 else {
                     if (!server.checkName(command[1])) sendErrorToClient(ProtocolMessages.DUPLICATE_NAME);
@@ -85,45 +88,49 @@ public class ClientHandler implements Runnable{
                                 if (feature.equals(ProtocolMessages.CHAT_FLAG)) hasChatFunction = true;
                                 if (feature.equals(ProtocolMessages.TURN_TIME_FLAG)) hasTimeLimit = true;
                             }
-                        } else sendErrorToClient(ProtocolMessages.ERROR);
+                        } else sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
                     }
                 }
                 break;
+
             case ProtocolMessages.CLIENTREADY:
                 isReady = true;
                 break;
 
             case ProtocolMessages.ABORT:
-                shutDown();
+                server.broadcastAbort(this);
+                if (server.getGameState()) { serverGame.getPlayerByID(clientId).setAborted(true);}
+                else shutDown();
                 break;
 
             case ProtocolMessages.MOVE:
-                if (serverGame.getCurrentPlayer() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
+                if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
                 else {
                     determineTileFromMove(command);
                     serverGame.updateScore(Integer.parseInt(command[2]));
                     server.broadcastMove(command[1],Integer.parseInt(command[2]));
                     serverGame.setNextPlayer();
                     serverGame.resetPassCount();
-                    server.broadcastTurn(serverGame.getCurrentPlayer());
+                    server.broadcastTurn(serverGame.getCurrentPlayerID());
                 }
                 break;
             case ProtocolMessages.PASS:
-                if (serverGame.getCurrentPlayer() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
+                if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
                 else {
                     determineTileFromMove(command);
                     serverGame.doPass(command[1]);
                     server.broadcastMove(command[1],0);
                     serverGame.setNextPlayer();
                     serverGame.incrementPassCount();
-                    server.broadcastTurn(serverGame.getCurrentPlayer());
+                    server.broadcastTurn(serverGame.getCurrentPlayerID());
                 }
                 break;
 
             default:
-                sendErrorToClient(ProtocolMessages.ERROR);
+                sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
                 break;
         }
+
     }
 
     private void determineTileFromMove(String[] command) {
@@ -161,7 +168,7 @@ public class ClientHandler implements Runnable{
 
     protected void sendErrorToClient(String error) {
         try {
-            out.write(error);
+            out.write(ProtocolMessages.ERROR + ProtocolMessages.SEPARATOR + error);
             out.flush();
         } catch (IOException e) {
             e.printStackTrace();

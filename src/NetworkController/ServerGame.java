@@ -34,7 +34,7 @@ public class ServerGame {
         playersScoreCount = new HashMap<>();
         serverPlayers = new ServerPlayer[numPlayer];
 
-        for(int i = 0; i < numPlayer; i++ ) {
+        for (int i = 0; i < numPlayer; i++) {
             ClientHandler client = server.getClients().get(i);
             serverPlayers[i] = new ServerPlayer(client.toString(), client.getClientId());
         }
@@ -42,7 +42,7 @@ public class ServerGame {
 
     private void removeTile(String character) {
         ArrayList<Tile> tray = serverPlayers[currentPlayer].getTray();
-        for (Tile tile: tray){
+        for (Tile tile : tray) {
             if (Character.toString(tile.getLetter()).equals(character)) {
                 tray.remove(tile);
             }
@@ -98,16 +98,16 @@ public class ServerGame {
     }
 
     public boolean gameOver() {
-        return isEmptyTrayAndBag() || isFullBoard() || passCount > 5;
+        return isEmptyTrayAndBag() || passCount > 5;
     }
 
-    public Player isWinner(){
-        Map<Player, Integer> finalDeduct = new HashMap<>();
+    public ServerPlayer isWinner() {
+        Map<ServerPlayer, Integer> finalDeduct = new HashMap<>();
 
         ArrayList<Tile> tilesLeft = null;
 
         //Create a map of players with their deduct points
-        for (Player serverPlayer : serverPlayers) {
+        for (ServerPlayer serverPlayer : serverPlayers) {
             tilesLeft = serverPlayer.getTray();
             int deductPoints = 0;
             for (Tile tile : tilesLeft) {
@@ -129,8 +129,8 @@ public class ServerGame {
             serverPlayers[i].setFinalPoints(finalPoints);
         }
 
-        Player winner = serverPlayers[0];
-        for (int i = 1; i < serverPlayers.length;) {
+        ServerPlayer winner = serverPlayers[0];
+        for (int i = 1; i < serverPlayers.length; ) {
             int compare = winner.compareTo(serverPlayers[i]);
             if (compare < 0) {
                 winner = serverPlayers[i];
@@ -152,41 +152,20 @@ public class ServerGame {
 //            String[] temp = move.split("");
 
 
-
     }
 
     protected void doPass(String move) {
 
     }
 
-    protected int getCurrentPlayer() { return currentPlayer;}
+    protected int getCurrentPlayerID() {
+        return currentPlayer;
+    }
 
+    protected ServerPlayer getCurrentPlayer() { return serverPlayers[currentPlayer];}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    protected ServerPlayer getPlayerByID(int id) {
+        return serverPlayers[id];
+    }
 
 }

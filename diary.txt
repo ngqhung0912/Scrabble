@@ -80,4 +80,7 @@ to check which of the places have the highest score combination.
 29/1/2022:
 dear diary,
 
-today was a really productive day. We got a lot of work done - and also 4 episodes of the Office.
+today was a really productive day. We got a lot of work done - and also 6 episodes of the Office.
+
+- is our handling of error correct? error | errorname?
+
