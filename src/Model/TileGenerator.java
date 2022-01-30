@@ -10,7 +10,7 @@ public class TileGenerator {
          */
         List<TileDescription> input = new ArrayList<>();
 
-        input.add(new TileDescription('#', 2, 0));
+        input.add(new TileDescription('-', 2, 0));
         input.add(new TileDescription('A', 9, 1));
         input.add(new TileDescription('B', 2, 3));
         input.add(new TileDescription('C', 2, 3));

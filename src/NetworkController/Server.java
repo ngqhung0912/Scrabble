@@ -10,26 +10,22 @@ import java.util.ArrayList;
 import View.NetworkView;
 
 public class Server implements Runnable{
-    private Game game;
     private ServerSocket serverSocket;
     private ArrayList<ClientHandler> clients;
-    private NetworkPlayer[] networkPlayers;
-    private int currentPlayer;
     private int numPlayers;
-    private BufferedReader in;
-    private BufferedWriter out;
     private NetworkView view;
     private int clientID;
     private boolean timeLimitFeature;
+    ServerGame serverGame;
 
 
     public Server(ServerSocket ss){
-        currentPlayer = 0;
         clients = new ArrayList<>();
         view = new NetworkView();
         this.serverSocket = ss;
         clientID = 0;
         timeLimitFeature = false;
+        serverGame = new ServerGame(this);
     }
 
     public boolean checkName(String name) {
@@ -78,17 +74,23 @@ public class Server implements Runnable{
                 view.showMessage("Waiting for connection...");
                 Socket clientSocket = serverSocket.accept();
                 view.showMessage("Player " + clientID + " has connected!!!");
+
                 ClientHandler client = new ClientHandler(clientSocket,this,clientID);
                 Thread clientThread = new Thread(client);
                 clientThread.start();
+
+                broadcastWelcomeMessage(client);
                 clients.add(client);
                 clientID++;
+
                 // if enough client then start game
                 numPlayers = clients.size();
                 if (numPlayers == 4) {
                     // broadcast welcome message
                     timeLimitFeature = checkHasTimeLimit();
-                    broadcastStartGame();
+                    view.showMessage("Enough players. Let's Start!");
+                    broadcastServerReady();
+                    play();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -96,33 +98,71 @@ public class Server implements Runnable{
         }
     }
 
+    protected ArrayList<ClientHandler> getClients() { return clients;}
+
+
     public void play() throws IOException {
+        while (!checkReadyStatus()) {
+
+
+
+        }
+    }
+
+
+
+    protected void broadcastWelcomeMessage(ClientHandler newlyJoined) {
+        String message = ProtocolMessages.WELCOME + ProtocolMessages.SEPARATOR + newlyJoined.toString();
+        if (newlyJoined.hasTimeLimit()) message += ProtocolMessages.SEPARATOR + ProtocolMessages.TURN_TIME_FLAG;
+        for (ClientHandler client : clients) {
+            client.sendMessageToClient(message);
+        }
+    }
+
+    protected void broadcastTiles(ClientHandler client, String tiles) {
+        client.sendMessageToClient(ProtocolMessages.TILES + ProtocolMessages.SEPARATOR + tiles);
 
     }
+
+    protected void broadcastServerReady() {
+        String message = ProtocolMessages.SERVERREADY + ProtocolMessages.SEPARATOR;
+        for (ClientHandler client : clients) {
+            if (client.isReady()) message += client.toString() + ProtocolMessages.AS;
+        }
+        for (ClientHandler client : clients) {
+            client.sendMessageToClient(message);
+        }
+    }
+
     protected void broadcastStartGame() {
         for (ClientHandler client : clients) {
             client.sendMessageToClient(ProtocolMessages.START + ProtocolMessages.SEPARATOR +
                     client + ProtocolMessages.AS);
+            String tiles = serverGame.sendNewTiles(new String[0]);
+            broadcastTiles(client, tiles);
         }
     }
 
-    protected void requestMove(int id) {
-        clients.get(id).sendMessageToClient(ProtocolMessages.MOVE);
+    protected void broadcastTurn(int currentPlayer) {
+        for (ClientHandler client : clients) {
+            client.sendMessageToClient(ProtocolMessages.TURN + ProtocolMessages.SEPARATOR + clients.get(currentPlayer));
+        }
     }
 
-    protected void broadcastMove() {
+    protected void broadcastMove(String move, int score) {
+        for (ClientHandler client: clients) {
+            if (client.getClientId() != serverGame.getCurrentPlayer())
+                client.sendMessageToClient(ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR +
+                        clients.get(serverGame.getCurrentPlayer()) + ProtocolMessages.SEPARATOR +
+                        move + ProtocolMessages.SEPARATOR + score);
+        }
 
     }
-
-    protected int getNextClient(int currentClientID) {
-        return currentClientID < 3 ? currentClientID++ : 0;
-    }
-
 
     public static void main(String[] args) throws IOException {
         Server server = new Server(new ServerSocket(8888));
-        server.run();
-
+        Thread serverThread = new Thread(server);
+        serverThread.start();
     }
 }
 

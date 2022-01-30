@@ -9,10 +9,9 @@ import java.io.IOException;
  * @author  Hung Nguyen
  * @version 0.1
  */
-public class NetworkPlayer extends Player {
-     private NetworkView networkUI;
+public class ServerPlayer extends Player {
 
-     public NetworkPlayer(String name, int id, ClientHandler handler) {
+     public ServerPlayer(String name, int id) {
           super(name, id);
      }
 
