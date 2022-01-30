@@ -1,6 +1,7 @@
 package View;
 
 import Model.Game;
+import NetworkController.ClientGame;
 
 import java.io.IOException;
 
@@ -15,6 +16,13 @@ public abstract class View {
                 + "Tray: " + game.getLetterFromTray(game.getCurrentPlayer().getTray()) + "\n"
                 + "Total Score: " + game.getCurrentPlayer().getTotalPoints() + "\n"
                 + "Current bag count: " + game.getTileBag().size());
+    }
+
+    public void update(ClientGame game) {
+        showMessage("\n\n" + BoardConstructor.generateBoard(game.getBoard()) + "\n"
+                + "Player: " + game.getCurrentPlayer().getName() + "\n"
+                + "Tray: " + game.getLetterFromTray(game.getCurrentPlayer().getTray()) + "\n"
+                + "Total Score: " + game.getCurrentPlayer().getTotalPoints() + "\n");
     }
 
 
