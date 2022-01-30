@@ -30,6 +30,11 @@ public class NetworkView extends View {
         return bf.readLine().charAt(0);
     }
 
+    public boolean getBoolean(String prompt) throws IOException{
+        showMessage(prompt);
+        return bf.readLine().equals("Y") ? true : false;
+    }
+
     public InetAddress getIp() throws IOException {
         InetAddress addr = null;
         while (addr == null) {

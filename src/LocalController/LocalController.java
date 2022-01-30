@@ -34,13 +34,14 @@ public class LocalController {
         }
         game = new Game(localPlayers);
 
-        loopingOverTheGame: while (true){
+        loopingOverTheGame:
+        do {
             textUI.update(game);
             String[] moves = localPlayers[currentPlayer].determineMove();
             switch (moves[0]) {
                 case "MOVE":
-                    String[] moveTiles = new String[moves.length-1];
-                    for (int i = 1; i < moves.length; i++) moveTiles[i-1] = moves[i];
+                    String[] moveTiles = new String[moves.length - 1];
+                    System.arraycopy(moves, 1, moveTiles, 0, moves.length - 1);
                     game.makeMove(moveTiles);
                     break;
                 case "PASS":
@@ -48,9 +49,9 @@ public class LocalController {
                     textUI.showMessage("This is the " + game.getPassCount() + " consecutive pass move(s).");
                     break;
                 case "SWAP":
-                    char[] swapTilesChar = new char[moves.length-1];
+                    char[] swapTilesChar = new char[moves.length - 1];
                     for (int i = 1; i < moves.length; i++) {
-                        swapTilesChar[i-1] = moves[i].charAt(0);
+                        swapTilesChar[i - 1] = moves[i].charAt(0);
                     }
                     game.swapTray(swapTilesChar);
                     break;
@@ -59,10 +60,7 @@ public class LocalController {
                     break;
             }
             currentPlayer = game.setCurrentPlayer();
-            if (game.gameOver()) {
-                break loopingOverTheGame;
-            }
-        }
+        } while (!game.gameOver());
         textUI.printResult(game);
     }
 }
