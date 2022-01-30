@@ -54,6 +54,7 @@ public class ClientHandler implements Runnable{
     public void run() {
         try {
             while (running) {
+                server.broadcastTurn(serverGame.getCurrentPlayerID());
                 String message = in.readLine();
                 view.showMessage("message from " + this.clientId + ": " + message);
                 String[] messages = message.split(ProtocolMessages.SEPARATOR);
@@ -111,18 +112,15 @@ public class ClientHandler implements Runnable{
                     server.broadcastMove(command[1],Integer.parseInt(command[2]));
                     serverGame.setNextPlayer();
                     serverGame.resetPassCount();
-                    server.broadcastTurn(serverGame.getCurrentPlayerID());
                 }
                 break;
             case ProtocolMessages.PASS:
                 if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
                 else {
                     determineTileFromMove(command);
-                    serverGame.doPass(command[1]);
                     server.broadcastMove(command[1],0);
                     serverGame.setNextPlayer();
                     serverGame.incrementPassCount();
-                    server.broadcastTurn(serverGame.getCurrentPlayerID());
                 }
                 break;
 

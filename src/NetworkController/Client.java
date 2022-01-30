@@ -111,7 +111,7 @@ public class Client {
                 playersNames = command[1].split("-");
                 String names = "";
                 for (int i = 0; i < playersNames.length; i++) {
-                    names = (i+1) + ". " + playersNames[i] + "\n";
+                    names += (i+1) + ". " + playersNames[i] + "\n";
                 }
                 view.showMessage("Welcome to Scrabble"
                         + "\nPlayers list: \n" + names + "\n"
@@ -133,6 +133,7 @@ public class Client {
                 break;
 
             case ProtocolMessages.TILES:
+                game.setCurrentPlayer(name);
                 String[] stringTileList  = command[1].split(ProtocolMessages.AS);
                 game.putTilesToTray(stringTileList);
                 break;

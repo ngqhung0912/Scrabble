@@ -41,10 +41,12 @@ public class ServerGame {
     }
 
     private void removeTile(String character) {
-        ArrayList<Tile> tray = serverPlayers[currentPlayer].getTray();
-        for (Tile tile : tray) {
-            if (Character.toString(tile.getLetter()).equals(character)) {
-                tray.remove(tile);
+        if (character != null) {
+            ArrayList<Tile> tray = serverPlayers[currentPlayer].getTray();
+            for (Tile tile : tray) {
+                if (Character.toString(tile.getLetter()).equals(character)) {
+                    tray.remove(tile);
+                }
             }
         }
     }
