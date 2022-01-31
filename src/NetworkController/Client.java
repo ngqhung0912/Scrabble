@@ -32,7 +32,7 @@ public class Client {
 
     public void start() throws ExitProgram, IOException, ServerUnavailableException {
         boolean running = true;
-        name = view.getString("Welcome to Scrabble!\n Please enter your name: ");
+        name = view.getString("Welcome to Scrabble!" + "\n Please enter your name: ");
 
         clearConnection();
         clientSideConnection();
@@ -99,18 +99,16 @@ public class Client {
 
         switch (command[0]){
             case ProtocolMessages.HELLO:
-                playersNames = command[1].split(" ");
-                String namesList = "";
-                for (int i = 0; i < playersNames.length; i++) {
-                    namesList += (i+1) + ". " + playersNames[i] + "\n";
-                }
-                view.showMessage("Players have connected are: \n" + namesList + "\n"
-                //+ playersList.length + ". " + nickname
-                +"\n Supported features are: " + command[2]);
+//                playersNames = command[1].split(" ");
+//                String namesList = "";
+//                for (int i = 0; i < playersNames.length; i++) {
+//                    namesList += (i+1) + ". " + playersNames[i] + "\n";
+//                }
+                view.showMessage("Hello! Bonjour! Xin chao!");
                 break;
 
             case ProtocolMessages.WELCOME:
-                view.showMessage("A new player (" + command[1] +") have joined!.");
+                view.showMessage( command[1] +" have joined!.");
                 break;
 
             case ProtocolMessages.SERVERREADY:
@@ -119,6 +117,13 @@ public class Client {
 
             case ProtocolMessages.START:
                 view.showMessage("---START---");
+                playersNames = command[1].split(AS);
+                String namesList = "";
+                for (int i = 0; i < playersNames.length; i++) {
+                    namesList += (i+1) + ". " + playersNames[i] + "\n";
+                }
+                view.showMessage("Players have connected are: \n" + namesList + "\n");
+                        //+ playersList.length + ". " + nickname);
                 game = new ClientGame(playersNames);
                 break;
 
@@ -158,6 +163,7 @@ public class Client {
                 if (command[1].equals(DUPLICATE_NAME)) {
                     view.showMessage("Name already chosen. Please choose another name and connect again " +
                             "\n Shutting down connection...");
+                    notifyClientAbort();
                     shutDown();
                 }
 //                    else if (command[1].equals(INVALID_MOVE)) {
@@ -165,7 +171,7 @@ public class Client {
 //
 //                    }
                 else if (command[1].equals(OUT_OF_TURN)) {
-                    view.showMessage("It's not your turn!");
+                    view.showMessage("Hold on! It's not your turn!");
                 }
                 else if (command[1].equals(UNRECOGNIZED)) {
                     view.showMessage("Unexpected error detected. Shutting down connection...");
