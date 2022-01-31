@@ -84,3 +84,15 @@ today was a really productive day. We got a lot of work done - and also 6 episod
 
 - is our handling of error correct? error | errorname?
 
+
+30/1/2022:
+what's left to be done:
+-Javadoc
+-Testing
+-debugging for networking and gamelogic
+-metric report
+-Academic skills
+-class diagram
+-MVC description
+-overview of functional requirements
+-time limit
