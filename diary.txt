@@ -96,3 +96,11 @@ what's left to be done:
 -MVC description
 -overview of functional requirements
 -time limit
+
+
+31/1/2022:
+
+Multithreading is not working as expected...
+
+The server calls are always seems to be earlier than the thread call, i.e. the server will broadcast gameReady
+before the threads can even say hello to its clients.
