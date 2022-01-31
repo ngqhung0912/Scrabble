@@ -43,7 +43,7 @@ public class ClientGame {
 
     public ClientGame(String[] playersNames) {
         board = new Board();
-        this.numPlayer = players.length;
+        this.numPlayer = playersNames.length;
         tileBag = new TileGenerator().generateTiles();
         usedWords = new ArrayList<>();
         checker = new InMemoryScrabbleWordChecker();
@@ -53,6 +53,7 @@ public class ClientGame {
 
         for (int id = 0; id < playersNames.length; id++) {
             ClientPlayer player = new ClientPlayer(playersNames[id], id);
+            players[id] = player;
         }
 
         for (ClientPlayer player : players) {

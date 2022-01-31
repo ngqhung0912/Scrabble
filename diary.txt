@@ -97,8 +97,8 @@ what's left to be done:
 -overview of functional requirements
 -time limit
 
-
-31/1/2022:
+31/1/2022
+- Debug in progress: Cannot remove entry from clients HashMap
 
 Multithreading is not working as expected...
 
