@@ -1,6 +1,7 @@
 package NetworkController;
 
 import View.NetworkView;
+import View.View;
 
 import java.io.*;
 
@@ -53,13 +54,19 @@ public class ClientHandler implements Runnable{
     @Override
     public void run() {
         try {
-            while (running) {
+            do {
+                String message = in.readLine();
+                view.showMessage("message from " + this.clientId + ": " + message);
+                String[] messages = message.split(ProtocolMessages.SEPARATOR);
+                handleCommand(messages);
+            }
+            while (running); {
                 server.broadcastTurn(serverGame.getCurrentPlayerID());
                 String message = in.readLine();
                 view.showMessage("message from " + this.clientId + ": " + message);
                 String[] messages = message.split(ProtocolMessages.SEPARATOR);
                 handleCommand(messages);
-                if (serverGame.gameOver()) {
+                if (gameStarted && serverGame.gameOver() ) {
                     server.broadcastWinner();
                 }
             }
@@ -74,22 +81,28 @@ public class ClientHandler implements Runnable{
         switch(command[0]) {
             case ProtocolMessages.HELLO:
                 if (command.length < 2)    {
+                    view.showMessage("Sending client unrecognized since command length too short.");
                     sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
                 }
                 else {
-                    if (!server.checkName(command[1])) sendErrorToClient(ProtocolMessages.DUPLICATE_NAME);
+                    if (!server.checkName(command[1])) {
+                        sendErrorToClient(ProtocolMessages.DUPLICATE_NAME);
+                        view.showMessage("Kicked " + this + " due to name duplication.");
+                    }
                     else {
-                        sendMessageToClient(ProtocolMessages.HELLO + ProtocolMessages.SEPARATOR +
-                                server.getJoinedPlayersName() + ProtocolMessages.SEPARATOR
-                                + server.getAcceptedFunctions());
                         setName(command[1]);
-                        if (command.length > 3) {
-                            List<String> featureList = Arrays.asList(command);
-                            for (String feature : featureList) {
-                                if (feature.equals(ProtocolMessages.CHAT_FLAG)) hasChatFunction = true;
-                                if (feature.equals(ProtocolMessages.TURN_TIME_FLAG)) hasTimeLimit = true;
-                            }
-                        } else sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
+                        List<String> featureList = Arrays.asList(command);
+                        for (String feature : featureList) {
+                            if (feature.equals(ProtocolMessages.CHAT_FLAG)) hasChatFunction = true;
+                            if (feature.equals(ProtocolMessages.TURN_TIME_FLAG)) hasTimeLimit = true;
+                        }
+
+                        String message = ProtocolMessages.HELLO + ProtocolMessages.SEPARATOR +
+                                server.getJoinedPlayersName() + ProtocolMessages.SEPARATOR
+                                + ProtocolMessages.TURN_TIME_FLAG;
+                        sendMessageToClient(message + "\n");
+                        server.broadcastWelcomeMessage(this);
+                        view.showMessage("message broadcast: " + message + " to " + this.clientId);
                     }
                 }
                 break;
@@ -122,10 +135,6 @@ public class ClientHandler implements Runnable{
                     serverGame.setNextPlayer();
                     serverGame.incrementPassCount();
                 }
-                break;
-
-            default:
-                sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
                 break;
         }
 

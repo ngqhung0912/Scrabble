@@ -38,10 +38,11 @@ public class Client {
         clientSideConnection();
         handleHello();
 
-        while (serverSock.isConnected()) {
+
+        while (true) {
             String serverCommand = readLineFromServer();
             handleServerCommand(serverCommand);
-            view.update(game);
+            if (game != null) view.update(game);
         }
 
     }
@@ -93,14 +94,15 @@ public class Client {
     }
 
     public void handleServerCommand(String serverCommand) throws IOException, ServerUnavailableException {
+        view.showMessage("Message from server: " + serverCommand);
         String[] command = serverCommand.split(ProtocolMessages.SEPARATOR);
 
         switch (command[0]){
             case ProtocolMessages.HELLO:
-                playersNames = command[1].split("-");
+                playersNames = command[1].split(" ");
                 String namesList = "";
                 for (int i = 0; i < playersNames.length; i++) {
-                    namesList = (i+1) + ". " + playersNames[i] + "\n";
+                    namesList += (i+1) + ". " + playersNames[i] + "\n";
                 }
                 view.showMessage("Players have connected are: \n" + namesList + "\n"
                 //+ playersList.length + ". " + nickname
@@ -108,15 +110,7 @@ public class Client {
                 break;
 
             case ProtocolMessages.WELCOME:
-                playersNames = command[1].split("-");
-                String names = "";
-                for (int i = 0; i < playersNames.length; i++) {
-                    names += (i+1) + ". " + playersNames[i] + "\n";
-                }
-                view.showMessage("Welcome to Scrabble"
-                        + "\nPlayers list: \n" + names + "\n"
-                        //+ completePlayerList.length + ". " + nickname
-                        +"\n Supported features are: " + command[2]);
+                view.showMessage("A new player (" + command[1] +") have joined!.");
                 break;
 
             case ProtocolMessages.SERVERREADY:
@@ -202,7 +196,9 @@ public class Client {
         if (in != null) {
             try {
                 // Read and return answer from Server
-                String answer = in.readLine();
+                String answer= in.readLine();
+
+                view.showMessage("the code is here ");
                 if (answer == null) {
                     throw new ServerUnavailableException("Server not detected.");
                 }
@@ -241,7 +237,7 @@ public class Client {
     public void handleHello() {
         try {
             String answer = ProtocolMessages.HELLO + ProtocolMessages.SEPARATOR + name
-                    + ProtocolMessages.SEPARATOR + ProtocolMessages.TURN_TIME_FLAG;
+                    + ProtocolMessages.SEPARATOR + ProtocolMessages.TURN_TIME_FLAG + "\n";
             sendMessage(answer);
         }
         catch (ServerUnavailableException e) {
@@ -253,12 +249,12 @@ public class Client {
         boolean answer = view.getBoolean("The game is ready to start. Do you want to start now? " +
                 "\n Enter \"Y\" to start or \"N\" to abort");
         String command = (answer == true) ?  ProtocolMessages.CLIENTREADY + ProtocolMessages.SEPARATOR + name
-                : ProtocolMessages.ABORT;
+                : ProtocolMessages.ABORT+ "\n";
         sendMessage(command);
     }
 
     public void notifyClientAbort() throws ServerUnavailableException {
-        String message = ProtocolMessages.ABORT + ProtocolMessages.SEPARATOR + name;
+        String message = ProtocolMessages.ABORT + ProtocolMessages.SEPARATOR + name+ "\n";
         sendMessage(message);
     }
 
@@ -266,21 +262,21 @@ public class Client {
         String[] clientMoves = game.getCurrentPlayer().determineMove(moves.split(ProtocolMessages.AS));
 
         if (clientMoves[0].equals("SWAP")) {
-            if (clientMoves.length > 1) doPassWithTiles(clientMoves[1]);
-            else {sendMessage(ProtocolMessages.PASS);}
+            if (clientMoves.length > 1) doPassWithTiles(clientMoves[1]+ "\n");
+            else {sendMessage(ProtocolMessages.PASS+ "\n");}
         }
         else {
             String message = (game.makeMove(clientMoves)) ?
                     ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR + game.sendMoveToServer(clientMoves)
-                    + ProtocolMessages.SEPARATOR + game.getCurrentPlayer().getTotalPoints()
-                    : ProtocolMessages.PASS;
+                    + ProtocolMessages.SEPARATOR + game.getCurrentPlayer().getTotalPoints()+ "\n"
+                    : ProtocolMessages.PASS+ "\n";
             sendMessage(message);
         }
     }
 
     public void doPassWithTiles(String swapTiles) throws ServerUnavailableException {
         String message = ProtocolMessages.PASS + ProtocolMessages.SEPARATOR + swapTiles;
-        sendMessage(message);
+        sendMessage(message+ "\n");
     }
 
 
