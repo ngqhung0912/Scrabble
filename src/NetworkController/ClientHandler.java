@@ -3,11 +3,14 @@ package NetworkController;
 import View.NetworkView;
 import View.View;
 
+import javax.crypto.KeyAgreement;
 import java.io.*;
 
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientHandler implements Runnable{
     //public static ArrayList<ClientHandler> clientHandlers;
@@ -24,22 +27,24 @@ public class ClientHandler implements Runnable{
     private boolean hasTimeLimit;
     private boolean isReady;
     private ServerGame serverGame;
+    private Lock lock;
 
 
 
-    public ClientHandler(Socket socket, Server server, int id){
+    public ClientHandler(Socket socket, Server server, int id ){
         try {
             this.socket = socket;
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.server = server;
-            this.clientId = id;
             this.view = new NetworkView();
             this.hasTimeLimit = false;
             this.running = true;
             this.hasChatFunction = false;
             this.isReady = false;
             this.serverGame = server.serverGame;
+            lock = new ReentrantLock();
+            this.clientId = id;
         } catch (IOException e) {
             shutDown();
         }
@@ -55,17 +60,22 @@ public class ClientHandler implements Runnable{
     public void run() {
         try {
             do {
-                String message = in.readLine();
-                view.showMessage("message from " + this.clientId + ": " + message);
-                String[] messages = message.split(ProtocolMessages.SEPARATOR);
-                handleCommand(messages);
+                String message;
+                if ((message = in.readLine()) != null) {
+                    view.showMessage("message from " + this.clientId + ": " + message);
+                    String[] messages = message.split(ProtocolMessages.SEPARATOR);
+                    handleCommand(messages);
+                }
             }
             while (running); {
                 server.broadcastTurn(serverGame.getCurrentPlayerID());
-                String message = in.readLine();
+                String message;
+                if ((message = in.readLine()) != null) message = in.readLine();
+
                 view.showMessage("message from " + this.clientId + ": " + message);
                 String[] messages = message.split(ProtocolMessages.SEPARATOR);
                 handleCommand(messages);
+
                 if (gameStarted && serverGame.gameOver() ) {
                     server.broadcastWinner();
                 }
@@ -77,17 +87,19 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    public void handleCommand(String[] command) throws IOException {
+    public synchronized void handleCommand(String[] command) throws IOException {
         switch(command[0]) {
             case ProtocolMessages.HELLO:
                 if (command.length < 2)    {
                     view.showMessage("Sending client unrecognized since command length too short.");
                     sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
+                    shutDown();
                 }
                 else {
                     if (!server.checkName(command[1])) {
+                        view.showMessage("Kicked " + this.clientId + " due to name duplication.");
                         sendErrorToClient(ProtocolMessages.DUPLICATE_NAME);
-                        view.showMessage("Kicked " + this + " due to name duplication.");
+                        shutDown();
                     }
                     else {
                         setName(command[1]);
@@ -101,8 +113,8 @@ public class ClientHandler implements Runnable{
                                 server.getJoinedPlayersName() + ProtocolMessages.SEPARATOR
                                 + ProtocolMessages.TURN_TIME_FLAG;
                         sendMessageToClient(message + "\n");
-                        server.broadcastWelcomeMessage(this);
                         view.showMessage("message broadcast: " + message + " to " + this.clientId);
+                        server.broadcastWelcomeMessage(this);
                     }
                 }
                 break;
@@ -163,6 +175,8 @@ public class ClientHandler implements Runnable{
     public String toString() {
         return clientName;
     }
+
+    protected void setID(int id) { this.clientId = id;}
 
     protected void sendMessageToClient(String message) {
         try {

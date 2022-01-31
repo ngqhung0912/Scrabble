@@ -34,9 +34,10 @@ public class ServerGame {
         playersScoreCount = new HashMap<>();
         serverPlayers = new ServerPlayer[numPlayer];
 
-        for (int i = 0; i < numPlayer; i++) {
-            ClientHandler client = server.getClients().get(i);
+        for (ClientHandler client : server.getClients().values()) {
+            int i = 0;
             serverPlayers[i] = new ServerPlayer(client.toString(), client.getClientId());
+            i++;
         }
     }
 
@@ -161,13 +162,15 @@ public class ServerGame {
     }
 
     protected int getCurrentPlayerID() {
-        return currentPlayer;
+        return serverPlayers[currentPlayer].getId();
     }
 
     protected ServerPlayer getCurrentPlayer() { return serverPlayers[currentPlayer];}
 
     protected ServerPlayer getPlayerByID(int id) {
-        return serverPlayers[id];
+        for (ServerPlayer serverPlayer : serverPlayers) {
+            if (serverPlayer.getId() == id) return serverPlayer;
+        }
+        return null;
     }
-
 }

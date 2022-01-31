@@ -110,7 +110,7 @@ public class Client {
                 break;
 
             case ProtocolMessages.WELCOME:
-                view.showMessage("A new player (" + command[1] +") have joined!.");
+                view.showMessage( command[1] + " has just joined!.");
                 break;
 
             case ProtocolMessages.SERVERREADY:
@@ -158,6 +158,7 @@ public class Client {
                 if (command[1].equals(DUPLICATE_NAME)) {
                     view.showMessage("Name already chosen. Please choose another name and connect again " +
                             "\n Shutting down connection...");
+                    notifyClientAbort();
                     shutDown();
                 }
 //                    else if (command[1].equals(INVALID_MOVE)) {
@@ -197,8 +198,6 @@ public class Client {
             try {
                 // Read and return answer from Server
                 String answer= in.readLine();
-
-                view.showMessage("the code is here ");
                 if (answer == null) {
                     throw new ServerUnavailableException("Server not detected.");
                 }
