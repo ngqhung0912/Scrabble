@@ -108,8 +108,6 @@ public class Board {
         return getSquare(x, y);
     }
 
-
-
     public Square getSquareAbove(Square currentSquare){
         int x = currentSquare.getxPosition();
         int y = currentSquare.getyPosition();
