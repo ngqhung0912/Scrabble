@@ -66,21 +66,13 @@ public class ClientHandler implements Runnable{
                     view.showMessage("message from " + this.clientId + ": " + message);
                     String[] messages = message.split(ProtocolMessages.SEPARATOR);
                     handleCommand(messages);
+                    if (gameStarted && serverGame.gameOver() ) {
+                        server.broadcastWinner();
+                    }
                 }
             }
-            while (running); {
-                String message;
-                if (in.readLine() != null) {
-                    message = in.readLine();
-                    view.showMessage("message from " + this.clientId + ": " + message);
-                    String[] messages = message.split(ProtocolMessages.SEPARATOR);
-                    handleCommand(messages);
-                }
+            while (running);
 
-                if (gameStarted && serverGame.gameOver() ) {
-                    server.broadcastWinner();
-                }
-            }
         } catch (IOException e) {
             e.printStackTrace();
             shutDown();

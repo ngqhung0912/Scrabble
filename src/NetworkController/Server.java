@@ -139,6 +139,7 @@ public class Server implements Runnable{
                 break;
             }
         }
+
         ArrayList<ClientHandler> removeClient = new ArrayList<>();
         for (ClientHandler client : clients.values()) {
             view.showMessage("Current client: " + client + client.getClientId());
