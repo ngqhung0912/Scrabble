@@ -144,7 +144,7 @@ public class ClientGame {
      */
     protected void putTilesToTray(String[] stringTileList) {
         for(String stringTile: stringTileList) {
-            Tile tile = determineTileFromChar(stringTile.charAt(0));
+            Tile tile = determineTileFromString(stringTile);
             players[currentPlayer].getTray().add(tile);
         }
     }
@@ -178,18 +178,18 @@ public class ClientGame {
         Map<String, String> letterToSquare = new HashMap<>();
         for (String letterAndSquareIndex: move) {
             int length = letterAndSquareIndex.length();
-            String letter = Character.toString(letterAndSquareIndex.charAt(0));
+            String letter = (letterAndSquareIndex.charAt(0) == '-') ? Character.toString(letterAndSquareIndex.charAt(1)) :
+                    Character.toString(letterAndSquareIndex.charAt(0));
             int index = (length == 2) ? letterAndSquareIndex.charAt(1)
                     : (length == 3) ? letterAndSquareIndex.charAt(1) + letterAndSquareIndex.charAt(2)
                     : letterAndSquareIndex.charAt(1) + letterAndSquareIndex.charAt(2) + letterAndSquareIndex.charAt(3);
 
             String indexSquare = Integer.toString(index);
-
             letterToSquare.put(indexSquare, letter);
         }
 
         for(Map.Entry<String, String> entry: letterToSquare.entrySet()) {
-            Tile tile = determineTileFromChar(entry.getValue().charAt(0));
+            Tile tile = determineTileFromString(entry.getValue());
             String indexFormatSquare = entry.getKey();
             Square square = board.getSquare(Integer.parseInt(indexFormatSquare));
             square.setTile(tile);
@@ -203,9 +203,10 @@ public class ClientGame {
     public String sendMoveToServer(String[] clientMoves) {
         String move = "";
         for (String clientMove: clientMoves) {
-            String[] letterAndSquareCoordinate = clientMove.split("-");
+            String[] letterAndSquareCoordinate = clientMove.split(".");
             String letter = letterAndSquareCoordinate[0];
             String squarePosition = getStringSquareIndex(letterAndSquareCoordinate[1]);
+            move += (letter+squarePosition + " ");
         }
 
         return move;
@@ -256,28 +257,16 @@ public class ClientGame {
         return letterToSquare;
     }
 
-    private Tile determineTileFromChar(char character) {
-        ArrayList<Tile> tray = players[currentPlayer].getTray();
-        for (Tile tile: tray){
-            if (character == '#' && character == tile.getLetter() ) {
-                String prompt = "Please choose one of the letters below:\n"
-                        + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n";
-                try{
-//                    char input = UI.getChar(prompt);
-//                    tile.setLetter(input);
-                    return tile;
-
-                } catch (IllegalArgumentException e) {
-                    return null;
-//                } catch (IOException e) {
-//                    return null;
-                }
-            }
-            else if (tile.getLetter() == character) {
-                return tile;
-            }
+    private Tile determineTileFromString(String letter) {
+        //To be re-implemented
+        if (letter.contains("-")) {
+           char blankLetter = letter.charAt(1);
+           Tile tile = new Tile(blankLetter, 0);
+           return tile;
         }
-        return null;
+
+        return new Tile(letter.charAt(0), 0);
+
     }
 
     private  ArrayList<ArrayList<Square>> determinePossibleWordCombinations(ArrayList<Square> inputWord, String direction, Board copyBoard) {
@@ -405,7 +394,7 @@ public class ClientGame {
         for (Map.Entry<String, String> move : moves.entrySet()) {
             char character = move.getValue().toCharArray()[0];
             Square location = copyBoard.getSquare(move.getKey());
-            Tile tile = determineTileFromChar(character);
+            Tile tile = determineTileFromString(Character.toString(character));
             if (tile == null) {
                 return null;
             }

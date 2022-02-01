@@ -38,7 +38,6 @@ public class Client {
         clientSideConnection();
         handleHello();
 
-
         while (true) {
             String serverCommand = readLineFromServer();
             handleServerCommand(serverCommand);
@@ -76,10 +75,14 @@ public class Client {
 
     public void handleUserInput() throws IOException, ServerUnavailableException {
         String prompt = "It's your turn. " + "\nInput format: If you want to put a words, " +
-                "\nfor example DOG into the board," +
-                "\nin the square A1, A2 and A3 , write your move as: MOVE D-A1 O-A2 G-A3" +
-                "\ntype SWAP to SWAP one or more letter(s) in your tray." +
-                "\nor SWAP with no argument to pass your turn." +
+                "for example DOG into the board," +
+                "\nin the square A1, A2 and A3 , write your move as: MOVE D.A1 O.A2 G.A3" +
+                "\nThe symbol \"-\" represents a blank tile, to determine a letter for the blank tile," +
+                "\nchoose one of the letters below: " +
+                "\nA B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n" +
+                "\nthen write: MOVE -D.A1 O.A2 G.A3" +
+                "\nType SWAP to SWAP one or more letter(s) in your tray." +
+                "or SWAP with no argument to pass your turn." +
                 "\nTo quit the game, type ABORT";
 
        view.showMessage(prompt);
@@ -87,8 +90,18 @@ public class Client {
 
        while (true) {
            String input = clientPrinter.readLine();
-           if (input != null && input.contains("ABORT")) notifyClientAbort();
-           else if(input != null && input.contains("MOVE")) doMove(input);
+           String[] clientMoves = game.getCurrentPlayer().determineMove(input.split(ProtocolMessages.AS));
+
+           if (input != null) {
+               if(input.contains("MOVE")) {doMove(clientMoves);}
+
+               else if (input.contains("SWAP")) {
+                   if (clientMoves.length > 1) doSwapWithTiles(clientMoves[1]+ "\n");
+                   else {sendMessage(ProtocolMessages.PASS+ "\n");}
+               }
+
+               else if (input.contains("ABORT")) {notifyClientAbort();}
+           }
        }
 
     }
@@ -140,7 +153,7 @@ public class Client {
             case ProtocolMessages.TURN:
                 game.setCurrentPlayer(command[1]);
 
-                if(name.equals(game.getCurrentPlayer().getName())) handleUserInput();
+                if(name.equals(command[1])) handleUserInput();
                 else {view.showMessage("It's currently " + command[1] + "'s turn");}
                 break;
 
@@ -151,7 +164,9 @@ public class Client {
                 break;
 
             case ProtocolMessages.PASS:
-                view.showMessage("Player " + command[1] + " has passed the turn");
+                if (command[1].equals(name)) {view.showMessage("You just passed your turn");}
+                else {view.showMessage("Player " + command[1] + " has passed the turn");}
+
                 break;
 
             case ProtocolMessages.GAMEOVER:
@@ -262,23 +277,17 @@ public class Client {
         sendMessage(message);
     }
 
-    public void doMove(String moves) throws IOException, ServerUnavailableException {
-        String[] clientMoves = game.getCurrentPlayer().determineMove(moves.split(ProtocolMessages.AS));
+    public void doMove(String[] clientMoves) throws IOException, ServerUnavailableException {
+        String[] clientInput = game.getCurrentPlayer().determineMove(clientMoves);
 
-        if (clientMoves[0].equals("SWAP")) {
-            if (clientMoves.length > 1) doPassWithTiles(clientMoves[1]+ "\n");
-            else {sendMessage(ProtocolMessages.PASS+ "\n");}
-        }
-        else {
-            String message = (game.makeMove(clientMoves)) ?
-                    ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR + game.sendMoveToServer(clientMoves)
-                    + ProtocolMessages.SEPARATOR + game.getCurrentPlayer().getTotalPoints()+ "\n"
-                    : ProtocolMessages.PASS+ "\n";
-            sendMessage(message);
-        }
+        String message = //(game.makeMove(clientMoves)) ?
+                ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR + game.sendMoveToServer(clientMoves)
+                + ProtocolMessages.SEPARATOR + game.getCurrentPlayer().getTotalPoints(); //+ "\n"
+                //: ProtocolMessages.PASS+ "\n";
+        sendMessage(message);
     }
 
-    public void doPassWithTiles(String swapTiles) throws ServerUnavailableException {
+    public void doSwapWithTiles(String swapTiles) throws ServerUnavailableException {
         String message = ProtocolMessages.PASS + ProtocolMessages.SEPARATOR + swapTiles;
         sendMessage(message+ "\n");
     }

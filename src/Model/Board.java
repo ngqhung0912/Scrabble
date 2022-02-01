@@ -86,7 +86,7 @@ public class Board {
     }
 
     public Square getSquare(int i) {
-        return i < 225 ? getSquare(i / 15,i % 15 ) : null;
+        return i < 225 ? getSquare(i % 15,i / 15 ) : null;
     }
 
     public Square getSquare(int x, int y){

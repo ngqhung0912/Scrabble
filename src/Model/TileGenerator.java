@@ -39,8 +39,6 @@ public class TileGenerator {
         input.add(new TileDescription('Z',1,10));
 
 
-
-
         /**
          * @invariant initialCapacity == 100
          */

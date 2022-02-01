@@ -1,0 +1,53 @@
+package Test;
+
+import Model.Square;
+import Model.SquareType;
+import Model.Tile;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class SquareTest {
+    private Square normalSquare;
+    private Square centerSquare;
+    private Tile tile;
+    @BeforeEach
+    void setUp() {
+        normalSquare = new Square(SquareType.NORMAL, 10, 5);
+        centerSquare = new Square(SquareType.CENTER, 7, 7);
+        tile = new Tile('A', 1);
+    }
+
+    @Test
+    void testGetType() {
+        assertEquals(normalSquare.getType(), SquareType.NORMAL);
+        assertEquals(centerSquare.getType(), SquareType.CENTER);
+    }
+
+    @Test
+    void testSetandGetTile() {
+        assertNull(normalSquare.getTile());
+        normalSquare.setTile(tile);
+        assertEquals(normalSquare.getTile(), tile);
+    }
+
+    @Test
+    void testGetxPosition() {
+        assertEquals(normalSquare.getxPosition(), 10);
+        assertEquals(centerSquare.getxPosition(), 7);
+    }
+
+    @Test
+    void testGetyPosition() {
+        assertEquals(normalSquare.getyPosition(), 5);
+        assertEquals(centerSquare.getyPosition(), 7);
+    }
+
+    @Test
+    void testHasTile() {
+        assertFalse(normalSquare.hasTile());
+        normalSquare.setTile(tile);
+        assertTrue(normalSquare.hasTile());
+    }
+}
