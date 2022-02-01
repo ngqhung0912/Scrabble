@@ -13,6 +13,16 @@ public class Tile {
     private boolean isBlank;
 
     /**
+     * Constructor for tiles
+     * @param letter the letter the tile represents.
+     * @param point the points that letter has.
+     */
+    public Tile(char letter, int point)   {
+        this.letter = letter;
+        this.point = point;
+    }
+
+    /**
      * getLetter function
      * @return the letter that the tile represents, in char.
      */
@@ -28,15 +38,7 @@ public class Tile {
         return point;
     }
 
-    /**
-     * Constructor for tiles
-     * @param letter the letter the tile represents.
-     * @param point the points that letter has.
-     */
-    public Tile(char letter, int point)   {
-        this.letter = letter;
-        this.point = point;
-    }
+
 
     public void setLetter(char letter) {
         this.letter = letter;
