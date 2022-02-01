@@ -337,11 +337,6 @@ public class Game {
         return true;
     }
 
-    private String getWordFromSquareList(ArrayList<Square> squares) {
-        String word = "";
-        for (Square square : squares)  word +=square.getTile().getLetter();
-        return word;
-    }
 
     private  ArrayList<ArrayList<Square>> determinePossibleWordCombinations(ArrayList<Square> inputWord, String direction, Board copyBoard) {
         Square startingPosition = inputWord.get(0);
