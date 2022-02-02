@@ -22,8 +22,6 @@ public class ClientPlayer extends Player {
         String[] moveTiles = new String[move.length - 1];
         System.arraycopy(move, 1, moveTiles, 0, move.length - 1);
 
-
-
         return moveTiles;
     }
 

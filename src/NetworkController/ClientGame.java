@@ -52,8 +52,12 @@ public class ClientGame {
         }
     }
 
-
-
+    /**
+     * @requires player is not null
+     * put assigned Tiles to each player's tray
+     * @param stringTileList The list of new tiles assigned to the currentPlayer
+     *
+     */
     protected void putTilesToTray(String[] stringTileList) {
         for(String stringTile: stringTileList) {
             Tile tile = determineTileFromServer(stringTile);
@@ -95,7 +99,7 @@ public class ClientGame {
     }
 
     protected void setOpponentPoints (int points) {
-        players[currentPlayer].addPoints(points);
+        getCurrentPlayer().addPoints(points);
     }
 
     public String sendMoveToServer(String[] clientMoves) {
@@ -114,8 +118,7 @@ public class ClientGame {
         Square square = board.getSquare(coordinate);
         int xPosition = square.getxPosition();
         int yPosition = square.getyPosition();
-        String index = Integer.toString((yPosition * 15) + xPosition);
-        return index;
+        return Integer.toString((yPosition * 15) + xPosition);
     }
 
     /**
@@ -129,30 +132,31 @@ public class ClientGame {
         return letterTray;
     }
 
-    private LinkedHashMap<String, String> mapLetterToSquare(String[] move){
-        LinkedHashMap<String , String > letterToSquare = new LinkedHashMap<>();
-        for (int i = 0; i < move.length; i++) {
-            String[] letterSquarePair = move[i].split("-");
-            if (letterSquarePair.length < 2) {
-                return null;
-            }
-            String[] coordinate = letterSquarePair[1].split("");
-            if (coordinate.length > 3) {
-                System.out.println("Coordinate's length should not be greater than 3.");
-                return null;
-            }
-            for (int j = 1; j < coordinate.length; j++) {
-                try {
-                    Integer.parseInt(coordinate[j]);
-                } catch (NumberFormatException e) {
-                    System.out.println("Wrong input format. Move should be D-H7 O-H8 G-H9 and so on.");
-                    return null;
-                }
-            }
-            letterToSquare.put(letterSquarePair[1], letterSquarePair[0]);
-        }
-        return letterToSquare;
-    }
+
+//    private LinkedHashMap<String, String> mapLetterToSquare(String[] move){
+//        LinkedHashMap<String , String > letterToSquare = new LinkedHashMap<>();
+//        for (int i = 0; i < move.length; i++) {
+//            String[] letterSquarePair = move[i].split("-");
+//            if (letterSquarePair.length < 2) {
+//                return null;
+//            }
+//            String[] coordinate = letterSquarePair[1].split("");
+//            if (coordinate.length > 3) {
+//                System.out.println("Coordinate's length should not be greater than 3.");
+//                return null;
+//            }
+//            for (int j = 1; j < coordinate.length; j++) {
+//                try {
+//                    Integer.parseInt(coordinate[j]);
+//                } catch (NumberFormatException e) {
+//                    System.out.println("Wrong input format. Move should be D-H7 O-H8 G-H9 and so on.");
+//                    return null;
+//                }
+//            }
+//            letterToSquare.put(letterSquarePair[1], letterSquarePair[0]);
+//        }
+//        return letterToSquare;
+//    }
 
     private Tile determineTileFromInput(String letter) {
         //To be re-implemented
