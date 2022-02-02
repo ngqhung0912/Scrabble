@@ -11,9 +11,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import View.NetworkView;
 
-public class Server implements Runnable{
+public class Server implements Runnable {
     private ServerSocket serverSocket;
-    private ConcurrentHashMap<Integer,ClientHandler> clients;
+    private ConcurrentHashMap<Integer, ClientHandler> clients;
     private int numPlayers;
     private NetworkView view;
     private int clientID;
@@ -23,7 +23,7 @@ public class Server implements Runnable{
     private Lock lock;
 
 
-    public Server(ServerSocket ss){
+    public Server(ServerSocket ss) {
         clients = new ConcurrentHashMap<>();
         view = new NetworkView();
         this.serverSocket = ss;
@@ -43,18 +43,18 @@ public class Server implements Runnable{
     public void removeClient(ClientHandler removedClient) {
         try {
             lock.lock();
-                clients.remove(removedClient.getClientId());
+            clients.remove(removedClient.getClientId());
         } finally {
             lock.unlock();
         }
         String message = "Current clients are:";
         for (ClientHandler client : clients.values()) {
-            message +=  " " + client;
+            message += " " + client;
         }
         view.showMessage(message);
     }
 
-    private boolean checkHasTimeLimit() {
+    public boolean checkHasTimeLimit() {
         for (ClientHandler client : clients.values()) {
             if (!client.hasTimeLimit()) return false;
         }
@@ -93,26 +93,30 @@ public class Server implements Runnable{
 
     @Override
     public synchronized void run() {
+        Thread gameThread = new Thread(new GameThread(this));
+        gameThread.start();
+
         while (true) {
             try {
                 view.showMessage("Waiting for connection...");
                 Socket clientSocket = serverSocket.accept();
                 view.showMessage("Player " + clientID + " has connected!!!");
 
-                ClientHandler client = new ClientHandler(clientSocket,this, clientID);
+                ClientHandler client = new ClientHandler(clientSocket, this, clientID);
                 Thread clientThread = new Thread(client);
                 clientThread.start();
+                Thread.sleep(200);
                 clientID++;
                 // if enough client then start game
-                numPlayers = clients.size();
-                if (numPlayers == 4) {
-                    // broadcast welcome message
-                    timeLimitFeature = checkHasTimeLimit();
-                    wait(2000);
-                    view.showMessage("Enough players. Let's get ready!");
-                    broadcastServerReady();
-                    play();
-                }
+//                numPlayers = clients.size();
+//                if (numPlayers == 4) {
+//                    // broadcast welcome message
+//                    timeLimitFeature = checkHasTimeLimit();
+//                    wait(2000);
+//                    view.showMessage("Enough players. Let's get ready!");
+//                    broadcastServerReady();
+//                    play();
+//                }
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
                 for (ClientHandler client : clients.values()) {
@@ -122,7 +126,43 @@ public class Server implements Runnable{
         }
     }
 
-    protected ConcurrentHashMap<Integer, ClientHandler> getClients() { return clients; }
+
+    public class GameThread implements Runnable {
+
+        private Server server;
+
+        public GameThread(Server server) {
+            this.server = server;
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    int numPlayers = server.getClients().size();
+
+                    if (numPlayers == 4) {
+                        // broadcast welcome message
+                        timeLimitFeature = checkHasTimeLimit();
+//                        wait(2000);
+                        view.showMessage("Enough players. Let's get ready!");
+                        broadcastServerReady();
+                        play();
+                    }
+                } catch (IOException | InterruptedException e) {
+                    e.printStackTrace();
+                    for (ClientHandler client : clients.values()) {
+                        client.sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
+                    }
+                }
+
+            }
+        }
+    }
+
+    protected ConcurrentHashMap<Integer, ClientHandler> getClients() {
+        return clients;
+    }
 
     public void play() throws IOException, InterruptedException {
         while (!checkReadyStatus()) {
@@ -150,47 +190,34 @@ public class Server implements Runnable{
         }
 
         for (ClientHandler client : removeClient) {
-            boolean removed =  clients.remove(client.getClientId(),client);
-            view.showMessage("client " + client.getClientId() + "/" +  client + " has been removed - " + removed );
+            boolean removed = clients.remove(client.getClientId(), client);
+            view.showMessage("client " + client.getClientId() + "/" + client + " has been removed - " + removed);
         }
 
         view.showMessage("Game started with: " + clients.size() + " clients.");
         serverGame = new ServerGame(this);
         broadcastStartGame();
         gameStart = true;
+        serverGame.start();
 
-        while (gameStart) {
-            if (serverGame.getCurrentPlayer().isAborted()) {
-                broadcastPass();
-            } else {
-                ClientHandler currentClient = clients.get(serverGame.getCurrentPlayerID());
-                broadcastTurn(currentClient);
-                broadcastTiles(currentClient, serverGame.addNewTilesToTray(currentClient.getClientId()));
-            }
-            // then clientHandler handle moves
-            // clientHandler then broadcast the move to all other clients.
-            // then clientHandler call server to send new tiles to current player.
-            // then next turn.
-            serverGame.setNextPlayer();
-        }
     }
 
-    protected void broadcastAbort(ClientHandler abortedClient){
+    protected void broadcastAbort(ClientHandler abortedClient) {
         for (ClientHandler client : clients.values()) {
             if (client.getClientId() != abortedClient.getClientId()) {
                 client.sendMessageToClient(ProtocolMessages.ABORT + ProtocolMessages.SEPARATOR + abortedClient.toString() + "\n");
-                view.showMessage("message broadcast: "+ abortedClient.getClientId() + " has aborted "  + " to " + client.getClientId() );
+                view.showMessage("message broadcast: " + abortedClient.getClientId() + " has aborted " + " to " + client.getClientId());
 
             }
         }
     }
 
     protected void broadcastWelcomeMessage(ClientHandler newlyJoined) {
-        String message = ProtocolMessages.WELCOME + ProtocolMessages.SEPARATOR + newlyJoined.toString()  ;
+        String message = ProtocolMessages.WELCOME + ProtocolMessages.SEPARATOR + newlyJoined.toString();
         if (newlyJoined.hasTimeLimit()) message += ProtocolMessages.SEPARATOR + ProtocolMessages.TURN_TIME_FLAG;
         for (ClientHandler client : clients.values()) {
-            client.sendMessageToClient(message+ "\n");
-            view.showMessage("message broadcast: " + message + " to " + client.getClientId() );
+            client.sendMessageToClient(message + "\n");
+            view.showMessage("message broadcast: " + message + " to " + client.getClientId());
         }
     }
 
@@ -206,7 +233,7 @@ public class Server implements Runnable{
         }
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(message + "\n");
-            view.showMessage("message broadcast: " + message + " to " + client.getClientId() );
+            view.showMessage("message broadcast: " + message + " to " + client.getClientId());
         }
     }
 
@@ -214,7 +241,7 @@ public class Server implements Runnable{
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.START + ProtocolMessages.SEPARATOR +
                     client + ProtocolMessages.AS + "\n");
-            view.showMessage("message broadcast: Start game" + " to " + client.getClientId() );
+            view.showMessage("message broadcast: Start game" + " to " + client.getClientId());
             String tiles = serverGame.addNewTilesToTray(client.getClientId());
             broadcastTiles(client, tiles);
         }
@@ -228,31 +255,33 @@ public class Server implements Runnable{
     }
 
     protected void broadcastMove(String move, int score) {
-        for (ClientHandler client: clients.values()) {
+        for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR +
                     clients.get(serverGame.getCurrentPlayerID()) + ProtocolMessages.SEPARATOR +
-                    move + ProtocolMessages.SEPARATOR + score+ "\n");
-            view.showMessage("message broadcast: moved "  + " to " + client.getClientId());
+                    move + ProtocolMessages.SEPARATOR + score + "\n");
+            view.showMessage("message broadcast: moved " + " to " + client.getClientId());
         }
     }
 
     protected void broadcastPass() {
-        for (ClientHandler client: clients.values()) {
+        for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.PASS + ProtocolMessages.SEPARATOR +
                     clients.get(serverGame.getCurrentPlayerID()) + "\n");
         }
     }
 
-    protected void broadcastWinner () {
+    protected void broadcastWinner() {
         ServerPlayer winner = serverGame.isWinner();
         for (ClientHandler client : clients.values()) {
-            client.sendMessageToClient(ProtocolMessages.GAMEOVER + ProtocolMessages.SEPARATOR + winner.getName()+ "\n");
-            view.showMessage("message broadcast: winner "  + " to " + client.getClientId()  );
+            client.sendMessageToClient(ProtocolMessages.GAMEOVER + ProtocolMessages.SEPARATOR + winner.getName() + "\n");
+            view.showMessage("message broadcast: winner " + " to " + client.getClientId());
 
         }
     }
 
-    protected boolean getGameState() { return gameStart;}
+    protected boolean getGameState() {
+        return gameStart;
+    }
 
     public static void main(String[] args) throws IOException {
         Server server = new Server(new ServerSocket(8888));
@@ -261,5 +290,3 @@ public class Server implements Runnable{
     }
 
 }
-
-

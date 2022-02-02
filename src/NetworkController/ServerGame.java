@@ -1,6 +1,7 @@
 package NetworkController;
 
 import Model.*;
+import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
 
 import java.util.*;
@@ -15,7 +16,6 @@ public class ServerGame {
     private int numPlayer;
     private ServerPlayer[] serverPlayers;
     private ScrabbleWordChecker checker;
-    private List<Square> occupiedSquares;
     private List<Square> nextValidSquares;
     private ArrayList<String> usedWords;
     private int turnScore;
@@ -34,14 +34,13 @@ public class ServerGame {
         numPlayer = server.getClients().size();
         serverPlayers = new ServerPlayer[numPlayer];
         usedWords = new ArrayList<>();
-        occupiedSquares = new ArrayList<>();
         nextValidSquares = new ArrayList<>();
         currentPlayer = 0;
         passCount = 0;
         turnScore = 0;
-
+        checker = new InMemoryScrabbleWordChecker();
+        int i = 0;
         for (ClientHandler client : server.getClients().values()) {
-            int i = 0;
             serverPlayers[i] = new ServerPlayer(client.toString(), client.getClientId());
             i++;
         }
@@ -127,7 +126,10 @@ public class ServerGame {
         return true;
     }
 
-    protected int setNextPlayer() { return currentPlayer < numPlayer-1 ? currentPlayer++ : 0; }
+    protected int setNextPlayer() {
+        currentPlayer = currentPlayer < numPlayer-1 ? currentPlayer+1 : 0;
+        return currentPlayer;
+    }
 
     protected void resetPassCount() {
         this.passCount = 0;
@@ -330,6 +332,7 @@ public class ServerGame {
             Square currentPosition = startingPosition;
             initialWord.add(startingPosition);
 
+            List<Square> occupiedSquares = getOccupiedSquare(copyBoard,inputWord);
             for (Square square : occupiedSquares) {
                 if (currentPosition.getLocation().equals(square.getLocation())) {
                     startingPosition = direction.equals("H") ? copyBoard.getSquareRight(startingPosition)
@@ -490,18 +493,28 @@ public class ServerGame {
 
     }
 
-    private static List<Square> getNextValidSquares(List<Square> playSquares, String direction, Board copyBoard) {
-        List<Square> occupiedSquares = new ArrayList<>();
-        List<Square> nextValidSquares = new ArrayList<>();
-
-        for (int i = 0; i < (copyBoard.SIZE * copyBoard.SIZE) ; i++) {
-            if(copyBoard.getSquare(i).hasTile()) occupiedSquares.add(copyBoard.getSquare(i));
+    private boolean isValidPlacement(List<Square> playSquares, String direction, Board copyBoard){
+        getNextValidSquares(playSquares, direction, copyBoard);
+        Square centralSquare = copyBoard.getSquare("H7");
+        if (usedWords.size() == 0 && playSquares.contains(centralSquare)) return true;
+        for (Square playSquare: playSquares){
+            if (usedWords.size() != 0) {
+                for (Square validSquare : nextValidSquares) {
+                    if (validSquare.getLocation().equals(playSquare.getLocation())) return true;
+                }
+            }
         }
+//        UI.showMessage("Invalid placement. In the first round, player has to put one tile on H7 square.\n" +
+//                "During the remaining game, at least one tile placed by the player has to connect to one of the tiles on the board.");
+        return false;
+    }
 
-        for (Square square : playSquares) {
-            occupiedSquares.remove(square);
-        }
-        if (occupiedSquares.size() == 0) return null;
+    private  void getNextValidSquares(List<Square> playSquares, String direction, Board copyBoard) {
+        List<Square> occupiedSquares = getOccupiedSquare(copyBoard,playSquares);
+//        List<Square> nextValidSquares = new ArrayList<>();
+
+//        if (occupiedSquares.size() == 0) return null;
+
         for (int i = 0; i < playSquares.size(); i++) {
             Square currentSquare = playSquares.get(i);
             try {
@@ -539,24 +552,37 @@ public class ServerGame {
             }
 
         }
-        return nextValidSquares;
-
+//        return nextValidSquares;
     }
 
-    private boolean isValidPlacement(List<Square> playSquares, String direction, Board copyBoard){
-        nextValidSquares = getNextValidSquares(playSquares, direction, copyBoard);
-        Square centralSquare = copyBoard.getSquare("H7");
-        if (usedWords.size() == 0 && playSquares.contains(centralSquare)) return true;
-        for (Square playSquare: playSquares){
-            if (usedWords.size() != 0) {
-                for (Square validSquare : nextValidSquares) {
-                    if (validSquare.getLocation().equals(playSquare.getLocation())) return true;
-                }
-            }
+    private List<Square> getOccupiedSquare(Board copyBoard, List<Square> playSquares) {
+        List<Square> occupiedSquares = new ArrayList<>();
+        for (int i = 0; i < (Board.SIZE * Board.SIZE) ; i++) {
+            if(copyBoard.getSquare(i).hasTile()) occupiedSquares.add(copyBoard.getSquare(i));
         }
-//        UI.showMessage("Invalid placement. In the first round, player has to put one tile on H7 square.\n" +
-//                "During the remaining game, at least one tile placed by the player has to connect to one of the tiles on the board.");
-        return false;
+
+        for (Square square : playSquares) {
+            occupiedSquares.remove(square);
+        }
+        return occupiedSquares;
     }
 
+    public void start() {
+        while (!gameOver()) {
+            ClientHandler currentClient = server.getClients().get(getCurrentPlayerID());
+            if (getCurrentPlayer().isAborted()) {
+                server.broadcastPass();
+            } else {
+                server.broadcastTurn(currentClient);
+                server.broadcastTiles(currentClient, addNewTilesToTray(currentClient.getClientId()));
+            }
+
+            // then clientHandler handle moves
+            // clientHandler then broadcast the move to all other clients.
+            // then clientHandler call server to send new tiles to current player.
+            // then next turn.
+            setNextPlayer();
+        }
+        // print result
+    }
 }
