@@ -294,6 +294,7 @@ public class Client {
     }
 
     public void doSwapWithTiles(String swapTiles) throws ServerUnavailableException {
+        game.removeSwapTiles(swapTiles);
         String message = ProtocolMessages.PASS + ProtocolMessages.SEPARATOR + swapTiles;
         sendMessage(message+ "\n");
     }

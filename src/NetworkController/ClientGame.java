@@ -65,6 +65,12 @@ public class ClientGame {
         }
     }
 
+    protected void removeSwapTiles(String swapTiles){
+        for (String tile: swapTiles.split(" ")) {
+            getCurrentPlayer().getTray().remove(determineTileFromInput(tile));
+        }
+    }
+
 
     public Board getBoard() { return board; }
 
@@ -80,11 +86,23 @@ public class ClientGame {
         Map<String, String> letterToSquare = new HashMap<>();
         for (String letterAndSquareIndex: move) {
             int length = letterAndSquareIndex.length();
-            String letter = (letterAndSquareIndex.charAt(0) == '-') ? Character.toString(letterAndSquareIndex.charAt(1)) :
-                    Character.toString(letterAndSquareIndex.charAt(0));
-            String index = (length == 1) ? Character.toString(letterAndSquareIndex.charAt(1))
-                    : (length == 2) ? Character.toString(letterAndSquareIndex.charAt(1)) + Character.toString(letterAndSquareIndex.charAt(2))
-                    : Character.toString(letterAndSquareIndex.charAt(1)) + Character.toString(letterAndSquareIndex.charAt(2)) + Character.toString(letterAndSquareIndex.charAt(3));
+            String letter = "";
+            String index = "";
+
+
+            if (letterAndSquareIndex.charAt(0) == '-') {
+                letter = Character.toString(letterAndSquareIndex.charAt(1));
+                index = (length == 3) ? Character.toString(letterAndSquareIndex.charAt(2))
+                        : (length == 4) ? Character.toString(letterAndSquareIndex.charAt(2)) + Character.toString(letterAndSquareIndex.charAt(3))
+                        : Character.toString(letterAndSquareIndex.charAt(2)) + Character.toString(letterAndSquareIndex.charAt(3)) + Character.toString(letterAndSquareIndex.charAt(4));
+
+            }
+            else {
+                letter = Character.toString(letterAndSquareIndex.charAt(0));
+                index = (length == 2) ? Character.toString(letterAndSquareIndex.charAt(1))
+                        : (length == 3) ? Character.toString(letterAndSquareIndex.charAt(1)) + Character.toString(letterAndSquareIndex.charAt(2))
+                        : Character.toString(letterAndSquareIndex.charAt(1)) + Character.toString(letterAndSquareIndex.charAt(2)) + Character.toString(letterAndSquareIndex.charAt(3));
+            }
 
             //int indexSquare = Integer.toString(index);
             letterToSquare.put(index, letter);
