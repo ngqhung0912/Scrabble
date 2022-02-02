@@ -50,6 +50,7 @@ public class ClientGame {
         occupiedSquares = new ArrayList<>();
         nextValidSquares = new ArrayList<>();
         currentPlayer = 0;
+        players = new ClientPlayer[playersNames.length];
 
         for (int id = 0; id < playersNames.length; id++) {
             ClientPlayer player = new ClientPlayer(playersNames[id], id);

@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -12,7 +13,7 @@ import View.NetworkView;
 
 public class Server implements Runnable{
     private ServerSocket serverSocket;
-    private HashMap<Integer,ClientHandler> clients;
+    private ConcurrentHashMap<Integer,ClientHandler> clients;
     private int numPlayers;
     private NetworkView view;
     private int clientID;
@@ -23,7 +24,7 @@ public class Server implements Runnable{
 
 
     public Server(ServerSocket ss){
-        clients = new HashMap<>();
+        clients = new ConcurrentHashMap<>();
         view = new NetworkView();
         this.serverSocket = ss;
         timeLimitFeature = false;
@@ -42,11 +43,11 @@ public class Server implements Runnable{
     public void removeClient(ClientHandler removedClient) {
         try {
             lock.lock();
-            clients.remove(removedClient.getClientId());
+                clients.remove(removedClient.getClientId());
         } finally {
             lock.unlock();
         }
-        String message = "Current client list is:";
+        String message = "Current clients are:";
         for (ClientHandler client : clients.values()) {
             message +=  " " + client;
         }
@@ -81,6 +82,15 @@ public class Server implements Runnable{
         return Functions;
     }
 
+    protected void putClientToClientList(ClientHandler client) {
+        try {
+            lock.lock();
+            clients.put(clientID, client);
+        } finally {
+            lock.unlock();
+        }
+    }
+
     @Override
     public synchronized void run() {
         while (true) {
@@ -93,14 +103,7 @@ public class Server implements Runnable{
                 Thread clientThread = new Thread(client);
                 clientThread.start();
                 clientID++;
-                try {
-                    lock.lock();
-                    clients.put(clientID, client);
-                } finally {
-                    lock.unlock();
-                }
-
-                    // if enough client then start game
+                // if enough client then start game
                 numPlayers = clients.size();
                 if (numPlayers == 4) {
                     // broadcast welcome message
@@ -119,7 +122,7 @@ public class Server implements Runnable{
         }
     }
 
-    protected HashMap<Integer, ClientHandler> getClients() { return clients; }
+    protected ConcurrentHashMap<Integer, ClientHandler> getClients() { return clients; }
 
     public void play() throws IOException, InterruptedException {
         while (!checkReadyStatus()) {
@@ -136,6 +139,7 @@ public class Server implements Runnable{
                 break;
             }
         }
+
         ArrayList<ClientHandler> removeClient = new ArrayList<>();
         for (ClientHandler client : clients.values()) {
             view.showMessage("Current client: " + client + client.getClientId());
@@ -151,9 +155,24 @@ public class Server implements Runnable{
         }
 
         view.showMessage("Game started with: " + clients.size() + " clients.");
-        broadcastStartGame();
         serverGame = new ServerGame(this);
+        broadcastStartGame();
         gameStart = true;
+
+        while (gameStart) {
+            if (serverGame.getCurrentPlayer().isAborted()) {
+                broadcastPass();
+            } else {
+                ClientHandler currentClient = clients.get(serverGame.getCurrentPlayerID());
+                broadcastTurn(currentClient);
+                broadcastTiles(currentClient, serverGame.addNewTilesToTray(currentClient.getClientId()));
+            }
+            // then clientHandler handle moves
+            // clientHandler then broadcast the move to all other clients.
+            // then clientHandler call server to send new tiles to current player.
+            // then next turn.
+            serverGame.setNextPlayer();
+        }
     }
 
     protected void broadcastAbort(ClientHandler abortedClient){
@@ -180,7 +199,6 @@ public class Server implements Runnable{
         view.showMessage("tile broadcast: " + tiles + " to " + client.getClientId());
     }
 
-
     private void broadcastServerReady() {
         String message = ProtocolMessages.SERVERREADY + ProtocolMessages.SEPARATOR;
         for (ClientHandler client : clients.values()) {
@@ -197,33 +215,31 @@ public class Server implements Runnable{
             client.sendMessageToClient(ProtocolMessages.START + ProtocolMessages.SEPARATOR +
                     client + ProtocolMessages.AS + "\n");
             view.showMessage("message broadcast: Start game" + " to " + client.getClientId() );
-            String tiles = serverGame.sendNewTiles(new String[7]);
+            String tiles = serverGame.addNewTilesToTray(client.getClientId());
             broadcastTiles(client, tiles);
-            serverGame.setNextPlayer();
         }
     }
 
-    protected void broadcastTurn(int currentPlayer) {
+    protected void broadcastTurn(ClientHandler currentClient) {
         for (ClientHandler client : clients.values()) {
-            client.sendMessageToClient(ProtocolMessages.TURN + ProtocolMessages.SEPARATOR + clients.get(currentPlayer)+ "\n");
-            view.showMessage("message broadcast: turn " + " to " + client.getClientId() );
-
+            client.sendMessageToClient(ProtocolMessages.TURN + ProtocolMessages.SEPARATOR + currentClient.toString() + "\n");
+            view.showMessage("message broadcast: turn " + " to " + client);
         }
     }
 
     protected void broadcastMove(String move, int score) {
         for (ClientHandler client: clients.values()) {
-            if (serverGame.getCurrentPlayer().isAborted()) {
-                client.sendMessageToClient(ProtocolMessages.PASS + ProtocolMessages.SEPARATOR +
-                        clients.get(serverGame.getCurrentPlayerID())+ "\n");
-                view.showMessage("message broadcast: moved "  + " to " + client.getClientId() + "(aborted)" );
-
-            }
-            else if (client.getClientId() != serverGame.getCurrentPlayerID())
-                client.sendMessageToClient(ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR +
-                        clients.get(serverGame.getCurrentPlayerID()) + ProtocolMessages.SEPARATOR +
-                        move + ProtocolMessages.SEPARATOR + score+ "\n");
+            client.sendMessageToClient(ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR +
+                    clients.get(serverGame.getCurrentPlayerID()) + ProtocolMessages.SEPARATOR +
+                    move + ProtocolMessages.SEPARATOR + score+ "\n");
             view.showMessage("message broadcast: moved "  + " to " + client.getClientId());
+        }
+    }
+
+    protected void broadcastPass() {
+        for (ClientHandler client: clients.values()) {
+            client.sendMessageToClient(ProtocolMessages.PASS + ProtocolMessages.SEPARATOR +
+                    clients.get(serverGame.getCurrentPlayerID()) + "\n");
         }
     }
 

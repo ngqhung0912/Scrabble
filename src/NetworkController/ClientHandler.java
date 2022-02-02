@@ -53,6 +53,7 @@ public class ClientHandler implements Runnable{
     public void shutDown() {
         server.removeClient(this);
         running = false;
+        view.showMessage(this + " has been shutdown. ID: " + this.clientId);
     }
 
 
@@ -65,21 +66,13 @@ public class ClientHandler implements Runnable{
                     view.showMessage("message from " + this.clientId + ": " + message);
                     String[] messages = message.split(ProtocolMessages.SEPARATOR);
                     handleCommand(messages);
+                    if (gameStarted && serverGame.gameOver() ) {
+                        server.broadcastWinner();
+                    }
                 }
             }
-            while (running); {
-                server.broadcastTurn(serverGame.getCurrentPlayerID());
-                String message;
-                if ((message = in.readLine()) != null) message = in.readLine();
+            while (running);
 
-                view.showMessage("message from " + this.clientId + ": " + message);
-                String[] messages = message.split(ProtocolMessages.SEPARATOR);
-                handleCommand(messages);
-
-                if (gameStarted && serverGame.gameOver() ) {
-                    server.broadcastWinner();
-                }
-            }
         } catch (IOException e) {
             e.printStackTrace();
             shutDown();
@@ -90,19 +83,22 @@ public class ClientHandler implements Runnable{
     public synchronized void handleCommand(String[] command) throws IOException {
         switch(command[0]) {
             case ProtocolMessages.HELLO:
-                if (command.length < 2)    {
+                if (command.length < 2) {
                     view.showMessage("Sending client unrecognized since command length too short.");
                     sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
                     shutDown();
                 }
                 else {
                     if (!server.checkName(command[1])) {
-                        view.showMessage("Kicked " + this.clientId + " due to name duplication.");
                         sendErrorToClient(ProtocolMessages.DUPLICATE_NAME);
                         shutDown();
+                        view.showMessage("Duplicate name sent to: " + this);
                     }
                     else {
                         setName(command[1]);
+                        server.putClientToClientList(this);
+                        view.showMessage("Name verified. adding " + this + " to client list.");
+
                         List<String> featureList = Arrays.asList(command);
                         for (String feature : featureList) {
                             if (feature.equals(ProtocolMessages.CHAT_FLAG)) hasChatFunction = true;
@@ -121,28 +117,39 @@ public class ClientHandler implements Runnable{
 
             case ProtocolMessages.CLIENTREADY:
                 isReady = true;
+                view.showMessage(this + "(" + clientId +") has ready.");
                 break;
 
             case ProtocolMessages.ABORT:
                 server.broadcastAbort(this);
-                if (server.getGameState()) { serverGame.getPlayerByID(clientId).setAborted(true);}
+                view.showMessage(this + "(" + clientId +") has aborted.");
+                if (server.getGameState()) { serverGame.getPlayerByID(clientId).setAborted(true); }
                 else shutDown();
                 break;
 
             case ProtocolMessages.MOVE:
                 if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
                 else {
-                    determineTileFromMove(command);
-                    serverGame.updateScore(Integer.parseInt(command[2]));
-                    server.broadcastMove(command[1],Integer.parseInt(command[2]));
+                    String[] moves = command[1].split(ProtocolMessages.AS);
+                    boolean validMove = serverGame.makeMove(moves);
+                    if (validMove) {
+                        // to be implement
+                        int turnScore = serverGame.getTurnScore();
+                        serverGame.resetTurnScore();
+                        serverGame.resetPassCount();
+                        server.broadcastMove(command[1],turnScore);
+                    }
+                    else {
+                        server.broadcastPass();
+                        serverGame.incrementPassCount();
+                    }
                     serverGame.setNextPlayer();
-                    serverGame.resetPassCount();
                 }
                 break;
             case ProtocolMessages.PASS:
                 if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
                 else {
-                    determineTileFromMove(command);
+                    serverGame.swapTray(command[1].toCharArray());
                     server.broadcastMove(command[1],0);
                     serverGame.setNextPlayer();
                     serverGame.incrementPassCount();
@@ -158,7 +165,7 @@ public class ClientHandler implements Runnable{
         for (int i = 1; i < moves.length; i++) {
             tileUsed[i] = moves[i].split("")[0];
         }
-        String tileSend = serverGame.sendNewTiles(tileUsed);
+        String tileSend = serverGame.addNewTilesToTray(this.getClientId());
         server.broadcastTiles(this,tileSend);
     }
 
