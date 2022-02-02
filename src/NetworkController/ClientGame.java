@@ -65,6 +65,12 @@ public class ClientGame {
         }
     }
 
+    protected void removeSwapTiles(String swapTiles){
+        for (String tile: swapTiles.split(" ")) {
+            getCurrentPlayer().getTray().remove(determineTileFromInput(tile));
+        }
+    }
+
 
     public Board getBoard() { return board; }
 
