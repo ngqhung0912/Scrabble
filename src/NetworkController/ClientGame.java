@@ -76,18 +76,23 @@ public class ClientGame {
     }
 
     protected void putTileToSquare(String[] move) {
-        //Map<String, String> letterToSquare = mapLetterToSquare(move);
-        Map<String, String> letterToSquare = new HashMap<>();
-        for (String letterAndSquareIndex: move) {
-            int length = letterAndSquareIndex.length();
-            String letter = (letterAndSquareIndex.charAt(0) == '-') ? Character.toString(letterAndSquareIndex.charAt(1)) :
-                    Character.toString(letterAndSquareIndex.charAt(0));
-            int index = (length == 1) ? letterAndSquareIndex.charAt(1)
-                    : (length == 2) ? letterAndSquareIndex.charAt(1) + letterAndSquareIndex.charAt(2)
-                    : letterAndSquareIndex.charAt(1) + letterAndSquareIndex.charAt(2) + letterAndSquareIndex.charAt(3);
-
-            String indexSquare = Integer.toString(index);
-            letterToSquare.put(indexSquare, letter);
+        LinkedHashMap<String, String > letterToSquare = new LinkedHashMap<>();
+        for (int i = 0; i < move.length; i++) {
+            String[] letterSquarePairs = move[i].split("");
+            String charMove = "";
+            String coordinateString = "";
+            if (letterSquarePairs.toString().contains("-")) {
+                charMove = letterSquarePairs[0] + letterSquarePairs[1];
+                for (int j = 2; j < letterSquarePairs.length; j++ ) {
+                    coordinateString += letterSquarePairs[j];
+                }
+            } else {
+                charMove = letterSquarePairs[0];
+                for (int j = 1; j < letterSquarePairs.length; j++ ) {
+                    coordinateString += letterSquarePairs[j];
+                }
+            }
+            letterToSquare.put(coordinateString,charMove);
         }
 
         for(Map.Entry<String, String> entry: letterToSquare.entrySet()) {
@@ -97,6 +102,14 @@ public class ClientGame {
             square.setTile(tile);
         }
     }
+    private String determineCoordinateFromSquareInt( int location ) {
+        int xPosition = location % 15;
+        int yPosition = location / 15;
+        String[] alphaArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        String xCoordinate = alphaArr[xPosition];
+        return (xCoordinate + yPosition);
+    }
+
 
     protected void setOpponentPoints (int points) {
         getCurrentPlayer().addPoints(points);
