@@ -133,31 +133,6 @@ public class ClientGame {
     }
 
 
-//    private LinkedHashMap<String, String> mapLetterToSquare(String[] move){
-//        LinkedHashMap<String , String > letterToSquare = new LinkedHashMap<>();
-//        for (int i = 0; i < move.length; i++) {
-//            String[] letterSquarePair = move[i].split("-");
-//            if (letterSquarePair.length < 2) {
-//                return null;
-//            }
-//            String[] coordinate = letterSquarePair[1].split("");
-//            if (coordinate.length > 3) {
-//                System.out.println("Coordinate's length should not be greater than 3.");
-//                return null;
-//            }
-//            for (int j = 1; j < coordinate.length; j++) {
-//                try {
-//                    Integer.parseInt(coordinate[j]);
-//                } catch (NumberFormatException e) {
-//                    System.out.println("Wrong input format. Move should be D-H7 O-H8 G-H9 and so on.");
-//                    return null;
-//                }
-//            }
-//            letterToSquare.put(letterSquarePair[1], letterSquarePair[0]);
-//        }
-//        return letterToSquare;
-//    }
-
     private Tile determineTileFromInput(String letter) {
         //To be re-implemented
         if (letter.contains("-")) {
@@ -171,8 +146,6 @@ public class ClientGame {
     private Tile determineTileFromServer(String letter) {
         return new Tile(letter.charAt(0), 0);
     }
-
-
 
 }
 
