@@ -1,10 +1,12 @@
 package View;
 
 import Model.LocalGame;
+import Model.Tile;
 import NetworkController.ClientGame;
 import NetworkController.ServerGame;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public abstract class View {
     public abstract void showMessage(String message);
@@ -29,12 +31,13 @@ public abstract class View {
 
 
     public void update(ClientGame game) {
+        ArrayList<String> tray = game.getLetterFromTray(game.getCurrentPlayer().getTray());
+        String trayMessage = "Tray: " +  (!tray.isEmpty() ? tray : "");
         showMessage("\n\n" + BoardConstructor.generateBoard(game.getBoard()) + "\n"
                 + "Player: " + game.getCurrentPlayer().getName() + "\n"
-                + "Tray: " + game.getLetterFromTray(game.getCurrentPlayer().getTray()) + "\n"
+                + trayMessage + "\n"
                 + "Total Score: " + game.getCurrentPlayer().getTotalPoints() + "\n");
     }
-
 
     public void printResult(LocalGame localGame) {
         if (localGame.isWinner() != null) showMessage("Congratulations! Player " + localGame.isWinner().getName() + " has won!");
