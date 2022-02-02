@@ -44,7 +44,6 @@ public class Client implements Runnable {
     public Client(String name) {
         this.name = name;
         view = new NetworkView();
-        name = null;
     }
 
     @Override
@@ -132,7 +131,7 @@ public class Client implements Runnable {
             if (input.contains("MOVE")) {
                 doMove(clientMoves);
             } else if (input.contains("SWAP")) {
-                if (clientMoves.length > 1) doSwapWithTiles(clientMoves[1] + "\n");
+                if (clientMoves.length > 1) doSwapWithTiles(clientMoves);
                 else {
                     sendMessage(ProtocolMessages.PASS + "\n");
                 }
@@ -143,30 +142,6 @@ public class Client implements Runnable {
             e.printStackTrace();
         }
     }
-
-    public void handleUserInput() throws IOException, ServerUnavailableException {
-           clientPrinter = new BufferedReader(new InputStreamReader(System.in));
-
-           String input = clientPrinter.readLine();
-           String[] clientMoves = game.getCurrentPlayer().determineMove(input.split(ProtocolMessages.AS));
-
-                while (true)  {
-               if (input != null) {
-                   if (input.contains("MOVE")) {
-                       doMove(clientMoves);
-                   } else if (input.contains("SWAP")) {
-                       if (clientMoves.length > 1) doSwapWithTiles(clientMoves[1] + "\n");
-                       else {
-                           sendMessage(ProtocolMessages.PASS + "\n");
-                       }
-                   } else if (input.contains("ABORT")) {
-                       notifyClientAbort();
-                       break;
-                   }
-               }
-           }
-       }
-
 
     public void handleServerCommand(String serverCommand) throws IOException, ServerUnavailableException {
         view.showMessage("Message from server: " + serverCommand);
@@ -217,6 +192,7 @@ public class Client implements Runnable {
                 game.setCurrentPlayer(command[1]);
                 String[] move = command[2].split(ProtocolMessages.AS);
                 game.opponentMakeMove(move, Integer.parseInt(command[3]));
+                view.update(game);
                 break;
 
             case ProtocolMessages.PASS:
@@ -337,7 +313,7 @@ public class Client implements Runnable {
         sendMessage(message);
     }
 
-    public void doSwapWithTiles(String swapTiles) throws ServerUnavailableException {
+    public void doSwapWithTiles(String[] swapTiles) throws ServerUnavailableException {
         game.removeSwapTiles(swapTiles);
         String message = ProtocolMessages.PASS + ProtocolMessages.SEPARATOR + swapTiles;
         sendMessage(message+ "\n");

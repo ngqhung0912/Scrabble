@@ -7,7 +7,7 @@ package NetworkController;
  */
 
 import Model.*;
-import View.View;
+import View.*;
 import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
 
@@ -65,8 +65,8 @@ public class ClientGame {
         }
     }
 
-    protected void removeSwapTiles(String swapTiles){
-        for (String tile: swapTiles.split(" ")) {
+    protected void removeSwapTiles(String[] swapTiles){
+        for (String tile: swapTiles) {
             getCurrentPlayer().getTray().remove(determineTileFromInput(tile));
         }
     }
