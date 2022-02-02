@@ -5,7 +5,7 @@ package Model;
  * @version 0.1
  */
 
-import View.View;
+import View.LocalView;
 import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
 
@@ -23,11 +23,11 @@ public class Game {
     private List<Tile> tileBag;
     private ArrayList<String> usedWords;
     private ScrabbleWordChecker checker;
-    private List<Square> occupiedSquares;
-    private List<Square> nextValidSquares;
     private int numPlayer;
     private int currentPlayer;
     private int passCount;
+    private LocalView UI;
+    private List<Square> nextValidSquares;
 
 
     /**
@@ -47,10 +47,10 @@ public class Game {
         tileBag = new TileGenerator().generateTiles();
         usedWords = new ArrayList<>();
         checker = new InMemoryScrabbleWordChecker();
-        occupiedSquares = new ArrayList<>();
-        nextValidSquares = new ArrayList<>();
         currentPlayer = 0;
         passCount = 0;
+        UI = new LocalView();
+        nextValidSquares = new ArrayList<>();
 
         for (Player player : players)
         {
@@ -186,7 +186,10 @@ public class Game {
     /**
      * To pass the play if the player decides to.
      */
-    public int setCurrentPlayer() { return currentPlayer < numPlayer-1 ? currentPlayer++ : 0; }
+    public int incrementCurrentPlayer() {
+        currentPlayer = currentPlayer < (numPlayer-1) ? currentPlayer+1 : 0;
+        return currentPlayer;
+    }
 
     /**
      * Determine who is the winner
@@ -266,7 +269,7 @@ public class Game {
     private LinkedHashMap<String, String> mapLetterToSquare(String[] move){
         LinkedHashMap<String , String > letterToSquare = new LinkedHashMap<>();
         for (int i = 0; i < move.length; i++) {
-            String[] letterSquarePair = move[i].split("-");
+            String[] letterSquarePair = move[i].split("[.]");
             if (letterSquarePair.length < 2) {
                 return null;
             }
@@ -337,11 +340,6 @@ public class Game {
         return true;
     }
 
-    private String getWordFromSquareList(ArrayList<Square> squares) {
-        String word = "";
-        for (Square square : squares)  word +=square.getTile().getLetter();
-        return word;
-    }
 
     private  ArrayList<ArrayList<Square>> determinePossibleWordCombinations(ArrayList<Square> inputWord, String direction, Board copyBoard) {
         Square startingPosition = inputWord.get(0);
@@ -370,7 +368,7 @@ public class Game {
             Square currentPosition = startingPosition;
             initialWord.add(startingPosition);
 
-            for (Square square : occupiedSquares) {
+            for (Square square : getOccupiedSquare(copyBoard, inputWord)) {
                 if (currentPosition.getLocation().equals(square.getLocation())) {
                     startingPosition = direction.equals("H") ? copyBoard.getSquareRight(startingPosition)
                             : copyBoard.getSquareBelow(startingPosition);
@@ -484,14 +482,14 @@ public class Game {
                 determinePossibleWordCombinations(initialWord, direction,copyBoard);
 
         if (wordCombinations == null || wordCombinations.size() == 0) {
-//            UI.showMessage("Wrong input format.");
+            UI.showMessage("Wrong input format.");
             return null;
         }
         int turnScore = 0;
         for (ArrayList<Square> wordCombination : wordCombinations) {
             String validWord = wordChecker(wordCombination);
             if (validWord == null) {
-//                UI.showMessage("The word " + getWordFromSquareList(wordCombination) + " is invalid. Skipping your turn...");
+                UI.showMessage("The word " + getWordFromSquareList(wordCombination) + " is invalid. Skipping your turn...");
                 return null;
             }
             turnScore += calculatePoints(wordCombination);
@@ -510,7 +508,13 @@ public class Game {
         return copyBoard;
     }
 
-    private static String determineMoveDirection(LinkedHashMap<String, String> moves) {
+    public String getWordFromSquareList(ArrayList<Square> squares) {
+        String word = "";
+        for (Square square : squares)  word +=square.getTile().getLetter();
+        return word;
+    }
+
+    private  String determineMoveDirection(LinkedHashMap<String, String> moves) {
         if (moves.size() == 1) {
             return "H";
         }
@@ -526,20 +530,27 @@ public class Game {
             return "V";
         }
 
-        }
+    }
 
-    private static List<Square> getNextValidSquares(List<Square> playSquares, String direction, Board copyBoard) {
+    private List<Square> getOccupiedSquare(Board copyBoard, List<Square> playSquares) {
         List<Square> occupiedSquares = new ArrayList<>();
-        List<Square> nextValidSquares = new ArrayList<>();
-
-        for (int i = 0; i < (copyBoard.SIZE * copyBoard.SIZE) ; i++) {
+        for (int i = 0; i < (Board.SIZE * Board.SIZE) ; i++) {
             if(copyBoard.getSquare(i).hasTile()) occupiedSquares.add(copyBoard.getSquare(i));
         }
 
         for (Square square : playSquares) {
             occupiedSquares.remove(square);
         }
-        if (occupiedSquares.size() == 0) return null;
+        return occupiedSquares;
+    }
+
+
+    private  void getNextValidSquares(List<Square> playSquares, String direction, Board copyBoard) {
+        List<Square> occupiedSquares = getOccupiedSquare(copyBoard,playSquares);
+//        List<Square> nextValidSquares = new ArrayList<>();
+
+//        if (occupiedSquares.size() == 0) return null;
+
         for (int i = 0; i < playSquares.size(); i++) {
             Square currentSquare = playSquares.get(i);
             try {
@@ -577,12 +588,12 @@ public class Game {
             }
 
         }
-        return nextValidSquares;
-
+//        return nextValidSquares;
     }
 
     private boolean isValidPlacement(List<Square> playSquares, String direction, Board copyBoard){
-        nextValidSquares = getNextValidSquares(playSquares, direction, copyBoard);
+//        List<Square> nextValidSquares =
+        getNextValidSquares(playSquares, direction, copyBoard);
         Square centralSquare = copyBoard.getSquare("H7");
         if (usedWords.size() == 0 && playSquares.contains(centralSquare)) return true;
         for (Square playSquare: playSquares){
@@ -592,8 +603,8 @@ public class Game {
                 }
             }
         }
-//        UI.showMessage("Invalid placement. In the first round, player has to put one tile on H7 square.\n" +
-//                "During the remaining game, at least one tile placed by the player has to connect to one of the tiles on the board.");
+        UI.showMessage("Invalid placement. In the first round, player has to put one tile on H7 square.\n" +
+                "During the remaining game, at least one tile placed by the player has to connect to one of the tiles on the board.");
         return false;
     }
 }

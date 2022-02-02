@@ -59,8 +59,11 @@ public class LocalController {
                     textUI.showMessage("Wrong input format. skipping turn...");
                     break;
             }
-            currentPlayer = game.setCurrentPlayer();
+            textUI.showMessage("current player before set is: " + currentPlayer);
+            currentPlayer = game.incrementCurrentPlayer();
+            textUI.showMessage("current player after set is: " + currentPlayer);
         } while (!game.gameOver());
+
         textUI.printResult(game);
     }
 }
