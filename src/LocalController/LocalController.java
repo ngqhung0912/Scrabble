@@ -1,6 +1,6 @@
 package LocalController;
 
-import Model.Game;
+import Model.LocalGame;
 import Model.Player;
 import View.LocalView;
 
@@ -10,7 +10,7 @@ public class LocalController {
     private static final String HELP = "Wrong input format. Correct input format: <numPlayers> <P1name> <P2name> ... ";
     private static int currentPlayer = 0;
     private static Player[] localPlayers;
-    private static Game game;
+    private static LocalGame localGame;
     private static LocalView textUI;
 
     public static void main(String[] args) throws IOException {
@@ -32,38 +32,38 @@ public class LocalController {
             playerName[i] = args[i+1];
             localPlayers[i] = new LocalPlayer(playerName[i], i);
         }
-        game = new Game(localPlayers);
+        localGame = new LocalGame(localPlayers);
 
         loopingOverTheGame:
         do {
-            textUI.update(game);
+            textUI.update(localGame);
             String[] moves = localPlayers[currentPlayer].determineMove();
             switch (moves[0]) {
                 case "MOVE":
                     String[] moveTiles = new String[moves.length - 1];
                     System.arraycopy(moves, 1, moveTiles, 0, moves.length - 1);
-                    game.makeMove(moveTiles);
+                    localGame.makeMove(moveTiles);
                     break;
                 case "PASS":
-                    game.incrementPassCount();
-                    textUI.showMessage("This is the " + game.getPassCount() + " consecutive pass move(s).");
+                    localGame.incrementPassCount();
+                    textUI.showMessage("This is the " + localGame.getPassCount() + " consecutive pass move(s).");
                     break;
                 case "SWAP":
                     char[] swapTilesChar = new char[moves.length - 1];
                     for (int i = 1; i < moves.length; i++) {
                         swapTilesChar[i - 1] = moves[i].charAt(0);
                     }
-                    game.swapTray(swapTilesChar);
+                    localGame.swapTray(swapTilesChar);
                     break;
                 default:
                     textUI.showMessage("Wrong input format. skipping turn...");
                     break;
             }
             textUI.showMessage("current player before set is: " + currentPlayer);
-            currentPlayer = game.incrementCurrentPlayer();
+            currentPlayer = localGame.incrementCurrentPlayer();
             textUI.showMessage("current player after set is: " + currentPlayer);
-        } while (!game.gameOver());
+        } while (!localGame.gameOver());
 
-        textUI.printResult(game);
+        textUI.printResult(localGame);
     }
 }

@@ -12,10 +12,12 @@ import java.io.IOException;
 public class ServerPlayer extends Player {
 
      private boolean aborted;
+     private ClientHandler client;
 
-     public ServerPlayer(String name, int id) {
-          super(name, id);
-          aborted = false;
+     public ServerPlayer(ClientHandler client) {
+          super(client.toString(), client.getClientId());
+          this.aborted = false;
+          this.client = client;
      }
 
      @Override
@@ -31,4 +33,6 @@ public class ServerPlayer extends Player {
      public void setAborted(boolean aborted) {
           this.aborted = aborted;
      }
+
+     public ClientHandler getClient() { return client;}
 }

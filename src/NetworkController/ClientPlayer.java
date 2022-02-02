@@ -24,13 +24,4 @@ public class ClientPlayer extends Player {
 
         return moveTiles;
     }
-
-
-//    public String[] determineOpponentMove(String[] opponentMoves) throws IOException {
-//
-//
-//    }
-
-
-
 }
