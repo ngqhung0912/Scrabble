@@ -170,8 +170,7 @@ public class Client {
                 break;
 
             case ProtocolMessages.GAMEOVER:
-                view.showMessage("---GAMEOVER---" + "\n********************" +
-                        "\nThe winner is " + command[1].toUpperCase());
+                view.printResult(game, command[1]);
                 break;
 
             case ProtocolMessages.ERROR:
@@ -193,7 +192,6 @@ public class Client {
                     shutDown();
                 }
                 break;
-
         }
     }
 

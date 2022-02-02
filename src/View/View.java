@@ -30,4 +30,9 @@ public abstract class View {
         if (game.isWinner() != null) showMessage("Congratulations! Player " + game.isWinner().getName() + " has won!");
         else showMessage("It's a draw!");
     }
+
+    public void printResult(ClientGame clientGame, String winner) {
+        showMessage("---GAMEOVER---" + "\n********************" +
+                "\nThe winner is " + winner);
+    }
 }

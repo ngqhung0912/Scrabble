@@ -526,8 +526,6 @@ public class Game {
             return "V";
         }
 
-
-
         }
 
     private static List<Square> getNextValidSquares(List<Square> playSquares, String direction, Board copyBoard) {
