@@ -82,30 +82,23 @@ public class ClientGame {
     }
 
     protected void putTileToSquare(String[] move) {
-        //Map<String, String> letterToSquare = mapLetterToSquare(move);
-        Map<String, String> letterToSquare = new HashMap<>();
-        for (String letterAndSquareIndex: move) {
-            int length = letterAndSquareIndex.length();
-            String letter = "";
-            String index = "";
-
-
-            if (letterAndSquareIndex.charAt(0) == '-') {
-                letter = Character.toString(letterAndSquareIndex.charAt(1));
-                index = (length == 3) ? Character.toString(letterAndSquareIndex.charAt(2))
-                        : (length == 4) ? Character.toString(letterAndSquareIndex.charAt(2)) + Character.toString(letterAndSquareIndex.charAt(3))
-                        : Character.toString(letterAndSquareIndex.charAt(2)) + Character.toString(letterAndSquareIndex.charAt(3)) + Character.toString(letterAndSquareIndex.charAt(4));
-
+        LinkedHashMap<String, String > letterToSquare = new LinkedHashMap<>();
+        for (int i = 0; i < move.length; i++) {
+            String[] letterSquarePairs = move[i].split("");
+            String charMove = "";
+            String coordinateString = "";
+            if (letterSquarePairs.toString().contains("-")) {
+                charMove = letterSquarePairs[0] + letterSquarePairs[1];
+                for (int j = 2; j < letterSquarePairs.length; j++ ) {
+                    coordinateString += letterSquarePairs[j];
+                }
+            } else {
+                charMove = letterSquarePairs[0];
+                for (int j = 1; j < letterSquarePairs.length; j++ ) {
+                    coordinateString += letterSquarePairs[j];
+                }
             }
-            else {
-                letter = Character.toString(letterAndSquareIndex.charAt(0));
-                index = (length == 2) ? Character.toString(letterAndSquareIndex.charAt(1))
-                        : (length == 3) ? Character.toString(letterAndSquareIndex.charAt(1)) + Character.toString(letterAndSquareIndex.charAt(2))
-                        : Character.toString(letterAndSquareIndex.charAt(1)) + Character.toString(letterAndSquareIndex.charAt(2)) + Character.toString(letterAndSquareIndex.charAt(3));
-            }
-
-            //int indexSquare = Integer.toString(index);
-            letterToSquare.put(index, letter);
+            letterToSquare.put(coordinateString,charMove);
         }
 
         for(Map.Entry<String, String> entry: letterToSquare.entrySet()) {
@@ -115,6 +108,14 @@ public class ClientGame {
             square.setTile(tile);
         }
     }
+    private String determineCoordinateFromSquareInt( int location ) {
+        int xPosition = location % 15;
+        int yPosition = location / 15;
+        String[] alphaArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        String xCoordinate = alphaArr[xPosition];
+        return (xCoordinate + yPosition);
+    }
+
 
     protected void setOpponentPoints (int points) {
         getCurrentPlayer().addPoints(points);
@@ -151,31 +152,6 @@ public class ClientGame {
     }
 
 
-//    private LinkedHashMap<String, String> mapLetterToSquare(String[] move){
-//        LinkedHashMap<String , String > letterToSquare = new LinkedHashMap<>();
-//        for (int i = 0; i < move.length; i++) {
-//            String[] letterSquarePair = move[i].split("-");
-//            if (letterSquarePair.length < 2) {
-//                return null;
-//            }
-//            String[] coordinate = letterSquarePair[1].split("");
-//            if (coordinate.length > 3) {
-//                System.out.println("Coordinate's length should not be greater than 3.");
-//                return null;
-//            }
-//            for (int j = 1; j < coordinate.length; j++) {
-//                try {
-//                    Integer.parseInt(coordinate[j]);
-//                } catch (NumberFormatException e) {
-//                    System.out.println("Wrong input format. Move should be D-H7 O-H8 G-H9 and so on.");
-//                    return null;
-//                }
-//            }
-//            letterToSquare.put(letterSquarePair[1], letterSquarePair[0]);
-//        }
-//        return letterToSquare;
-//    }
-
     private Tile determineTileFromInput(String letter) {
         //To be re-implemented
         if (letter.contains("-")) {
@@ -189,8 +165,6 @@ public class ClientGame {
     private Tile determineTileFromServer(String letter) {
         return new Tile(letter.charAt(0), 0);
     }
-
-
 
 }
 

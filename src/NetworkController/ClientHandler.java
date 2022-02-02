@@ -27,7 +27,7 @@ public class ClientHandler implements Runnable{
     private boolean hasTimeLimit;
     private boolean isReady;
     private ServerGame serverGame;
-    private Lock lock;
+
 
 
 
@@ -42,15 +42,18 @@ public class ClientHandler implements Runnable{
             this.running = true;
             this.hasChatFunction = false;
             this.isReady = false;
-            this.serverGame = server.serverGame;
-            lock = new ReentrantLock();
+//            this.serverGame = server.serverGame;
             this.clientId = id;
+
         } catch (IOException e) {
             shutDown();
         }
     }
 
-    public void shutDown() {
+    protected void setServerGame (ServerGame serverGame) {this.serverGame = serverGame;}
+
+    public void shutDown()
+    {
         server.removeClient(this);
         running = false;
         view.showMessage(this + " has been shutdown. ID: " + this.clientId);
@@ -128,35 +131,40 @@ public class ClientHandler implements Runnable{
                 break;
 
             case ProtocolMessages.MOVE:
-                if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
-                else {
-                    String[] moves = command[1].split(ProtocolMessages.AS);
-                    boolean validMove = serverGame.makeMove(moves);
-                    if (validMove) {
-                        // to be implement
-                        int turnScore = serverGame.getTurnScore();
-                        serverGame.resetTurnScore();
-                        serverGame.resetPassCount();
-                        server.broadcastMove(command[1],turnScore);
-                    }
-                    else {
-                        server.broadcastPass();
-                        serverGame.incrementPassCount();
-                    }
-                    serverGame.setNextPlayer();
-                }
-                break;
+//                if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
+//                else {
+//                    String[] moves = command[1].split(ProtocolMessages.AS);
+//
+//
+//                    boolean validMove = serverGame.makeMove(moves);
+//                    if (validMove) {
+//                        // to be implement
+//                        int turnScore = serverGame.getTurnScore();
+//                        serverGame.resetTurnScore();
+//                        serverGame.resetPassCount();
+//                        server.broadcastMove(command[1],turnScore);
+//                    }
+//                    else {
+//                        server.broadcastPass();
+//                        serverGame.incrementPassCount();
+//                    }
+//                    serverGame.setNextPlayer();
+//                }
             case ProtocolMessages.PASS:
-                if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
-                else {
-                    serverGame.swapTray(command[1].toCharArray());
-                    server.broadcastMove(command[1],0);
-                    serverGame.setNextPlayer();
-                    serverGame.incrementPassCount();
+//                if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
+//                else {
+//                    serverGame.swapTray(command[1].toCharArray());
+//                    server.broadcastMove(command[1],0);
+//                    serverGame.setNextPlayer();
+//                    serverGame.incrementPassCount();
+//                }
+                if (server.getGameState()) {
+                    serverGame.doMove(this, command[0], command[1]);
+                } else {
+                    sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
                 }
                 break;
         }
-
     }
 
     private void determineTileFromMove(String[] command) {

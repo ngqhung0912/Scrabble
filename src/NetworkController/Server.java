@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -14,11 +13,10 @@ import View.NetworkView;
 public class Server implements Runnable {
     private ServerSocket serverSocket;
     private ConcurrentHashMap<Integer, ClientHandler> clients;
-    private int numPlayers;
     private NetworkView view;
     private int clientID;
     private boolean timeLimitFeature;
-    ServerGame serverGame;
+    volatile ServerGame serverGame;
     private boolean gameStart;
     private Lock lock;
 
@@ -39,6 +37,8 @@ public class Server implements Runnable {
         }
         return true;
     }
+
+
 
     public void removeClient(ClientHandler removedClient) {
         try {
@@ -107,16 +107,6 @@ public class Server implements Runnable {
                 clientThread.start();
                 Thread.sleep(200);
                 clientID++;
-                // if enough client then start game
-//                numPlayers = clients.size();
-//                if (numPlayers == 4) {
-//                    // broadcast welcome message
-//                    timeLimitFeature = checkHasTimeLimit();
-//                    wait(2000);
-//                    view.showMessage("Enough players. Let's get ready!");
-//                    broadcastServerReady();
-//                    play();
-//                }
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
                 for (ClientHandler client : clients.values()) {
@@ -182,7 +172,6 @@ public class Server implements Runnable {
 
         ArrayList<ClientHandler> removeClient = new ArrayList<>();
         for (ClientHandler client : clients.values()) {
-            view.showMessage("Current client: " + client + client.getClientId());
             if (!client.isReady()) {
                 client.sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
                 removeClient.add(client);
@@ -198,14 +187,22 @@ public class Server implements Runnable {
         serverGame = new ServerGame(this);
         broadcastStartGame();
         gameStart = true;
+        view.showMessage("Game Started.");
+        setServerGameForHandlers();
         serverGame.start();
 
+    }
+
+    protected void setServerGameForHandlers() {
+        for (ClientHandler client : clients.values()) {
+            client.setServerGame(serverGame);
+        }
     }
 
     protected void broadcastAbort(ClientHandler abortedClient) {
         for (ClientHandler client : clients.values()) {
             if (client.getClientId() != abortedClient.getClientId()) {
-                client.sendMessageToClient(ProtocolMessages.ABORT + ProtocolMessages.SEPARATOR + abortedClient.toString() + "\n");
+                client.sendMessageToClient(ProtocolMessages.ABORT + ProtocolMessages.SEPARATOR + abortedClient + "\n");
                 view.showMessage("message broadcast: " + abortedClient.getClientId() + " has aborted " + " to " + client.getClientId());
 
             }
@@ -238,9 +235,13 @@ public class Server implements Runnable {
     }
 
     private void broadcastStartGame() {
+        String message = "";
         for (ClientHandler client : clients.values()) {
+            message += (client + ProtocolMessages.AS);
+        }
+            for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.START + ProtocolMessages.SEPARATOR +
-                    client + ProtocolMessages.AS + "\n");
+                    message + "\n");
             view.showMessage("message broadcast: Start game" + " to " + client.getClientId());
             String tiles = serverGame.addNewTilesToTray(client.getClientId());
             broadcastTiles(client, tiles);
@@ -250,14 +251,14 @@ public class Server implements Runnable {
     protected void broadcastTurn(ClientHandler currentClient) {
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.TURN + ProtocolMessages.SEPARATOR + currentClient.toString() + "\n");
-            view.showMessage("message broadcast: turn " + " to " + client);
+            view.showMessage("message broadcast: turn of "+ currentClient + " to " + client);
         }
     }
 
-    protected void broadcastMove(String move, int score) {
+    protected void broadcastMove(String move, int score, int currentPlayerID) {
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR +
-                    clients.get(serverGame.getCurrentPlayerID()) + ProtocolMessages.SEPARATOR +
+                    clients.get(currentPlayerID) + ProtocolMessages.SEPARATOR +
                     move + ProtocolMessages.SEPARATOR + score + "\n");
             view.showMessage("message broadcast: moved " + " to " + client.getClientId());
         }
@@ -267,6 +268,8 @@ public class Server implements Runnable {
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.PASS + ProtocolMessages.SEPARATOR +
                     clients.get(serverGame.getCurrentPlayerID()) + "\n");
+            view.showMessage("message broadcast: passed " + " to " + client.getClientId());
+
         }
     }
 
@@ -279,6 +282,10 @@ public class Server implements Runnable {
         }
     }
 
+    public void broadcastInvalidMove(ClientHandler client) {
+        client.sendErrorToClient(ProtocolMessages.INVALID_MOVE);
+    }
+
     protected boolean getGameState() {
         return gameStart;
     }
@@ -288,5 +295,7 @@ public class Server implements Runnable {
         Thread serverThread = new Thread(server);
         serverThread.start();
     }
+
+    public NetworkView getView() { return view; }
 
 }

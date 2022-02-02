@@ -5,15 +5,17 @@ import Exceptions.ServerUnavailableException;
 import Model.Board;
 import Model.Square;
 import View.NetworkView;
+import com.sun.source.tree.WhileLoopTree;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Locale;
+import java.util.Scanner;
 
 import static NetworkController.ProtocolMessages.*;
 
-public class Client {
+public class Client implements Runnable {
     private String name;
     private boolean hasFeature;
 
@@ -26,30 +28,59 @@ public class Client {
     private String[] playersNames;
     private BufferedReader clientPrinter;
 
-    public Client() {
+    public static void main(String[] args)  {
+        System.out.println("Welcome to Scrabble! Please enter your name to start connecting!");
+        Scanner scanner = new Scanner(System.in);
+        String name = scanner.nextLine();
+
+        Client client = new Client(name);
+        Thread clientThread = new Thread(client);
+        clientThread.start();
+        //client.shutDown();
+
+
+    }
+
+    public Client(String name) {
+        this.name = name;
         view = new NetworkView();
         name = null;
     }
 
-    public void start() throws ExitProgram, IOException, ServerUnavailableException {
-        boolean running = true;
-        while(name == null || name.isBlank() || name.isEmpty()){
-            name = view.getString("Welcome to Scrabble!" + "\n Please enter your name: "
-                    + "(Your name shouldn't include space between letters. If your name has already existed, " +
-                    "you will be aborted from the ");
-            if (name.contains(" ") || name.isBlank() || name.isEmpty()) {
-                view.showMessage("Your name cannot include whitespace between letters. Please try again");
-                name = null;
-            }
+    @Override
+
+    public void run() {
+        try {
+            clientSideConnection();
+            handleHello();
+        } catch (ExitProgram e) {
+            view.showMessage("Unexpected error detected. Shutting down the connection...");
         }
-        clearConnection();
-        clientSideConnection();
-        handleHello();
+
+    // public void start() throws ExitProgram, IOException, ServerUnavailableException {
+    //     boolean running = true;
+    //     while(name == null || name.isBlank() || name.isEmpty()){
+    //         name = view.getString("Welcome to Scrabble!" + "\n Please enter your name: "
+    //                 + "(Your name shouldn't include space between letters. If your name has already existed, " +
+    //                 "you will be aborted from the ");
+    //         if (name.contains(" ") || name.isBlank() || name.isEmpty()) {
+    //             view.showMessage("Your name cannot include whitespace between letters. Please try again");
+    //             name = null;
+    //         }
+    //     }
+    //     clearConnection();
+    //     clientSideConnection();
+    //     handleHello();
 
         while (true) {
-            String serverCommand = readLineFromServer();
-            handleServerCommand(serverCommand);
-            if (game != null) view.update(game);
+            String serverCommand;
+            try {
+                serverCommand = readLineFromServer();
+                handleServerCommand(serverCommand);
+            } catch (ServerUnavailableException | IOException e) {
+                view.showMessage("Unexpected error detected. Shutting down the connection...");
+                break;
+            }
         }
 
     }
@@ -71,6 +102,7 @@ public class Client {
             } catch (IOException e) {
                 System.out.println("ERROR: could not create a socket on "
                         + host + " and port " + port + ".");
+                break;
             }
         }
     }
@@ -79,10 +111,11 @@ public class Client {
         serverSock = null;
         in = null;
         out = null;
+
     }
 
-    public void handleUserInput() throws IOException, ServerUnavailableException {
-        String prompt = "It's your turn. " + "\nInput format: If you want to put a words, " +
+    private void handleUserTurn() {
+        String promptTurn = "It's your turn. " + "\nInput format: If you want to put a words, " +
                 "for example DOG into the board," +
                 "\nin the square A1, A2 and A3 , write your move as: MOVE D.A1 O.A2 G.A3" +
                 "\nThe symbol \"-\" represents a blank tile, to determine a letter for the blank tile," +
@@ -92,27 +125,48 @@ public class Client {
                 "\nType SWAP to SWAP one or more letter(s) in your tray." +
                 "or SWAP with no argument to pass your turn." +
                 "\nTo quit the game, type ABORT";
+        String input;
+        try {
+            input = view.getString(promptTurn);
+            String[] clientMoves = game.getCurrentPlayer().determineMove(input.split(ProtocolMessages.AS));
+            if (input.contains("MOVE")) {
+                doMove(clientMoves);
+            } else if (input.contains("SWAP")) {
+                if (clientMoves.length > 1) doSwapWithTiles(clientMoves[1] + "\n");
+                else {
+                    sendMessage(ProtocolMessages.PASS + "\n");
+                }
+            } else if (input.contains("ABORT")) {
+                notifyClientAbort();
+            }
+        } catch (ServerUnavailableException | IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-       view.showMessage(prompt);
-       clientPrinter = new BufferedReader(new InputStreamReader(System.in));
+    public void handleUserInput() throws IOException, ServerUnavailableException {
+           clientPrinter = new BufferedReader(new InputStreamReader(System.in));
 
-       while (true) {
            String input = clientPrinter.readLine();
            String[] clientMoves = game.getCurrentPlayer().determineMove(input.split(ProtocolMessages.AS));
 
-           if (input != null) {
-               if(input.contains("MOVE")) {doMove(clientMoves);}
-
-               else if (input.contains("SWAP")) {
-                   if (clientMoves.length > 1) doSwapWithTiles(clientMoves[1]+ "\n");
-                   else {sendMessage(ProtocolMessages.PASS+ "\n");}
+                while (true)  {
+               if (input != null) {
+                   if (input.contains("MOVE")) {
+                       doMove(clientMoves);
+                   } else if (input.contains("SWAP")) {
+                       if (clientMoves.length > 1) doSwapWithTiles(clientMoves[1] + "\n");
+                       else {
+                           sendMessage(ProtocolMessages.PASS + "\n");
+                       }
+                   } else if (input.contains("ABORT")) {
+                       notifyClientAbort();
+                       break;
+                   }
                }
-
-               else if (input.contains("ABORT")) {notifyClientAbort();}
            }
        }
 
-    }
 
     public void handleServerCommand(String serverCommand) throws IOException, ServerUnavailableException {
         view.showMessage("Message from server: " + serverCommand);
@@ -120,11 +174,6 @@ public class Client {
 
         switch (command[0]){
             case ProtocolMessages.HELLO:
-//                playersNames = command[1].split(" ");
-//                String namesList = "";
-//                for (int i = 0; i < playersNames.length; i++) {
-//                    namesList += (i+1) + ". " + playersNames[i] + "\n";
-//                }
                 view.showMessage("Hello! Bonjour! Xin chao!");
                 break;
 
@@ -144,7 +193,6 @@ public class Client {
                     namesList += (i+1) + ". " + playersNames[i] + "\n";
                 }
                 view.showMessage("Players have connected are: \n" + namesList + "\n");
-                        //+ playersList.length + ". " + nickname);
                 game = new ClientGame(playersNames);
                 break;
 
@@ -156,12 +204,12 @@ public class Client {
                 game.setCurrentPlayer(name);
                 String[] stringTileList  = command[1].split(ProtocolMessages.AS);
                 game.putTilesToTray(stringTileList);
+                if (game != null) view.update(game);
                 break;
 
             case ProtocolMessages.TURN:
                 game.setCurrentPlayer(command[1]);
-
-                if(name.equals(command[1])) handleUserInput();
+                if(name.equals(command[1])) handleUserTurn();
                 else {view.showMessage("It's currently " + command[1] + "'s turn");}
                 break;
 
@@ -174,7 +222,6 @@ public class Client {
             case ProtocolMessages.PASS:
                 if (command[1].equals(name)) {view.showMessage("You just passed your turn");}
                 else {view.showMessage("Player " + command[1] + " has passed the turn");}
-
                 break;
 
             case ProtocolMessages.GAMEOVER:
@@ -188,10 +235,9 @@ public class Client {
                     notifyClientAbort();
                     shutDown();
                 }
-//                    else if (command[1].equals(INVALID_MOVE)) {
-//                        view.showMessage("");
-//
-//                    }
+                else if (command[1].equals(INVALID_MOVE)) {
+                    view.showMessage("Your move is invalid and you will lost your turn.");
+                }
                 else if (command[1].equals(OUT_OF_TURN)) {
                     view.showMessage("Hold on! It's not your turn!");
                 }
@@ -272,7 +318,7 @@ public class Client {
 
     public void notifyClientReady() throws ServerUnavailableException, IOException {
         boolean answer = view.getBoolean("The game is ready to start. Do you want to start now? " +
-                "\n Enter \"Y\" to start or \"N\" to abort");
+                "\n Enter \"Y\" to start or \"N\" to abo rt");
         String command = (answer == true) ?  ProtocolMessages.CLIENTREADY + ProtocolMessages.SEPARATOR + name
                 : ProtocolMessages.ABORT+ "\n";
         sendMessage(command);
@@ -287,9 +333,7 @@ public class Client {
         String[] clientInput = game.getCurrentPlayer().determineMove(clientMoves);
 
         String message = //(game.makeMove(clientMoves)) ?
-                ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR + game.sendMoveToServer(clientMoves)
-                + ProtocolMessages.SEPARATOR + game.getCurrentPlayer().getTotalPoints(); //+ "\n"
-                //: ProtocolMessages.PASS+ "\n";
+                ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR + game.sendMoveToServer(clientMoves);
         sendMessage(message);
     }
 
@@ -311,19 +355,7 @@ public class Client {
         }
     }
 
-    public static void main(String[] args)  {
-        Client client = new Client();
-        NetworkView view = client.view;
 
-        try {
-            client.start();
-        } catch (ExitProgram e) {
-            view.showMessage("Exit program");
-            client.shutDown();
-        } catch (IOException e) {
-            view.showMessage("Illegal input. Please try again");
-        } catch (ServerUnavailableException e) {
-            view.showMessage("No server detected. Shutting down the connection...");
-        }
-    }
+
+
 }

@@ -9,9 +9,9 @@ is a word connected to that tile.
 17/1/2022:
 To do list:
 - Implementing the input controller.
-- When will game ends?
-- Do our game run both locally and on a network, or only on network? i.e. you have use 4 different terminals to connect to
-game and run?
+- When will localGame ends?
+- Do our localGame run both locally and on a network, or only on network? i.e. you have use 4 different terminals to connect to
+localGame and run?
 - https://www.youtube.com/watch?v=aIaFFPatJjY tictactoe multiplayer
 
 18/1/2022:
@@ -22,13 +22,13 @@ hashmap WordPlayed to store all the word previously has been played, among with 
 19/1/2022:
 - Blank tile: implement a method to ask the user to choose a letter, then convert it to a tile (v)
 
-ComputerPlayer ideas: Copy the game, determine all possible places to place a word, then use game.determinePossibleWordCombination()
+ComputerPlayer ideas: Copy the localGame, determine all possible places to place a word, then use localGame.determinePossibleWordCombination()
 to check which of the places have the highest score combination.
 
 - guard: starting position must be H8.
 - check if the starting position of the move already have the tile of the same kind. If not then pass the turn.
 
-- after the first round, the localPlayer have to put their tiles next to at least 1 existing tile on the board during the remaining game
+- after the first round, the localPlayer have to put their tiles next to at least 1 existing tile on the board during the remaining localGame
 - JUnit test: if the players use more letter of the same type then they have on the tray
 - putWordInSquare: guard - check whether the nextPosition already has a tile or not, if true, return null
 - Every localPlayer input should be turned into upper case letters
@@ -45,8 +45,8 @@ to check which of the places have the highest score combination.
 - List of implements to be done if the input method changed:
 + determineMove of localPlayer (v)
 + checkmove of localPlayer (v)
-+ isValidMove of game receives hashMap<string, string> (v)
-+ putWordInSquare of game (v)
++ isValidMove of localGame receives hashMap<string, string> (v)
++ putWordInSquare of localGame (v)
 + determinePossibleWordCombination (v)
 
 - implement linkedhashmap because it can index.
@@ -68,7 +68,7 @@ to check which of the places have the highest score combination.
 25/1/2022: Networking day.
 26/1/2022
 - Restructure class LocalPlayer and NetworkPlayer extends Interface player. deadline today (V)
-- Restructure class LocalController to control local game (Like a local server). deadline today (V)
+- Restructure class LocalController to control local localGame (Like a local server). deadline today (V)
 - Implement + Server
             + Client
             + ClientHandler
