@@ -44,6 +44,7 @@ public class Client implements Runnable {
     public Client(String name) {
         this.name = name;
         view = new NetworkView();
+        name = null;
     }
 
     @Override
@@ -55,6 +56,21 @@ public class Client implements Runnable {
         } catch (ExitProgram e) {
             view.showMessage("Unexpected error detected. Shutting down the connection...");
         }
+
+    // public void start() throws ExitProgram, IOException, ServerUnavailableException {
+    //     boolean running = true;
+    //     while(name == null || name.isBlank() || name.isEmpty()){
+    //         name = view.getString("Welcome to Scrabble!" + "\n Please enter your name: "
+    //                 + "(Your name shouldn't include space between letters. If your name has already existed, " +
+    //                 "you will be aborted from the ");
+    //         if (name.contains(" ") || name.isBlank() || name.isEmpty()) {
+    //             view.showMessage("Your name cannot include whitespace between letters. Please try again");
+    //             name = null;
+    //         }
+    //     }
+    //     clearConnection();
+    //     clientSideConnection();
+    //     handleHello();
 
         while (true) {
             String serverCommand;
@@ -214,7 +230,7 @@ public class Client implements Runnable {
 
             case ProtocolMessages.ERROR:
                 if (command[1].equals(DUPLICATE_NAME)) {
-                    view.showMessage("Name already chosen. Please choose another name and connect again " +
+                    view.showMessage("Name has already chosen. Please choose another name and connect again " +
                             "\n Shutting down connection...");
                     notifyClientAbort();
                     shutDown();

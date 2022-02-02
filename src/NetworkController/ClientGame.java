@@ -82,12 +82,12 @@ public class ClientGame {
             int length = letterAndSquareIndex.length();
             String letter = (letterAndSquareIndex.charAt(0) == '-') ? Character.toString(letterAndSquareIndex.charAt(1)) :
                     Character.toString(letterAndSquareIndex.charAt(0));
-            int index = (length == 1) ? letterAndSquareIndex.charAt(1)
-                    : (length == 2) ? letterAndSquareIndex.charAt(1) + letterAndSquareIndex.charAt(2)
-                    : letterAndSquareIndex.charAt(1) + letterAndSquareIndex.charAt(2) + letterAndSquareIndex.charAt(3);
+            String index = (length == 1) ? Character.toString(letterAndSquareIndex.charAt(1))
+                    : (length == 2) ? Character.toString(letterAndSquareIndex.charAt(1)) + Character.toString(letterAndSquareIndex.charAt(2))
+                    : Character.toString(letterAndSquareIndex.charAt(1)) + Character.toString(letterAndSquareIndex.charAt(2)) + Character.toString(letterAndSquareIndex.charAt(3));
 
-            String indexSquare = Integer.toString(index);
-            letterToSquare.put(indexSquare, letter);
+            //int indexSquare = Integer.toString(index);
+            letterToSquare.put(index, letter);
         }
 
         for(Map.Entry<String, String> entry: letterToSquare.entrySet()) {

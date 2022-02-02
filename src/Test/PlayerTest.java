@@ -18,7 +18,6 @@ class LocalPlayerTest {
     void setUp() {
         player1 = new LocalPlayer("nhat", 0);
         player1.setFinalPoints(100);
-
     }
 
     @Test
@@ -48,6 +47,5 @@ class LocalPlayerTest {
 
     @Test
     void testDetermineMove() {
-
     }
 }
