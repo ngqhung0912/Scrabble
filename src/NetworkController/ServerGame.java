@@ -286,18 +286,7 @@ public class ServerGame {
         ArrayList<Tile> tray = serverPlayers[currentPlayer].getTray();
         for (Tile tile: tray){
             if (character == '-' && character == tile.getLetter() ) {
-                String prompt = "Please choose one of the letters below:\n"
-                        + "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z\n";
-                try{
-//                    char input = UI.getChar(prompt);
-//                    tile.setLetter(input);
-                    return tile;
-
-                } catch (IllegalArgumentException e) {
-                    return null;
-//                } catch (IOException e) {
-//                    return null;
-                }
+                return tile;
             }
             else if (tile.getLetter() == character) {
                 return tile;
