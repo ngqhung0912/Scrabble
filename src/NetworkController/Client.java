@@ -28,12 +28,20 @@ public class Client {
 
     public Client() {
         view = new NetworkView();
+        name = null;
     }
 
     public void start() throws ExitProgram, IOException, ServerUnavailableException {
         boolean running = true;
-        name = view.getString("Welcome to Scrabble!" + "\n Please enter your name: ");
-
+        while(name == null || name.isBlank() || name.isEmpty()){
+            name = view.getString("Welcome to Scrabble!" + "\n Please enter your name: "
+                    + "(Your name shouldn't include space between letters. If your name has already existed, " +
+                    "you will be aborted from the ");
+            if (name.contains(" ") || name.isBlank() || name.isEmpty()) {
+                view.showMessage("Your name cannot include whitespace between letters. Please try again");
+                name = null;
+            }
+        }
         clearConnection();
         clientSideConnection();
         handleHello();
@@ -175,7 +183,7 @@ public class Client {
 
             case ProtocolMessages.ERROR:
                 if (command[1].equals(DUPLICATE_NAME)) {
-                    view.showMessage("Name already chosen. Please choose another name and connect again " +
+                    view.showMessage("Name has already chosen. Please choose another name and connect again " +
                             "\n Shutting down connection...");
                     notifyClientAbort();
                     shutDown();
