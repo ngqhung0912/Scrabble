@@ -24,9 +24,9 @@ public class LocalView implements View {
 
     /**
      * Prompt to get the user's input as char from terminal.
-     * @param prompt
+     * @param prompt the prompt to ask the user.
      * @return char input arguments.
-     * @throws IOException
+     * @throws IOException when there is input/output error.
      */
     public char getChar(String prompt) throws IOException {
          showMessage(prompt);
@@ -35,7 +35,7 @@ public class LocalView implements View {
 
     /**
      * update the local game.
-     * @param localGame
+     * @param localGame the current game.
      */
     public void update(LocalGame localGame) {
         showMessage("\n\n" + BoardConstructor.generateBoard(localGame.getBoard()) + "\n"
@@ -47,7 +47,7 @@ public class LocalView implements View {
 
     /**
      * Print result whenever there is a winner for local game.
-     * @param localGame
+     * @param localGame the current game.
      */
     public void printResult(LocalGame localGame) {
         if (localGame.isWinner() != null) showMessage("Congratulations! Player " + localGame.isWinner().getName() + " has won!");

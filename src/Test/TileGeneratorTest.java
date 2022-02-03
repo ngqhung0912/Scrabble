@@ -8,6 +8,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * @author Nhat Tran
+ * @version finale.
+ */
 class TileGeneratorTest {
     private TileGenerator tileGenerator;
     private TileDescription tileDescriptionA;
@@ -24,6 +28,9 @@ class TileGeneratorTest {
         tileZ = new Tile('Z', 10);
     }
 
+    /**
+     * Test generating the tiles.
+     */
     @Test
     void testGenerateTiles() {
         assertEquals(tileGenerator.generateTiles().size(), 100);

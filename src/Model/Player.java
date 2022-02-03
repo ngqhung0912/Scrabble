@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
+ * Represents each players in the Scrabble game.
  * @author Hung Nguyen
  * @version finale
  */
