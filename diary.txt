@@ -2,16 +2,16 @@
 - It was a productive day
 
 16/1/2022:
-- Logic for tray assigning in controller: Initialize player with
+- Logic for tray assigning in controller: Initialize localPlayer with
 - Save all words by players in the board in a dictionary, then re-loop the dictionary to find it later if there
 is a word connected to that tile.
 
 17/1/2022:
 To do list:
 - Implementing the input controller.
-- When will game ends?
-- Do our game run both locally and on a network, or only on network? i.e. you have use 4 different terminals to connect to
-game and run?
+- When will localGame ends?
+- Do our localGame run both locally and on a network, or only on network? i.e. you have use 4 different terminals to connect to
+localGame and run?
 - https://www.youtube.com/watch?v=aIaFFPatJjY tictactoe multiplayer
 
 18/1/2022:
@@ -22,16 +22,16 @@ hashmap WordPlayed to store all the word previously has been played, among with 
 19/1/2022:
 - Blank tile: implement a method to ask the user to choose a letter, then convert it to a tile (v)
 
-ComputerPlayer ideas: Copy the game, determine all possible places to place a word, then use game.determinePossibleWordCombination()
+ComputerPlayer ideas: Copy the localGame, determine all possible places to place a word, then use localGame.determinePossibleWordCombination()
 to check which of the places have the highest score combination.
 
-- guard: starting position must be H8.
+- guard: starting position must be H7.
 - check if the starting position of the move already have the tile of the same kind. If not then pass the turn.
 
-- after the first round, the player have to put their tiles next to at least 1 existing tile on the board during the remaining game
+- after the first round, the localPlayer have to put their tiles next to at least 1 existing tile on the board during the remaining localGame
 - JUnit test: if the players use more letter of the same type then they have on the tray
 - putWordInSquare: guard - check whether the nextPosition already has a tile or not, if true, return null
-- Every player input should be turned into upper case letters
+- Every localPlayer input should be turned into upper case letters
 
 22/1/2022
 - the square for new word input hasn't been append to other squares
@@ -43,10 +43,10 @@ to check which of the places have the highest score combination.
 - not possible to place tile above and below
 - new input method: Ask user to place each tiles separately into the desired square, instead of words.
 - List of implements to be done if the input method changed:
-+ determineMove of player (v)
-+ checkmove of player (v)
-+ isValidMove of game receives hashMap<string, string> (v)
-+ putWordInSquare of game (v)
++ determineMove of localPlayer (v)
++ checkmove of localPlayer (v)
++ isValidMove of localGame receives hashMap<string, string> (v)
++ putWordInSquare of localGame (v)
 + determinePossibleWordCombination (v)
 
 - implement linkedhashmap because it can index.
@@ -62,3 +62,45 @@ to check which of the places have the highest score combination.
 - The Scanner has a little buffer (1KB char buffer) as opposed to the BufferedReader (8KB byte buffer), but it's more
   than enough. BufferedReader is a bit faster as compared to scanner because scanner does parsing of input data and
   BufferedReader simply reads sequence of characters
+
+23/1/2022: We were tired.
+24/1/2022: I was super sick.
+25/1/2022: Networking day.
+26/1/2022
+- Restructure class LocalPlayer and NetworkPlayer extends Interface player. deadline today (V)
+- Restructure class LocalController to control local localGame (Like a local server). deadline today (V)
+- Implement + Server
+            + Client
+            + ClientHandler
+            + NetworkView
+
+- Bug: Cannot place tiles when all the tiles is on the left of the current word, i.e BAL on the left of D.
+
+
+29/1/2022:
+dear diary,
+
+today was a really productive day. We got a lot of work done - and also 6 episodes of the Office.
+
+- is our handling of error correct? error | errorname?
+
+
+30/1/2022:
+what's left to be done:
+-Javadoc (v)
+-Testing (v)
+-debugging for networking and gamelogic (v)
+-metric report
+-Academic skills
+-class diagram (1/3 v)
+-MVC description
+-overview of functional requirements
+-time limit
+
+31/1/2022
+- Debug in progress: Cannot remove entry from clients HashMap
+
+Multithreading is not working as expected...
+
+The server calls are always seems to be earlier than the thread call, i.e. the server will broadcast gameReady
+before the threads can even say hello to its clients.
