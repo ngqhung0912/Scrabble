@@ -31,15 +31,6 @@ class BoardTest {
         board.getSquare("O12").setTile(tileA);
         Board clonedBoard = board.clone();
 
-//        assertEquals(clonedBoard, board); //Not sure about
-//        assertEquals(clonedBoard.getSquare("A1").getTile(), board.getSquare("A1").getTile());
-//        assertEquals(clonedBoard.getSquare("B5").getTile(), board.getSquare("B5").getTile());
-//        assertEquals(clonedBoard.getSquare("C8").getTile(), board.getSquare("C8").getTile());
-//        assertEquals(clonedBoard.getSquare("O12").getTile(), board.getSquare("O12").getTile());
-//        assertEquals(clonedBoard.getSquare("H7").getType(), board.getSquare("H7").getType());
-//
-//        assertNotEquals(clonedBoard.getSquare("A1"),board.getSquare("O12"));
-
         for(int i = 0; i < board.SIZE * board.SIZE; i++) {
             assertEquals(board.getSquare(i).getLocation(), clonedBoard.getSquare(i).getLocation());
         }

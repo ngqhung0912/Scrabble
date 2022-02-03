@@ -40,7 +40,7 @@ public class ClientHandler implements Runnable{
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.server = server;
-            this.view = new NetworkView();
+            this.view = server.getView();
             this.hasTimeLimit = false;
             this.running = true;
             this.hasChatFunction = false;
