@@ -7,11 +7,7 @@ package NetworkController;
  */
 
 import Model.*;
-import View.*;
-import WordChecker.main.java.InMemoryScrabbleWordChecker;
-import WordChecker.main.java.ScrabbleWordChecker;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -65,9 +61,12 @@ public class ClientGame {
         }
     }
 
-    protected void removeSwapTiles(String[] swapTiles){
-        for (String tile: swapTiles) {
-            getCurrentPlayer().getTray().remove(determineTileFromInput(tile));
+    protected void removeTiles(String[] swapTiles){
+        if (getCurrentPlayer().getTray().size() > 0) {
+            for (String tileAndSquare: swapTiles) {
+                String tile = Character.toString(tileAndSquare.charAt(0));
+                getCurrentPlayer().getTray().remove(determineTileFromInput(tile));
+            }
         }
     }
 
@@ -78,6 +77,7 @@ public class ClientGame {
 
     public void opponentMakeMove (String[] move, int points) {
         putTileToSquare(move);
+        removeTiles(move);
         setOpponentPoints(points);
     }
 
@@ -144,7 +144,7 @@ public class ClientGame {
      * Update the current board with the new total points of the current player
      */
     public ArrayList<String> getLetterFromTray(ArrayList<Tile> tray) {
-        ArrayList<String> letterTray = new ArrayList<String>();
+        ArrayList<String> letterTray = new ArrayList<>();
         for (Tile tile : tray) {
             letterTray.add(Character.toString(tile.getLetter()));
         }
@@ -153,13 +153,16 @@ public class ClientGame {
 
 
     private Tile determineTileFromInput(String letter) {
-        //To be re-implemented
-        if (letter.contains("-")) {
-           char blankLetter = letter.charAt(1);
-           Tile tile = new Tile(blankLetter, 0);
-           return tile;
+        ArrayList<Tile> tray = getCurrentPlayer().getTray();
+        for (Tile tile: tray){
+            if (letter.equals("-") && letter.equals(Character.toString(tile.getLetter()))) {
+                return tile;
+            }
+            else if (letter.equals(Character.toString(tile.getLetter()))) {
+                return tile;
+            }
         }
-        return new Tile(letter.charAt(0), 0);
+        return null;
     }
 
     private Tile determineTileFromServer(String letter) {

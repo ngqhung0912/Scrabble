@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ServerGame {
 
     private Server server;
-    private List<Tile> tileBag;
+    private volatile List<Tile> tileBag;
     private Board board;
     private int passCount;
     private int currentPlayer;
@@ -104,8 +104,7 @@ public class ServerGame {
         ArrayList<Tile> tray = currentPlayer.getTray();
         int bagSize = tileBag.size();
 
-        int missingTiles = bagSize == 0 ? 0 : bagSize < (7 - tray.size()) ? bagSize : 7 - tray.size();
-        missingTiles = bagSize < missingTiles ? bagSize : missingTiles;
+        int missingTiles = bagSize == 0 ? 0 : Math.min(bagSize, (7 - tray.size()));
 
         String tileSend = "";
 
@@ -270,10 +269,11 @@ public class ServerGame {
         return (xCoordinate + yPosition);
     }
 
-    protected void swapTray(char[] chars) {
+    protected void swapTray(String[] chars) {
+
         ArrayList<Tile> shuffledTiles = new ArrayList<>();
-        for (char character : chars) {
-            Tile tile = determineTileFromChar(character);
+        for (String character : chars) {
+            Tile tile = determineTileFromString(character);
             shuffledTiles.add(tile);
         }
         for (Tile tile: shuffledTiles) {
@@ -282,13 +282,13 @@ public class ServerGame {
         }
     }
 
-    private Tile determineTileFromChar(char character) {
+    private Tile determineTileFromString(String character) {
         ArrayList<Tile> tray = serverPlayers[currentPlayer].getTray();
         for (Tile tile: tray){
-            if (character == '-' && character == tile.getLetter() ) {
+            if (character.equals("-") && character.equals(Character.toString(tile.getLetter()))) {
                 return tile;
             }
-            else if (tile.getLetter() == character) {
+            else if (character.equals(Character.toString(tile.getLetter()))) {
                 return tile;
             }
         }
@@ -416,9 +416,9 @@ public class ServerGame {
         ArrayList<Square> playSquares = new ArrayList<>();
 
         for (Map.Entry<String, String> move : moves.entrySet()) {
-            char character = move.getValue().toCharArray()[0];
+            String character = move.getValue();
             Square location = copyBoard.getSquare(move.getKey());
-            Tile tile = determineTileFromChar(character);
+            Tile tile = determineTileFromString(character);
             if (tile == null) {
                 return null;
             }
@@ -533,6 +533,8 @@ public class ServerGame {
                 }
 
             } catch (NullPointerException e) {
+                e.printStackTrace();
+                System.out.println("Null pointer exception catched in getNextValidSquares");
                 continue;
             }
 
@@ -569,6 +571,11 @@ public class ServerGame {
         return tileBag;
     }
 
+    public void setAbort(int id) {
+        getPlayerByID(id).setAborted(true);
+
+    }
+
     public void start() {
         while (!gameOver()) {
             server.getView().update(this);
@@ -583,15 +590,15 @@ public class ServerGame {
                     while (moveType == null) {
                         try { wait(); }
                         catch (InterruptedException e) {
+                            System.out.println("Wait interrupted.");
                             continue;
                         }
                     }
                 }
-
+                String[] moves = move.split(ProtocolMessages.AS);
                 switch (moveType) {
                     case ProtocolMessages.MOVE:
                         System.out.println("MOVE. " + moveType + move);
-                        String[] moves = move.split(ProtocolMessages.AS);
                         boolean validMove = makeMove(moves);
                         if (validMove) {
                             System.out.println("Move validated.");
@@ -604,7 +611,9 @@ public class ServerGame {
                         server.broadcastInvalidMove(currentClient);
                     case ProtocolMessages.PASS:
                         System.out.println("PASS. " + moveType + move);
-                        if (move != null) swapTray(move.toCharArray());
+                        if (!move.equals("Pass")) {
+                            swapTray(moves);
+                        }
                         server.broadcastPass();
                         incrementPassCount();
                         break;

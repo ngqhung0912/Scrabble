@@ -32,7 +32,7 @@ public class NetworkView extends View {
 
     public boolean getBoolean(String prompt) throws IOException{
         showMessage(prompt);
-        return bf.readLine().equals("Y") ? true : false;
+        return bf.readLine().equals("Y") || bf.readLine().equals("y");
     }
 
     public InetAddress getIp() throws IOException {

@@ -42,7 +42,6 @@ public class ClientHandler implements Runnable{
             this.running = true;
             this.hasChatFunction = false;
             this.isReady = false;
-//            this.serverGame = server.serverGame;
             this.clientId = id;
 
         } catch (IOException e) {
@@ -56,6 +55,7 @@ public class ClientHandler implements Runnable{
     {
         server.removeClient(this);
         running = false;
+        serverGame.getPlayerByID(this.getClientId()).setAborted(true);
         view.showMessage(this + " has been shutdown. ID: " + this.clientId);
     }
 
@@ -77,9 +77,9 @@ public class ClientHandler implements Runnable{
             while (running);
 
         } catch (IOException e) {
+            view.showMessage("IOException in run of: " + this);
             e.printStackTrace();
             shutDown();
-            view.showMessage(this + " has been disconnected.");
         }
     }
 
@@ -126,40 +126,20 @@ public class ClientHandler implements Runnable{
             case ProtocolMessages.ABORT:
                 server.broadcastAbort(this);
                 view.showMessage(this + "(" + clientId +") has aborted.");
-                if (server.getGameState()) { serverGame.getPlayerByID(clientId).setAborted(true); }
+                if (server.getGameState()) {
+                    serverGame.setAbort(this.clientId);
+                    serverGame.doMove(this, ProtocolMessages.PASS, "Pass");
+                }
                 else shutDown();
                 break;
 
             case ProtocolMessages.MOVE:
-//                if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
-//                else {
-//                    String[] moves = command[1].split(ProtocolMessages.AS);
-//
-//
-//                    boolean validMove = serverGame.makeMove(moves);
-//                    if (validMove) {
-//                        // to be implement
-//                        int turnScore = serverGame.getTurnScore();
-//                        serverGame.resetTurnScore();
-//                        serverGame.resetPassCount();
-//                        server.broadcastMove(command[1],turnScore);
-//                    }
-//                    else {
-//                        server.broadcastPass();
-//                        serverGame.incrementPassCount();
-//                    }
-//                    serverGame.setNextPlayer();
-//                }
             case ProtocolMessages.PASS:
-//                if (serverGame.getCurrentPlayerID() != clientId) sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
-//                else {
-//                    serverGame.swapTray(command[1].toCharArray());
-//                    server.broadcastMove(command[1],0);
-//                    serverGame.setNextPlayer();
-//                    serverGame.incrementPassCount();
-//                }
                 if (server.getGameState()) {
-                    serverGame.doMove(this, command[0], command[1]);
+                    String move;
+                    if (command.length == 1) move = "Pass";
+                    else move = command[1];
+                    serverGame.doMove(this, command[0], move);
                 } else {
                     sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
                 }
@@ -167,15 +147,6 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    private void determineTileFromMove(String[] command) {
-        String[] moves = command[1].split(ProtocolMessages.AS);
-        String[] tileUsed = new String[moves.length];
-        for (int i = 1; i < moves.length; i++) {
-            tileUsed[i] = moves[i].split("")[0];
-        }
-        String tileSend = serverGame.addNewTilesToTray(this.getClientId());
-        server.broadcastTiles(this,tileSend);
-    }
 
     protected boolean hasTimeLimit() {
         return hasTimeLimit;
@@ -199,6 +170,7 @@ public class ClientHandler implements Runnable{
             out.flush();
         } catch (IOException e) {
             e.printStackTrace();
+            view.showMessage("Cannot send message to client: " + this + "(client ID: " + clientId + ")");
         }
     }
 
@@ -207,6 +179,7 @@ public class ClientHandler implements Runnable{
             out.write(ProtocolMessages.ERROR + ProtocolMessages.SEPARATOR + error);
             out.flush();
         } catch (IOException e) {
+            view.showMessage("Cannot send error to client: " + this);
             e.printStackTrace();
         }
     }

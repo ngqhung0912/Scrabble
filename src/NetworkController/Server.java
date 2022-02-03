@@ -18,6 +18,7 @@ public class Server implements Runnable {
     private boolean timeLimitFeature;
     volatile ServerGame serverGame;
     private boolean gameStart;
+    private boolean serverReady;
     private Lock lock;
 
 
@@ -28,6 +29,7 @@ public class Server implements Runnable {
         timeLimitFeature = false;
         gameStart = false;
         lock = new ReentrantLock();
+        serverReady = false;
     }
 
     public boolean checkName(String name) {
@@ -98,19 +100,22 @@ public class Server implements Runnable {
 
         while (true) {
             try {
-                view.showMessage("Waiting for connection...");
-                Socket clientSocket = serverSocket.accept();
-                view.showMessage("Player " + clientID + " has connected!!!");
-
-                ClientHandler client = new ClientHandler(clientSocket, this, clientID);
-                Thread clientThread = new Thread(client);
-                clientThread.start();
-                Thread.sleep(200);
-                clientID++;
+                if (serverReady || gameStart) break;
+                else {
+                    view.showMessage("Waiting for connection...");
+                    Socket clientSocket = serverSocket.accept();
+                    view.showMessage("Player " + clientID + " has connected!!!");
+                    ClientHandler client = new ClientHandler(clientSocket, this, clientID);
+                    Thread clientThread = new Thread(client);
+                    clientThread.start();
+                    Thread.sleep(200);
+                    clientID++;
+                }
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
                 for (ClientHandler client : clients.values()) {
                     client.sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
+                    break;
                 }
             }
         }
@@ -155,6 +160,7 @@ public class Server implements Runnable {
     }
 
     public void play() throws IOException, InterruptedException {
+        serverReady = true;
         while (!checkReadyStatus()) {
             Thread.sleep(10000);
             int readyCount = 0;
@@ -187,7 +193,6 @@ public class Server implements Runnable {
         serverGame = new ServerGame(this);
         broadcastStartGame();
         gameStart = true;
-        view.showMessage("Game Started.");
         setServerGameForHandlers();
         serverGame.start();
 
