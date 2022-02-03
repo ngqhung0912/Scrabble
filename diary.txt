@@ -87,12 +87,12 @@ today was a really productive day. We got a lot of work done - and also 6 episod
 
 30/1/2022:
 what's left to be done:
--Javadoc
--Testing
--debugging for networking and gamelogic
+-Javadoc (v)
+-Testing (v)
+-debugging for networking and gamelogic (v)
 -metric report
 -Academic skills
--class diagram
+-class diagram (1/3 v)
 -MVC description
 -overview of functional requirements
 -time limit

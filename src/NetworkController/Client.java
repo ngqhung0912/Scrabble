@@ -2,6 +2,7 @@ package NetworkController;
 
 import Exceptions.ExitProgram;
 import Exceptions.ServerUnavailableException;
+import Model.ClientGame;
 import View.NetworkView;
 
 import java.io.*;
@@ -11,6 +12,11 @@ import java.util.Scanner;
 
 import static NetworkController.ProtocolMessages.*;
 
+/**
+ * This class connects the player to the server and allows the player to join an online Scrabble Game.
+ * @author Nhat Tran
+ * @version finale
+ */
 public class Client implements Runnable {
     private String name;
     private boolean hasFeature;
@@ -22,7 +28,6 @@ public class Client implements Runnable {
 
     private ClientGame game;
     private String[] playersNames;
-    private BufferedReader clientPrinter;
 
     public static void main(String[] args)  {
         System.out.println("Welcome to Scrabble!" + "\n Please enter your name: "
@@ -37,17 +42,22 @@ public class Client implements Runnable {
         Client client = new Client(name);
         Thread clientThread = new Thread(client);
         clientThread.start();
-
-
     }
+
+    /**
+     * Client Constructor.
+     * @param name of the client.
+     */
 
     public Client(String name) {
         this.name = name;
         view = new NetworkView();
     }
 
+    /**
+     * run method for the thread.
+     */
     @Override
-
     public void run() {
         try {
             clientSideConnection();
@@ -69,6 +79,10 @@ public class Client implements Runnable {
 
     }
 
+    /**
+     * Establish connection on the client side.
+     * @throws ExitProgram
+     */
     public void clientSideConnection() throws ExitProgram {
         clearConnection();
         while (serverSock == null) {
@@ -91,6 +105,9 @@ public class Client implements Runnable {
         }
     }
 
+    /**
+     * clear all connection to the server.
+     */
     public void clearConnection() {
         serverSock = null;
         in = null;
@@ -98,6 +115,9 @@ public class Client implements Runnable {
 
     }
 
+    /**
+     * handle the user's move whenver it is their turn.
+     */
     private void handleUserTurn() {
         String promptTurn = "It's your turn. " + "\nInput format: If you want to put a words, " +
                 "for example DOG into the board," +
@@ -129,6 +149,12 @@ public class Client implements Runnable {
         }
     }
 
+    /**
+     * handle the server message whenver there is an incoming message.
+     * @param serverCommand The message from server.
+     * @throws IOException when there is input error.
+     * @throws ServerUnavailableException when server is unavailable.
+     */
     public void handleServerCommand(String serverCommand) throws IOException, ServerUnavailableException {
         view.showMessage("Message from server: " + serverCommand);
         String[] command = serverCommand.split(ProtocolMessages.SEPARATOR);
@@ -181,7 +207,7 @@ public class Client implements Runnable {
             case ProtocolMessages.MOVE:
                 game.setCurrentPlayer(command[1]);
                 String[] move = command[2].split(ProtocolMessages.AS);
-                game.opponentMakeMove(move, Integer.parseInt(command[3]));
+                game.makeMove(move, Integer.parseInt(command[3]));
                 view.update(game);
                 break;
 
@@ -191,7 +217,7 @@ public class Client implements Runnable {
                 break;
 
             case ProtocolMessages.GAMEOVER:
-                view.printResult(game, command[1]);
+                view.printResult(command[1]);
                 break;
 
             case ProtocolMessages.ERROR:
@@ -215,7 +241,11 @@ public class Client implements Runnable {
         }
     }
 
-
+    /**
+     * sending message to the server
+     * @param msg to send
+     * @throws ServerUnavailableException when server is unavailable.
+     */
     public static synchronized void sendMessage(String msg) throws ServerUnavailableException {
         if (out != null) {
             try {
@@ -230,6 +260,13 @@ public class Client implements Runnable {
             throw new ServerUnavailableException("Server not detected.");
         }
     }
+
+    /**
+     * reading message from sever whenever there is one.
+     * @return the message from server
+     * @throws ServerUnavailableException when server is not detected.
+     * @throws IOException when there is an error in the bufferedReader and Writer.
+     */
 
     public String readLineFromServer() throws ServerUnavailableException, IOException {
         if (in != null) {
@@ -248,29 +285,10 @@ public class Client implements Runnable {
         }
     }
 
-//    public String readMultipleLinesFromServer()
-//            throws ServerUnavailableException {
-//        if (in != null) {
-//            try {
-//                // Read and return answer from Server
-//                StringBuilder sb = new StringBuilder();
-//                for (String line = in.readLine(); line != null
-//                        && !line.equals(ProtocolMessages.EOT);
-//                     line = in.readLine()) {
-//                    sb.append(line + System.lineSeparator());
-//                }
-//                return sb.toString();
-//            } catch (IOException e) {
-//                throw new ServerUnavailableException("Could not read "
-//                        + "from server.");
-//            }
-//        } else {
-//            throw new ServerUnavailableException("Could not read "
-//                    + "from server.");
-//        }
-//    }
 
-
+    /**
+     * handling handshake with the server.
+     */
     public void handleHello() {
         try {
             String answer = ProtocolMessages.HELLO + ProtocolMessages.SEPARATOR + name
@@ -282,6 +300,11 @@ public class Client implements Runnable {
         }
     }
 
+    /**
+     * notify the server that the client is ready.
+     * @throws ServerUnavailableException when server is not detected.
+     * @throws IOException when there is an error in the bufferedReader and Writer.
+     */
     public void notifyClientReady() throws ServerUnavailableException, IOException {
         boolean answer = view.getBoolean("The game is ready to start. Do you want to start now? " +
                 "\n Enter \"Y\" to start or \"N\" to abort");
@@ -290,18 +313,32 @@ public class Client implements Runnable {
         sendMessage(command);
     }
 
+    /**
+     * notify the server that the client has aborted.
+     * @throws ServerUnavailableException
+     */
+
     public void notifyClientAbort() throws ServerUnavailableException {
         String message = ProtocolMessages.ABORT + ProtocolMessages.SEPARATOR + name+ "\n";
         sendMessage(message);
     }
 
+    /**
+     * making move on behalf of the client.
+     * @param clientMoves String that represents the client's move
+     * @throws ServerUnavailableException when server is not detected.
+     * @throws IOException when there is an error in the bufferedReader and Writer.
+     */
     public void doMove(String[] clientMoves) throws IOException, ServerUnavailableException {
-        String[] clientInput = game.getCurrentPlayer().determineMove(clientMoves);
-
-        String message = //(game.makeMove(clientMoves)) ?
-                ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR + game.sendMoveToServer(clientMoves);
+        String message = ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR + game.formatMoveToServer(clientMoves);
         sendMessage(message);
     }
+
+    /**
+     * making swap move on behalf of client.
+     * @param swapTiles String Array that represents the tiles to swap/
+     * @throws ServerUnavailableException when server is not detected.
+     */
 
     public void doSwapWithTiles(String[] swapTiles) throws ServerUnavailableException {
         game.removeTiles(swapTiles);
@@ -313,6 +350,9 @@ public class Client implements Runnable {
         sendMessage(message+ "\n");
     }
 
+    /**
+     * shutdown all connection to the server.
+     */
 
     public void shutDown(){
         view.showMessage("Closing the connection...");

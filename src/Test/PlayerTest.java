@@ -1,9 +1,6 @@
 package Test;
 
-import LocalController.LocalPlayer;
-import Model.Player;
-import NetworkController.ClientPlayer;
-import NetworkController.ServerPlayer;
+import Model.LocalPlayer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"Exceptions"},{"l":"LocalController"},{"l":"Model"},{"l":"NetworkController"},{"l":"Test"},{"l":"View"},{"l":"WordChecker.main.java"}]

@@ -22,6 +22,11 @@ public class Square {
         this.tile = null;
     }
 
+    /**
+     * getter for the location
+     * @return
+     */
+
     public String getLocation() {
         return  xPosition + "" +  yPosition;
     }
