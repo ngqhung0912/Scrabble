@@ -25,7 +25,7 @@ hashmap WordPlayed to store all the word previously has been played, among with 
 ComputerPlayer ideas: Copy the localGame, determine all possible places to place a word, then use localGame.determinePossibleWordCombination()
 to check which of the places have the highest score combination.
 
-- guard: starting position must be H8.
+- guard: starting position must be H7.
 - check if the starting position of the move already have the tile of the same kind. If not then pass the turn.
 
 - after the first round, the localPlayer have to put their tiles next to at least 1 existing tile on the board during the remaining localGame

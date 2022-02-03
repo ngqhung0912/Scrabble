@@ -47,6 +47,7 @@ class BoardTest {
 
     @Test
     void getSquareIndex() {
+        assertNull(board.getSquare(225));
         assertEquals(board.getSquare(10).getxPosition(), 10);
         assertEquals(board.getSquare(14).getyPosition(), 0);
 

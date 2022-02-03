@@ -10,20 +10,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TileGeneratorTest {
     private TileGenerator tileGenerator;
-    private Tile tile1;
-    private Tile tile2;
+    private TileDescription tileDescriptionA;
+    private TileDescription tileDescriptionZ;
+    private Tile tileA;
+    private Tile tileZ;
 
     @BeforeEach
     void setUp() {
         tileGenerator = new TileGenerator();
-        tile1 = new Tile('A', 1);
-        tile2 = new Tile('Z', 10);
+        tileDescriptionA = new TileDescription('A', 9, 1);
+        tileDescriptionZ = new TileDescription('Z', 6,10);
+        tileA = new Tile('A', 1);
+        tileZ = new Tile('Z', 10);
     }
 
     @Test
     void testGenerateTiles() {
         assertEquals(tileGenerator.generateTiles().size(), 100);
-        assertEquals(tile1.getLetter(), 'A');
-        assertNotEquals(tile2.getPoint(), 5);
+        assertEquals(tileDescriptionA.getLetter(), tileA.getLetter());
+        assertEquals(tileDescriptionZ.getPoints(), tileZ.getPoint());
     }
 }
