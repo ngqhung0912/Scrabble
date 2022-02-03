@@ -50,10 +50,6 @@ public class TileGenerator {
                 tiles.add(new Tile(tileDescription.getLetter(), tileDescription.getPoints()));
             }
         }
-
         return tiles;
-
     }
-
-
 }

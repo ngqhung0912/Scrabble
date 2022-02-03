@@ -9,15 +9,15 @@ import java.io.IOException;
 public interface View {
     /**
      * show the message to the terminal
-     * @param message
+     * @param message the message to send.
      */
     void showMessage(String message);
 
     /**
      * Prompt to get the user's input as string from the terminal.
-     * @param prompt
+     * @param prompt the prompt to ask the user.
      * @return String input arguments.
-     * @throws IOException
+     * @throws IOException when there is input/output error.
      */
     String getString(String prompt) throws IOException;
 }

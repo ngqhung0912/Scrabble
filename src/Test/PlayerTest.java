@@ -6,11 +6,12 @@ import Model.TileDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+/**
+ * Test the local player's logic.
+ * @author Nhat Tran.
+ * @version finale.
+ */
 class LocalPlayerTest {
     private LocalPlayer player1;
     private LocalPlayer player2;
@@ -21,6 +22,9 @@ class LocalPlayerTest {
         player2 = new LocalPlayer("hung", 50);
     }
 
+    /**
+     * test setting the tray of the player.
+     */
     @Test
     void setTray() {
         assertTrue(player1.getTray().size() == 0);
@@ -36,6 +40,9 @@ class LocalPlayerTest {
     }
 
 
+    /**
+     * Test adding points to the player.
+     */
     @Test
     void addPoints() {
         player1.addPoints(100);
@@ -44,6 +51,9 @@ class LocalPlayerTest {
         assertEquals(player1.getTotalPoints(), 113);
     }
 
+    /**
+     * Test comparing the player.
+     */
     @Test
     void compareTo() {
         player1.setFinalPoints(100);

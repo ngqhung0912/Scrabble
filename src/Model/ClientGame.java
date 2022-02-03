@@ -132,7 +132,7 @@ public class ClientGame {
 
     /**
      * set the point sent by the server to their respective players.
-     * @param points
+     * @param points the point to set.
      */
     protected void setPoints(int points) {
         getCurrentPlayer().addPoints(points);
@@ -171,7 +171,7 @@ public class ClientGame {
 
     /**
      * Getting a string array representation of a tray.
-     *  @param tray
+     *  @param tray player's tray.
      * @return return the String array represents the tray.
      *
      */

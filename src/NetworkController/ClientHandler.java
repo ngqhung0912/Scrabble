@@ -1,5 +1,6 @@
 package NetworkController;
 
+import Model.ServerGame;
 import View.NetworkView;
 
 import java.io.*;
@@ -57,7 +58,7 @@ public class ClientHandler implements Runnable{
      * @param serverGame the serverGame that handles this client.
      */
 
-    protected void setServerGame (ServerGame serverGame) {this.serverGame = serverGame;}
+    public void setServerGame (ServerGame serverGame) {this.serverGame = serverGame;}
 
     /**
      * shut down the connection and remove this thread from the server.
@@ -170,7 +171,7 @@ public class ClientHandler implements Runnable{
      * check the time limit feature of the client.
      * @return true if this client has a time limit feature, false otherwise.
      */
-    protected boolean hasTimeLimit() {
+    public boolean hasTimeLimit() {
         return hasTimeLimit;
     }
 
@@ -178,7 +179,7 @@ public class ClientHandler implements Runnable{
      * check the ready status of the client
      * @return true if this client is ready, false otherwise.
      */
-    protected boolean isReady() {return isReady;}
+    public boolean isReady() {return isReady;}
 
     /**
      * setter for the client's name.
@@ -203,7 +204,7 @@ public class ClientHandler implements Runnable{
      * @param message to send.
      */
 
-    protected void sendMessageToClient(String message) {
+    public void sendMessageToClient(String message) {
         try {
             out.write(message);
             out.flush();
@@ -214,10 +215,10 @@ public class ClientHandler implements Runnable{
     }
     /**
      * send error to the client.
-     * @param error
+     * @param error the error to send
      */
 
-    protected void sendErrorToClient(String error) {
+    public void sendErrorToClient(String error) {
         try {
             out.write(ProtocolMessages.ERROR + ProtocolMessages.SEPARATOR + error);
             out.flush();
@@ -232,7 +233,7 @@ public class ClientHandler implements Runnable{
      * @return client's ID.
      */
 
-    protected int getClientId() {
+    public int getClientId() {
         return clientId;
     }
 

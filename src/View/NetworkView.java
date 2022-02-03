@@ -1,7 +1,7 @@
 package View;
 
 import Model.ClientGame;
-import NetworkController.ServerGame;
+import Model.ServerGame;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 /**
+ * The View for network game.
  * @author Hung Nguyen
  * @version finale
  */
@@ -58,9 +59,9 @@ public class NetworkView implements View {
 
     /**
      * prompt the user to input a boolean.
-     * @param prompt
+     * @param prompt the prompt to ask the user.
      * @return true if user enter Y, false otherwise.
-     * @throws IOException
+     * @throws IOException when there is input/output error.
      */
     public boolean getBoolean(String prompt) throws IOException{
         showMessage(prompt);
@@ -70,7 +71,7 @@ public class NetworkView implements View {
     /**
      * Get the Ip address to connect to server
      * @return the IP address.
-     * @throws IOException
+     * @throws IOException when there is input/output error.
      */
     public InetAddress getIp() throws IOException {
         InetAddress addr = null;

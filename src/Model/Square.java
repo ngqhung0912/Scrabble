@@ -1,6 +1,7 @@
 package Model;
 
 /**
+ * Represent a square in the Scrabble Board.
  * @author Hung Nguyen
  * @version 0.1
  */
@@ -11,9 +12,10 @@ public class Square {
     private int yPosition;
 
     /**
-     * Square Constructor
-     * @param type of the square, indicated by SquareType enum
-     *
+     * Square Constructor.
+     * @param type the type of square.
+     * @param xPosition x position of the square.
+     * @param yPosition y position of the square.
      */
     public Square(SquareType type, int xPosition, int yPosition) {
         this.type = type;
@@ -24,7 +26,7 @@ public class Square {
 
     /**
      * getter for the location
-     * @return
+     * @return location.
      */
 
     public String getLocation() {
@@ -58,7 +60,7 @@ public class Square {
 
     /**
      * Set the type of this square, when initialize board.
-     * @param type
+     * @param type the type of the tile.
      */
     public void setType(SquareType type) {
         this.type = type;
@@ -80,7 +82,4 @@ public class Square {
         return tile == null ? false : true;
     }
 
-//    public void reset (){
-//        tile = null;
-//    }
 }
