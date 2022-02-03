@@ -1,6 +1,7 @@
 package Model;
 
 /**
+ * Describes the quantity of the each type of tiles needed in the game.
  * @author Nhat Tran.
  * @version finale
  */

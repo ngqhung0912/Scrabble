@@ -81,7 +81,7 @@ public class Client implements Runnable {
 
     /**
      * Establish connection on the client side.
-     * @throws ExitProgram
+     * @throws ExitProgram when the program has exited.
      */
     public void clientSideConnection() throws ExitProgram {
         clearConnection();
@@ -315,7 +315,7 @@ public class Client implements Runnable {
 
     /**
      * notify the server that the client has aborted.
-     * @throws ServerUnavailableException
+     * @throws ServerUnavailableException when there is no server available.
      */
 
     public void notifyClientAbort() throws ServerUnavailableException {

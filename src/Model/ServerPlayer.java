@@ -1,6 +1,6 @@
-package NetworkController;
+package Model;
 
-import Model.Player;
+import NetworkController.ClientHandler;
 
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ public class ServerPlayer extends Player {
 
      /**
       * Constructor to the server Player.
-      * @param client
+      * @param client the client that this player represents.
       */
      public ServerPlayer(ClientHandler client) {
           super(client.toString(), client.getClientId());
@@ -42,7 +42,7 @@ public class ServerPlayer extends Player {
 
      /**
       * set the aborted state for this player
-      * @param aborted
+      * @param aborted true
       */
      public void setAborted(boolean aborted) {
           this.aborted = aborted;

@@ -43,9 +43,6 @@ public class LocalPlayer extends Player  {
      }
 
 
-     /**
-      * Main class for testing.
-      */
      public static void main(String[] args) throws IOException {
           LocalPlayer local1 = new LocalPlayer("nhat", 0);
           LocalPlayer local2 = new LocalPlayer("xon", 1);

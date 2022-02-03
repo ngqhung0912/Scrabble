@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import Model.ServerGame;
+import Model.ServerPlayer;
 import View.NetworkView;
 
 /**
@@ -85,7 +87,7 @@ public class Server implements Runnable {
 
     /**
      * check if all clients is ready or not
-     * @returntrue if all clients are ready, false otherwise.
+     * @return true if all clients are ready, false otherwise.
      */
     private boolean checkReadyStatus() {
         for (ClientHandler client : clients.values()) {
@@ -99,7 +101,7 @@ public class Server implements Runnable {
      * @return joined player's name.
      */
 
-    protected String getJoinedPlayersName() {
+    public String getJoinedPlayersName() {
         String joinedPlayers = "";
         for (ClientHandler client : clients.values()) {
             joinedPlayers += client.toString() + ProtocolMessages.AS;
@@ -111,7 +113,7 @@ public class Server implements Runnable {
      * getter for all the accepted functions in the game.
      * @return a string represent the functions.
      */
-    protected String getAcceptedFunctions() {
+    public String getAcceptedFunctions() {
         String Functions = "";
         if (timeLimitFeature) Functions += ProtocolMessages.TEAM_PLAY_FLAG;
         return Functions;
@@ -121,7 +123,7 @@ public class Server implements Runnable {
      * put the client to the client's list after validating it's name.
      * @param client to be put.
      */
-    protected void putClientToClientList(ClientHandler client) {
+    public void putClientToClientList(ClientHandler client) {
         try {
             lock.lock();
             clients.put(clientID, client);
@@ -180,7 +182,6 @@ public class Server implements Runnable {
             while (true) {
                 try {
                     int numPlayers = server.getClients().size();
-
                     if (numPlayers == 4) {
                         // broadcast welcome message
                         timeLimitFeature = checkHasTimeLimit();
@@ -204,7 +205,7 @@ public class Server implements Runnable {
      * getter for the hashmap represents all the clients.
      * @return clients hash map.
      */
-    protected ConcurrentHashMap<Integer, ClientHandler> getClients() {
+    public ConcurrentHashMap<Integer, ClientHandler> getClients() {
         return clients;
     }
 
@@ -254,7 +255,7 @@ public class Server implements Runnable {
     /**
      * setter for serverGame for clientHandlers after creating a game.
      */
-    protected void setServerGameForHandlers() {
+    public void setServerGameForHandlers() {
         for (ClientHandler client : clients.values()) {
             client.setServerGame(serverGame);
         }
@@ -264,7 +265,7 @@ public class Server implements Runnable {
      * Broadcast to all clients that there is one client has aborted.
      * @param abortedClient the aborted client.
      */
-    protected void broadcastAbort(ClientHandler abortedClient) {
+    public void broadcastAbort(ClientHandler abortedClient) {
         for (ClientHandler client : clients.values()) {
             if (client.getClientId() != abortedClient.getClientId()) {
                 client.sendMessageToClient(ProtocolMessages.ABORT + ProtocolMessages.SEPARATOR + abortedClient + "\n");
@@ -278,7 +279,7 @@ public class Server implements Runnable {
      * Broadcast to all clients that a new client has just joined.
      * @param newlyJoined the newly joined client.
      */
-    protected void broadcastWelcomeMessage(ClientHandler newlyJoined) {
+    public void broadcastWelcomeMessage(ClientHandler newlyJoined) {
         String message = ProtocolMessages.WELCOME + ProtocolMessages.SEPARATOR + newlyJoined.toString();
         if (newlyJoined.hasTimeLimit()) message += ProtocolMessages.SEPARATOR + ProtocolMessages.TURN_TIME_FLAG;
         for (ClientHandler client : clients.values()) {
@@ -292,7 +293,7 @@ public class Server implements Runnable {
      * @param client the target client.
      * @param tiles to send.
      */
-    protected void broadcastTiles(ClientHandler client, String tiles) {
+    public void broadcastTiles(ClientHandler client, String tiles) {
         client.sendMessageToClient(ProtocolMessages.TILES + ProtocolMessages.SEPARATOR + tiles + "\n");
         view.showMessage("tile broadcast: " + tiles + " to " + client.getClientId());
     }
@@ -332,7 +333,7 @@ public class Server implements Runnable {
      * Broadcast to a specific client that it is their turn.
      * @param currentClient the targeted client.
      */
-    protected void broadcastTurn(ClientHandler currentClient) {
+    public void broadcastTurn(ClientHandler currentClient) {
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.TURN + ProtocolMessages.SEPARATOR + currentClient.toString() + "\n");
             view.showMessage("message broadcast: turn of "+ currentClient + " to " + client);
@@ -345,7 +346,7 @@ public class Server implements Runnable {
      * @param score the associated score.
      * @param currentPlayerID the player that has just made the move.
      */
-    protected void broadcastMove(String move, int score, int currentPlayerID) {
+    public void broadcastMove(String move, int score, int currentPlayerID) {
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR +
                     clients.get(currentPlayerID) + ProtocolMessages.SEPARATOR +
@@ -357,7 +358,7 @@ public class Server implements Runnable {
     /**
      * Broadcast to all clients that the current client has just passed the game.
      */
-    protected void broadcastPass() {
+    public void broadcastPass() {
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.PASS + ProtocolMessages.SEPARATOR +
                     clients.get(serverGame.getCurrentPlayerID()) + "\n");
@@ -369,7 +370,7 @@ public class Server implements Runnable {
     /**
      * Broadcast to all clients that there is a winner.
      */
-    protected void broadcastWinner() {
+    public void broadcastWinner() {
         ServerPlayer winner = serverGame.isWinner();
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.GAMEOVER + ProtocolMessages.SEPARATOR + winner.getName() + "\n");
@@ -390,7 +391,7 @@ public class Server implements Runnable {
      * Getter for the gameState
      * @return true if game has started, false otherwise.
      */
-    protected boolean getGameState() {
+    public boolean getGameState() {
         return gameStart;
     }
 

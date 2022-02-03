@@ -7,6 +7,7 @@ import View.LocalView;
 
 import java.io.IOException;
 /**
+ * Controls the local game.
  * @author Hung Nguyen
  */
 
@@ -17,12 +18,6 @@ public class LocalController {
     private static Player[] localPlayers;
     private static LocalGame localGame;
     private static LocalView textUI;
-
-    /**
-     * main function to execute the Local Server Game.
-     * @param args
-     *
-     */
 
     public static void main(String[] args)  {
         textUI = new LocalView();
@@ -43,7 +38,7 @@ public class LocalController {
             playerName[i] = args[i+1];
             localPlayers[i] = new LocalPlayer(playerName[i], i);
         }
-        localGame = new LocalGame(localPlayers);
+        localGame = new LocalGame(localPlayers,textUI);
 
         loopingOverTheGame:
         do {
@@ -65,9 +60,9 @@ public class LocalController {
                     textUI.showMessage("This is the " + localGame.getPassCount() + " consecutive pass move(s).");
                     break;
                 case "SWAP":
-                    char[] swapTilesChar = new char[moves.length - 1];
+                    String[] swapTilesChar = new String[moves.length - 1];
                     for (int i = 1; i < moves.length; i++) {
-                        swapTilesChar[i - 1] = moves[i].charAt(0);
+                        swapTilesChar[i - 1] = moves[i];
                     }
                     localGame.swapTray(swapTilesChar);
                     break;
@@ -76,7 +71,7 @@ public class LocalController {
                     break;
             }
             textUI.showMessage("current player before set is: " + currentPlayer);
-            currentPlayer = localGame.incrementCurrentPlayer();
+            currentPlayer = localGame.setNextPlayer();
             textUI.showMessage("current player after set is: " + currentPlayer);
         } while (!localGame.gameOver());
 

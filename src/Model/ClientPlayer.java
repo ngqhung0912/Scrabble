@@ -11,9 +11,9 @@ import java.io.IOException;
  */
 public class ClientPlayer extends Player {
     /**
-     *
-     * @param name
-     * @param id
+     * Client Player's constructor
+     * @param name of the client.
+     * @param id of the client.
      */
     public ClientPlayer(String name, int id) {
         super(name, id);

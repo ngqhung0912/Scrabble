@@ -20,14 +20,16 @@ public interface PlayerInterface {
 
     /**
      * Get the current point of the player
-     * @return
+     * @return the total points.
      */
     int getTotalPoints();
+
+
 
     void setFinalPoints(int finalPoints);
     /**
      *
-     * @param point
+     * @param point to add.
      */
     void addPoints(int point);
 
