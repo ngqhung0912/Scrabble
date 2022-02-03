@@ -1,18 +1,9 @@
-package NetworkController;
-
-/**
- * This class implements the basic game functions of Scrabble.
- * @author Hung Nguyen, Nhat Tran
- * @version 0.1
- */
-
-import Model.*;
-
+package Model;
 import java.util.*;
 
 /**
  * @author Hung Nguyen, Nhat Tran
- * @version 0.1
+ * @version finale
  */
 
 public class ClientGame {
@@ -20,15 +11,9 @@ public class ClientGame {
     private ClientPlayer[] players;
     private int currentPlayer;
 
-
     /**
-     * Creates a new game
+     * Creates a new game to handle the logic on the client's side.
      * @param playersNames List of players' names
-     * @requires numPlayers > 0 && numPlayers < 5
-     * @ensures creates a new board and all squares are empty
-     * @ensures A new tileBag is created for the game
-     * @ensures player.getTray() is not null
-     * @invariant players.length == numPlayers
      */
 
     public ClientGame(String[] playersNames) {
@@ -42,6 +27,10 @@ public class ClientGame {
         }
     }
 
+    /**
+     * setter for the current player
+     * @param currentPlayerName the index of the current player.
+     */
     public void setCurrentPlayer(String currentPlayerName) {
         for(ClientPlayer player: players) {
             currentPlayer = (player.getName().equals(currentPlayerName)) ? player.getId() : currentPlayer;
@@ -49,19 +38,22 @@ public class ClientGame {
     }
 
     /**
-     * @requires player is not null
      * put assigned Tiles to each player's tray
      * @param stringTileList The list of new tiles assigned to the currentPlayer
-     *
      */
-    protected void putTilesToTray(String[] stringTileList) {
+    public void putTilesToTray(String[] stringTileList) {
         for(String stringTile: stringTileList) {
             Tile tile = determineTileFromServer(stringTile);
             players[currentPlayer].getTray().add(tile);
         }
     }
 
-    protected void removeTiles(String[] swapTiles){
+    /**
+     * remove tiles from the tray after the move has been validated by the server.
+     * @param swapTiles tiles to remove, represents by a String Array.
+     */
+
+    public void removeTiles(String[] swapTiles){
         if (getCurrentPlayer().getTray().size() > 0) {
             for (String tileAndSquare: swapTiles) {
                 String tile = Character.toString(tileAndSquare.charAt(0));
@@ -70,16 +62,36 @@ public class ClientGame {
         }
     }
 
-
+    /**
+     * getter for board.
+     * @return board.
+     */
     public Board getBoard() { return board; }
+
+    /**
+     * getter for the current player.
+     * @return current player.
+     */
 
     public ClientPlayer getCurrentPlayer() { return players[currentPlayer]; }
 
-    public void opponentMakeMove (String[] move, int points) {
+    /**
+     * Making move for the opponents (and also including the clients) after the move has been sent back
+     * by the server.
+     * @param move The moves made, represents by a string Array.
+     * @param points the points of the move.
+     */
+
+    public void makeMove(String[] move, int points) {
         putTileToSquare(move);
         removeTiles(move);
-        setOpponentPoints(points);
+        setPoints(points);
     }
+
+    /**
+     * put the tiles to their respective square as sent by the server.
+     * @param move The moves made, represents by a string Array.
+     */
 
     protected void putTileToSquare(String[] move) {
         LinkedHashMap<String, String > letterToSquare = new LinkedHashMap<>();
@@ -108,20 +120,31 @@ public class ClientGame {
             square.setTile(tile);
         }
     }
-    private String determineCoordinateFromSquareInt( int location ) {
-        int xPosition = location % 15;
-        int yPosition = location / 15;
-        String[] alphaArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-        String xCoordinate = alphaArr[xPosition];
-        return (xCoordinate + yPosition);
-    }
 
 
-    protected void setOpponentPoints (int points) {
+//    private String determineCoordinateFromSquareInt( int location ) {
+//        int xPosition = location % 15;
+//        int yPosition = location / 15;
+//        String[] alphaArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+//        String xCoordinate = alphaArr[xPosition];
+//        return (xCoordinate + yPosition);
+//    }
+
+    /**
+     * set the point sent by the server to their respective players.
+     * @param points
+     */
+    protected void setPoints(int points) {
         getCurrentPlayer().addPoints(points);
     }
 
-    public String sendMoveToServer(String[] clientMoves) {
+    /**
+     * format the client's move to send the server.
+     * @param clientMoves the String Array represents the client's move.
+     * @return a String to send to the server.
+     */
+
+    public String formatMoveToServer(String[] clientMoves) {
         String move = "";
         for (String clientMove: clientMoves) {
             String[] letterAndSquareCoordinate = clientMove.split("[.]");
@@ -133,6 +156,12 @@ public class ClientGame {
         return move;
     }
 
+    /**
+     * get a square's index from its coordinate in form of (A1, A2, A3,... )
+     * @param coordinate the coordinate of the square.
+     * @return the index of the square.
+     */
+
     public String getStringSquareIndex(String coordinate) {
         Square square = board.getSquare(coordinate);
         int xPosition = square.getxPosition();
@@ -141,7 +170,10 @@ public class ClientGame {
     }
 
     /**
-     * Update the current board with the new total points of the current player
+     * Getting a string array representation of a tray.
+     *  @param tray
+     * @return return the String array represents the tray.
+     *
      */
     public ArrayList<String> getLetterFromTray(ArrayList<Tile> tray) {
         ArrayList<String> letterTray = new ArrayList<>();
@@ -151,7 +183,11 @@ public class ClientGame {
         return letterTray;
     }
 
-
+    /**
+     * get a player's tile corresponds to the client's input.
+     * @param letter client's input
+     * @return a tile represents that letter if it exists on the player's tray, null otherwise.
+     */
     private Tile determineTileFromInput(String letter) {
         ArrayList<Tile> tray = getCurrentPlayer().getTray();
         for (Tile tile: tray){
@@ -164,6 +200,13 @@ public class ClientGame {
         }
         return null;
     }
+
+    /**
+     * Determine the tile from the letter String sent by the server, then create a dummy tile without a
+     * score in it.
+     * @param letter the letter sent by the server.
+     * @return a new tile containing the letter with 0 points.
+     */
 
     private Tile determineTileFromServer(String letter) {
         return new Tile(letter.charAt(0), 0);

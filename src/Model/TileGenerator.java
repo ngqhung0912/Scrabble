@@ -3,11 +3,17 @@ package Model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class generates the necessary tiles for the Scrabble game.
+ * @author Nhat Tran
+ * @version finale
+ */
 public class TileGenerator {
+    /**
+     * Method to generate all the tiles that belongs to the game.
+     * @return The list of tiles (tilesBag).
+     */
     public List<Tile> generateTiles(){
-        /**
-         * @invariant inititialCapacity == 26
-         */
         List<TileDescription> input = new ArrayList<>();
 
         input.add(new TileDescription('-', 2, 0));
@@ -38,10 +44,6 @@ public class TileGenerator {
         input.add(new TileDescription('Y',2,4));
         input.add(new TileDescription('Z',1,10));
 
-
-        /**
-         * @invariant initialCapacity == 100
-         */
         List<Tile> tiles = new ArrayList<>();
         for(TileDescription tileDescription: input){
             for(int i = 0; i < tileDescription.getQuantity(); i++){

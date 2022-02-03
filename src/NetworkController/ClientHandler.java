@@ -1,19 +1,20 @@
 package NetworkController;
 
 import View.NetworkView;
-import View.View;
 
-import javax.crypto.KeyAgreement;
 import java.io.*;
 
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * ClientHandler is the thread created by the server to handle all connection
+ * by each client.
+ * @author Hung Nguyen
+ * @version finale
+ */
 public class ClientHandler implements Runnable{
-    //public static ArrayList<ClientHandler> clientHandlers;
     private Socket socket;
     private BufferedReader in;
     private BufferedWriter out;
@@ -29,11 +30,13 @@ public class ClientHandler implements Runnable{
     private ServerGame serverGame;
 
 
-
-
+    /**
+     * @param socket the socket connection.
+     * @param server the master server.
+     * @param id the client's id.
+     */
     public ClientHandler(Socket socket, Server server, int id ){
         try {
-            this.socket = socket;
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.server = server;
@@ -49,17 +52,28 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    /**
+     * Setter for the serverGame.
+     * @param serverGame the serverGame that handles this client.
+     */
+
     protected void setServerGame (ServerGame serverGame) {this.serverGame = serverGame;}
 
-    public void shutDown()
-    {
+    /**
+     * shut down the connection and remove this thread from the server.
+     */
+
+    public void shutDown() {
         server.removeClient(this);
         running = false;
         serverGame.getPlayerByID(this.getClientId()).setAborted(true);
         view.showMessage(this + " has been shutdown. ID: " + this.clientId);
     }
 
-
+    /**
+     * override method for the thread. Used to consecutively read message from the client and pass it on to the
+     * server or serverGame.
+     */
     @Override
     public void run() {
         try {
@@ -83,6 +97,11 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    /**
+     * handling the command sent by the client
+     * @param command the commands sent by the client.
+     * @throws IOException when cannot read the message.
+     */
     public synchronized void handleCommand(String[] command) throws IOException {
         switch(command[0]) {
             case ProtocolMessages.HELLO:
@@ -147,22 +166,42 @@ public class ClientHandler implements Runnable{
         }
     }
 
-
+    /**
+     * check the time limit feature of the client.
+     * @return true if this client has a time limit feature, false otherwise.
+     */
     protected boolean hasTimeLimit() {
         return hasTimeLimit;
     }
 
+    /**
+     * check the ready status of the client
+     * @return true if this client is ready, false otherwise.
+     */
     protected boolean isReady() {return isReady;}
+
+    /**
+     * setter for the client's name.
+     * @param name the name to be set.
+     */
 
     private void setName(String name) {
         this.clientName = name;
     }
 
+    /**
+     * toString override.
+     * @return client's name.
+     */
+
     public String toString() {
         return clientName;
     }
 
-    protected void setID(int id) { this.clientId = id;}
+    /**
+     * to send message to the client.
+     * @param message to send.
+     */
 
     protected void sendMessageToClient(String message) {
         try {
@@ -173,6 +212,10 @@ public class ClientHandler implements Runnable{
             view.showMessage("Cannot send message to client: " + this + "(client ID: " + clientId + ")");
         }
     }
+    /**
+     * send error to the client.
+     * @param error
+     */
 
     protected void sendErrorToClient(String error) {
         try {
@@ -183,6 +226,11 @@ public class ClientHandler implements Runnable{
             e.printStackTrace();
         }
     }
+
+    /**
+     * getter for this client's ID
+     * @return client's ID.
+     */
 
     protected int getClientId() {
         return clientId;

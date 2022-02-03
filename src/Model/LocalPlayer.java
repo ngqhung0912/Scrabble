@@ -1,13 +1,13 @@
-package LocalController;
+package Model;
 
 import java.io.IOException;
 
-import Model.Player;
 import View.LocalView;
 
 /**
+ * LocalPlayer class represents the player in the local game.
  * @author Nhat Tran, Hung Nguyen
- * @version 0.1
+ * @version finale
  */
 public class LocalPlayer extends Player  {
 
@@ -15,14 +15,18 @@ public class LocalPlayer extends Player  {
 
      private static LocalView textUI;
      // -- Constructors -----------------------------------------------
+     /**
+      *
+      * @param name local player's name.
+      * @param id local player's id.
+      */
      public LocalPlayer(String name, int id){
           super(name, id);
           this.textUI = new LocalView();
      }
      /**
-      *
-      *
-      * @return
+      * determineMove function, prompting user to make a move when it's their turn.
+      * @return Move in String Array format.
       */
      @Override
      public String[] determineMove() throws IOException {
@@ -38,6 +42,10 @@ public class LocalPlayer extends Player  {
           return textUI.getString(prompt).split(" ");
      }
 
+
+     /**
+      * Main class for testing.
+      */
      public static void main(String[] args) throws IOException {
           LocalPlayer local1 = new LocalPlayer("nhat", 0);
           LocalPlayer local2 = new LocalPlayer("xon", 1);

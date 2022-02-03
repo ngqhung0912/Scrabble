@@ -4,7 +4,7 @@ package Model;
  * Tile for the Scrabble game - Module 2 Project.
  * Each tile represents a character with points.
  * @author Hung Nguyen
- * @version 0.1
+ * @version finale
  */
 
 public class Tile {
@@ -23,7 +23,7 @@ public class Tile {
     }
 
     /**
-     * getLetter function
+     * getter for the letter that the tile represents.
      * @return the letter that the tile represents, in char.
      */
     public char getLetter() {
@@ -31,14 +31,17 @@ public class Tile {
     }
 
     /**
-     * getPoint function
+     * gettter for the point of the tile.
      * @return how many points this letter generates should it be used.
      */
     public int getPoint() {
         return point;
     }
 
-
+    /**
+     * setter for the letter of the tile
+     * @param letter the letter to set.
+     */
 
     public void setLetter(char letter) {
         this.letter = letter;

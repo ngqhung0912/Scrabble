@@ -10,6 +10,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import View.NetworkView;
 
+/**
+ * Server is the final point for hosting the game. It decides who can connect, when to start the game and who can play.
+ * @author Hung Nguyen
+ * @version finale
+ */
 public class Server implements Runnable {
     private ServerSocket serverSocket;
     private ConcurrentHashMap<Integer, ClientHandler> clients;
@@ -21,7 +26,10 @@ public class Server implements Runnable {
     private boolean serverReady;
     private Lock lock;
 
-
+    /**
+     * Constructor for the server
+     * @param ss the server Socket.
+     */
     public Server(ServerSocket ss) {
         clients = new ConcurrentHashMap<>();
         view = new NetworkView();
@@ -32,6 +40,11 @@ public class Server implements Runnable {
         serverReady = false;
     }
 
+    /**
+     * check a newly joined client's name to see if it is the same as a client that has already join.
+     * @param name the newly joined client's name.
+     * @return return true if the name not yet exist, false otherwise
+     */
     public boolean checkName(String name) {
         view.showMessage("Name checked:" + name);
         for (ClientHandler client : clients.values()) {
@@ -40,7 +53,10 @@ public class Server implements Runnable {
         return true;
     }
 
-
+    /**
+     * remove the client out of the game.
+     * @param removedClient client to be removed.
+     */
 
     public void removeClient(ClientHandler removedClient) {
         try {
@@ -56,6 +72,10 @@ public class Server implements Runnable {
         view.showMessage(message);
     }
 
+    /**
+     * check if the game can start with a time limit feature or not.
+     * @return true if all clients have time limit feature, false otherwise.
+     */
     public boolean checkHasTimeLimit() {
         for (ClientHandler client : clients.values()) {
             if (!client.hasTimeLimit()) return false;
@@ -63,12 +83,21 @@ public class Server implements Runnable {
         return true;
     }
 
+    /**
+     * check if all clients is ready or not
+     * @returntrue if all clients are ready, false otherwise.
+     */
     private boolean checkReadyStatus() {
         for (ClientHandler client : clients.values()) {
             if (!client.isReady()) return false;
         }
         return true;
     }
+
+    /**
+     * getter for all the joined player's name.
+     * @return joined player's name.
+     */
 
     protected String getJoinedPlayersName() {
         String joinedPlayers = "";
@@ -78,12 +107,20 @@ public class Server implements Runnable {
         return joinedPlayers;
     }
 
+    /**
+     * getter for all the accepted functions in the game.
+     * @return a string represent the functions.
+     */
     protected String getAcceptedFunctions() {
         String Functions = "";
         if (timeLimitFeature) Functions += ProtocolMessages.TEAM_PLAY_FLAG;
         return Functions;
     }
 
+    /**
+     * put the client to the client's list after validating it's name.
+     * @param client to be put.
+     */
     protected void putClientToClientList(ClientHandler client) {
         try {
             lock.lock();
@@ -93,8 +130,12 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * Run the server's thread.
+     */
     @Override
     public synchronized void run() {
+
         Thread gameThread = new Thread(new GameThread(this));
         gameThread.start();
 
@@ -121,8 +162,12 @@ public class Server implements Runnable {
         }
     }
 
-
     public class GameThread implements Runnable {
+        /**
+         * This class create a gameThread and simultaneously running with
+         * the server thread to determine whenever the client's number have reached 4 or not
+         * in order to start the game.
+         */
 
         private Server server;
 
@@ -144,7 +189,7 @@ public class Server implements Runnable {
                         broadcastServerReady();
                         play();
                     }
-                } catch (IOException | InterruptedException e) {
+                } catch ( InterruptedException e) {
                     e.printStackTrace();
                     for (ClientHandler client : clients.values()) {
                         client.sendErrorToClient(ProtocolMessages.UNRECOGNIZED);
@@ -155,11 +200,19 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * getter for the hashmap represents all the clients.
+     * @return clients hash map.
+     */
     protected ConcurrentHashMap<Integer, ClientHandler> getClients() {
         return clients;
     }
 
-    public void play() throws IOException, InterruptedException {
+    /**
+     * play method if there is enough players in the game.
+     * @throws InterruptedException if there is something interrupt the thread.sleep command.
+     */
+    public void play() throws InterruptedException {
         serverReady = true;
         while (!checkReadyStatus()) {
             Thread.sleep(10000);
@@ -198,12 +251,19 @@ public class Server implements Runnable {
 
     }
 
+    /**
+     * setter for serverGame for clientHandlers after creating a game.
+     */
     protected void setServerGameForHandlers() {
         for (ClientHandler client : clients.values()) {
             client.setServerGame(serverGame);
         }
     }
 
+    /**
+     * Broadcast to all clients that there is one client has aborted.
+     * @param abortedClient the aborted client.
+     */
     protected void broadcastAbort(ClientHandler abortedClient) {
         for (ClientHandler client : clients.values()) {
             if (client.getClientId() != abortedClient.getClientId()) {
@@ -214,6 +274,10 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * Broadcast to all clients that a new client has just joined.
+     * @param newlyJoined the newly joined client.
+     */
     protected void broadcastWelcomeMessage(ClientHandler newlyJoined) {
         String message = ProtocolMessages.WELCOME + ProtocolMessages.SEPARATOR + newlyJoined.toString();
         if (newlyJoined.hasTimeLimit()) message += ProtocolMessages.SEPARATOR + ProtocolMessages.TURN_TIME_FLAG;
@@ -223,11 +287,19 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * Broadcast to a specific client their new tiles.
+     * @param client the target client.
+     * @param tiles to send.
+     */
     protected void broadcastTiles(ClientHandler client, String tiles) {
         client.sendMessageToClient(ProtocolMessages.TILES + ProtocolMessages.SEPARATOR + tiles + "\n");
         view.showMessage("tile broadcast: " + tiles + " to " + client.getClientId());
     }
 
+    /**
+     * Broadcast to all clients that the server is ready.
+     */
     private void broadcastServerReady() {
         String message = ProtocolMessages.SERVERREADY + ProtocolMessages.SEPARATOR;
         for (ClientHandler client : clients.values()) {
@@ -239,6 +311,9 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * Broadcast to all clients that the game has started.
+     */
     private void broadcastStartGame() {
         String message = "";
         for (ClientHandler client : clients.values()) {
@@ -253,6 +328,10 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * Broadcast to a specific client that it is their turn.
+     * @param currentClient the targeted client.
+     */
     protected void broadcastTurn(ClientHandler currentClient) {
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.TURN + ProtocolMessages.SEPARATOR + currentClient.toString() + "\n");
@@ -260,6 +339,12 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * Broadcast to everyone a move that a client has just made.
+     * @param move the move information.
+     * @param score the associated score.
+     * @param currentPlayerID the player that has just made the move.
+     */
     protected void broadcastMove(String move, int score, int currentPlayerID) {
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR +
@@ -269,6 +354,9 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * Broadcast to all clients that the current client has just passed the game.
+     */
     protected void broadcastPass() {
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.PASS + ProtocolMessages.SEPARATOR +
@@ -278,6 +366,9 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * Broadcast to all clients that there is a winner.
+     */
     protected void broadcastWinner() {
         ServerPlayer winner = serverGame.isWinner();
         for (ClientHandler client : clients.values()) {
@@ -287,13 +378,27 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     * Broadcast to the respective client that their move was invalid.
+     * @param client to broadcast.
+     */
     public void broadcastInvalidMove(ClientHandler client) {
         client.sendErrorToClient(ProtocolMessages.INVALID_MOVE);
     }
 
+    /**
+     * Getter for the gameState
+     * @return true if game has started, false otherwise.
+     */
     protected boolean getGameState() {
         return gameStart;
     }
+
+    /**
+     * getter for the view
+     * @return view
+     */
+    public NetworkView getView() { return view; }
 
     public static void main(String[] args) throws IOException {
         Server server = new Server(new ServerSocket(8888));
@@ -301,6 +406,5 @@ public class Server implements Runnable {
         serverThread.start();
     }
 
-    public NetworkView getView() { return view; }
 
 }

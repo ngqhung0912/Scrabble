@@ -1,19 +1,30 @@
 package LocalController;
 
 import Model.LocalGame;
+import Model.LocalPlayer;
 import Model.Player;
 import View.LocalView;
 
 import java.io.IOException;
+/**
+ * @author Hung Nguyen
+ */
 
 public class LocalController {
+
     private static final String HELP = "Wrong input format. Correct input format: <numPlayers> <P1name> <P2name> ... ";
     private static int currentPlayer = 0;
     private static Player[] localPlayers;
     private static LocalGame localGame;
     private static LocalView textUI;
 
-    public static void main(String[] args) throws IOException {
+    /**
+     * main function to execute the Local Server Game.
+     * @param args
+     *
+     */
+
+    public static void main(String[] args)  {
         textUI = new LocalView();
         int numPlayers = 0;
         try {
@@ -37,7 +48,12 @@ public class LocalController {
         loopingOverTheGame:
         do {
             textUI.update(localGame);
-            String[] moves = localPlayers[currentPlayer].determineMove();
+            String[] moves = new String[0];
+            try {
+                moves = localPlayers[currentPlayer].determineMove();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             switch (moves[0]) {
                 case "MOVE":
                     String[] moveTiles = new String[moves.length - 1];

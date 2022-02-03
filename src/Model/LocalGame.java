@@ -12,11 +12,6 @@ import WordChecker.main.java.ScrabbleWordChecker;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * @author Hung Nguyen, Nhat Tran
- * @version 0.1
- */
-
 public class LocalGame {
     private Board board;
     private Player[] players;
@@ -34,11 +29,6 @@ public class LocalGame {
     /**
      * Creates a new game
      * @param players number of players
-     * @requires numPlayers > 0 && numPlayers < 5
-     * @ensures creates a new board and all squares are empty
-     * @ensures A new tileBag is created for the game
-     * @ensures player.getTray() is not null
-     * @invariant players.length == numPlayers
      */
 
     public LocalGame(Player[] players) {
@@ -66,6 +56,11 @@ public class LocalGame {
         }
     }
 
+    /**
+     * determine the winner player.
+     * @return the winner (player).
+     */
+
     public Player isWinner(){
         Map<Player, Integer> finalDeduct = new HashMap<>();
 
@@ -82,16 +77,16 @@ public class LocalGame {
         }
 
 
-        for (int i = 0; i < players.length; i++) {
-            int finalPoints = 0;
+        for (Player player : players) {
+            var finalPoints = 0;
             if (tilesLeft.size() == 0) {
                 int totalDeductPoints = finalDeduct.get(players[0]) + finalDeduct.get(players[1])
                         + finalDeduct.get(players[2]) + finalDeduct.get(players[3]);
-                finalPoints = players[i].getTotalPoints() + totalDeductPoints;
+                finalPoints = player.getTotalPoints() + totalDeductPoints;
             } else {
-                finalPoints = players[i].getTotalPoints() - finalDeduct.get(players[i]);
+                finalPoints = player.getTotalPoints() - finalDeduct.get(player);
             }
-            players[i].setFinalPoints(finalPoints);
+            player.setFinalPoints(finalPoints);
         }
 
         Player winner = players[0];
@@ -111,13 +106,25 @@ public class LocalGame {
         return winner;
     }
 
+    /**
+     * resetting the pass count.
+     */
+
     public void resetPassCount() {
         this.passCount = 0;
     }
 
+    /**
+     * increment the pass count.
+     */
+
     public void incrementPassCount() {
         this.passCount++;
     }
+
+    /**
+     * @return the current passCount
+     */
 
     public int getPassCount() {
         return passCount;
@@ -189,12 +196,11 @@ public class LocalGame {
      * @requires player is not null
      * add Tile to each player's tray
      * @param player which player to add tile to.
-     *
      */
     private void addTileToTray(Player player) {
         ArrayList<Tile> tray = player.getTray();
         int bagSize = tileBag.size();
-        int missingTile = bagSize == 0 ? 0 : bagSize < (7 - tray.size()) ? bagSize : 7 - tray.size();
+        int missingTile = bagSize == 0 ? 0 : Math.min(bagSize, (7 - tray.size()));
 
         for (int i = 0; i < missingTile; i++) {
             bagSize = tileBag.size();
@@ -206,21 +212,16 @@ public class LocalGame {
         player.setTray(tray);
     }
     /**
-     *
+     * Method to determine if the bag is empty and the current player's tray is empty.
      * @return true if the current player's tray is empty and the tile bag is empty, false otherwise.
      */
     private boolean isEmptyTrayAndBag() {
         return players[currentPlayer].getTray().isEmpty() && tileBag.isEmpty();
     }
 
-    /**
-     * To be implemented:
-     * @return true if there is no more space to put a meaningful word in, false otherwise.
-     */
-
 
     /**
-     *
+     * Check if game is over.
      * @return true is game already over, false otherwise.
      */
 
@@ -237,27 +238,43 @@ public class LocalGame {
     }
 
     /**
-     * Determine who is the winner
-     * @return the winner.
-     */
-
-
-    /**
-     * Update the current board with the new total points of the current player
+     * Get letter from the player's tray.
+     * @param tray player's tray.
+     * @return tray, represents in String ArrayList format.
      */
     public ArrayList<String> getLetterFromTray(ArrayList<Tile> tray) {
-        ArrayList<String> letterTray = new ArrayList<String>();
+        ArrayList<String> letterTray = new ArrayList<>();
         for (Tile tile : tray) {
             letterTray.add(Character.toString(tile.getLetter()));
         }
         return letterTray;
     }
 
+    /**
+     * getter for board
+     * @return Board.
+     */
     public Board getBoard() { return board; }
 
-    public List<Tile> getTileBag() { return tileBag; };
+    /**
+     * getter for Tile Bag
+     * @return Tile Bag
+     */
+
+    public List<Tile> getTileBag() { return tileBag; }
+
+    /**
+     * getter for current player.
+     * @return the current player.
+     */
 
     public Player getCurrentPlayer() { return players[currentPlayer]; }
+
+    /**
+     * determine the move from the player's tile input.
+     * @param moveTiles the String Array represents the move inputted by the player.
+     * @return true if move valid, false otherwise.
+     */
 
     public boolean makeMove(String[] moveTiles) {
         Board validBoard = isValidMove(mapLetterToSquare(moveTiles));
@@ -268,6 +285,13 @@ public class LocalGame {
         resetPassCount();
         return false;
     }
+
+    /**
+     * Create a Linked HashMap, with key is the square location and value is the Tile's letter
+     * representation.
+     * @param move ArrayList representing the move make by player, i.e. D.A1 O.A2 G.A3
+     * @return a map that map letter to square.
+     */
 
     private LinkedHashMap<String, String> mapLetterToSquare(String[] move){
         LinkedHashMap<String , String > letterToSquare = new LinkedHashMap<>();
@@ -294,6 +318,13 @@ public class LocalGame {
         return letterToSquare;
     }
 
+    /**
+     * Swap the tiles that the player chooses with new tiles from the tileBag,
+     * if there is still tiles in the tileBag.
+     * @param chars the chars Array representation of the tiles player want to
+     *              swap.
+     */
+
     public void swapTray(char[] chars) {
         if (tileBag.isEmpty()) incrementPassCount();
         else {
@@ -311,6 +342,13 @@ public class LocalGame {
 
         }
     }
+
+    /**
+     * determine the tile from the player's input and whether the player has that tile.
+     * @param character the player's input.
+     * @return the Tile associated with the character if it's in the player's tray,
+     * null otherwise.
+     */
 
     private Tile determineTileFromChar(char character) {
         ArrayList<Tile> tray = players[currentPlayer].getTray();
@@ -334,6 +372,11 @@ public class LocalGame {
         return null;
     }
 
+    /**
+     * Check if the board is full.
+     * @return true if there is no more free square left in the board, false otherwise.
+     */
+
     private boolean isFullBoard() {
         for (int i = 0; i < board.SIZE; i++) {
             if (!board.getSquare(i).hasTile()) return false;
@@ -341,7 +384,14 @@ public class LocalGame {
         return true;
     }
 
-
+    /**
+     * determine possible word Combinations from the input word,
+     * @param inputWord the Square contains the input word.
+     * @param direction moving direction ("H" for horizontal, "V" for vertical). Call determineMoveDirection to determine.
+     * @param copyBoard Board
+     * @return the ArrayList contains the ArrayList of Squares that represents the valid word combination. Return null if there
+     * is at least one wrong combination.
+     */
     private  ArrayList<ArrayList<Square>> determinePossibleWordCombinations(ArrayList<Square> inputWord, String direction, Board copyBoard) {
         Square startingPosition = inputWord.get(0);
 
@@ -454,6 +504,13 @@ public class LocalGame {
         return wordCombinations;
     }
 
+    /**
+     * check if a move is valid or not, including dictionary check.
+     * @param moves the Linked Hash Map with location at key and String tile representation as values.
+     * @return null if invalid move, or the validated board since the validation is carried out in a
+     * copy version of the main board, made right before validating the move.
+     */
+
     private Board isValidMove(LinkedHashMap<String, String> moves) {
         if (moves == null) {
             return null;
@@ -509,11 +566,23 @@ public class LocalGame {
         return copyBoard;
     }
 
+    /**
+     * Get the word representing by the ArrayList of Squares.
+     * @param squares the Squares containing the word/
+     * @return the word.
+     */
+
     public String getWordFromSquareList(ArrayList<Square> squares) {
         String word = "";
         for (Square square : squares)  word +=square.getTile().getLetter();
         return word;
     }
+
+    /**
+     * determine the move direction.
+     * @param moves the player's input move.
+     * @return "H" for horizontal, "V" for vertical.
+     */
 
     private  String determineMoveDirection(LinkedHashMap<String, String> moves) {
         if (moves.size() == 1) {
@@ -533,6 +602,13 @@ public class LocalGame {
 
     }
 
+    /**
+     * Get the List of Square which is being occupied by a tile on the board.
+     * @param copyBoard Board to check.
+     * @param playSquares the square which has just recently been placed.
+     * @return the List of Occupied Squares.
+     */
+
     private List<Square> getOccupiedSquare(Board copyBoard, List<Square> playSquares) {
         List<Square> occupiedSquares = new ArrayList<>();
         for (int i = 0; i < (Board.SIZE * Board.SIZE) ; i++) {
@@ -544,6 +620,13 @@ public class LocalGame {
         }
         return occupiedSquares;
     }
+
+    /**
+     * get the valid squares before the move.
+     * @param playSquares The List contains the squares which represents the moves of the player
+     * @param direction the move direction. "H" for Horizontal, "V" for vertical.
+     * @param copyBoard the board to check.
+     */
 
     private  void getNextValidSquares(List<Square> playSquares, String direction, Board copyBoard) {
 
@@ -586,6 +669,14 @@ public class LocalGame {
         }
 //        return nextValidSquares;
     }
+
+    /**
+     * check if a placement is valid or not.
+     * @param playSquares The List contains the squares which represents the moves of the player
+     * @param direction the move direction. "H" for Horizontal, "V" for vertical.
+     * @param copyBoard the board to check.
+     * @return true if the placement adhere to the game rules, false otherwise.
+     */
 
     private boolean isValidPlacement(List<Square> playSquares, String direction, Board copyBoard){
         List<Square> occupiedSquares = getOccupiedSquare(copyBoard,playSquares);

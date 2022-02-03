@@ -1,8 +1,18 @@
 package View;
 import Model.*;
 
+/**
+ * BoardConstructor class to construct a TUI representation of a Scrabble board.
+ * @author Hung Nguyen
+ * @version finale
+ */
 
 public class BoardConstructor  {
+    /**
+     * Generate the TUI representation of a Board
+     * @param board to generate
+     * @return the string representation.
+     */
     public static String generateBoard(Board board) {
         StringBuilder builder = new StringBuilder();
         builder.append("    ");

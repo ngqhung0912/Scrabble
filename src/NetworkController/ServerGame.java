@@ -4,9 +4,12 @@ import Model.*;
 import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
 
-import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
+/**
+ * This class implements the basic game on the Server functions of Scrabble.
+ * @author Hung Nguyen
+ * @version finale
+ */
 
 public class ServerGame {
 
