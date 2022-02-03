@@ -2,15 +2,11 @@ package NetworkController;
 
 import Exceptions.ExitProgram;
 import Exceptions.ServerUnavailableException;
-import Model.Board;
-import Model.Square;
 import View.NetworkView;
-import com.sun.source.tree.WhileLoopTree;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Locale;
 import java.util.Scanner;
 
 import static NetworkController.ProtocolMessages.*;
@@ -29,14 +25,18 @@ public class Client implements Runnable {
     private BufferedReader clientPrinter;
 
     public static void main(String[] args)  {
-        System.out.println("Welcome to Scrabble! Please enter your name to start connecting!");
+        System.out.println("Welcome to Scrabble!" + "\n Please enter your name: "
+                + "(Your name shouldn't include space between letters or special symbols/characters. If your name has already existed, " +
+                "please try and reconnect with a different name. ");
         Scanner scanner = new Scanner(System.in);
         String name = scanner.nextLine();
-
+        while(name.isBlank() || name.isEmpty() || name.contains(AS) || name.contains(SEPARATOR)){
+            System.out.println("Your name cannot include whitespace between letters. Please try again");
+            name = scanner.nextLine();
+        }
         Client client = new Client(name);
         Thread clientThread = new Thread(client);
         clientThread.start();
-        //client.shutDown();
 
 
     }
@@ -55,21 +55,6 @@ public class Client implements Runnable {
         } catch (ExitProgram e) {
             view.showMessage("Unexpected error detected. Shutting down the connection...");
         }
-
-    // public void start() throws ExitProgram, IOException, ServerUnavailableException {
-    //     boolean running = true;
-    //     while(name == null || name.isBlank() || name.isEmpty()){
-    //         name = view.getString("Welcome to Scrabble!" + "\n Please enter your name: "
-    //                 + "(Your name shouldn't include space between letters. If your name has already existed, " +
-    //                 "you will be aborted from the ");
-    //         if (name.contains(" ") || name.isBlank() || name.isEmpty()) {
-    //             view.showMessage("Your name cannot include whitespace between letters. Please try again");
-    //             name = null;
-    //         }
-    //     }
-    //     clearConnection();
-    //     clientSideConnection();
-    //     handleHello();
 
         while (true) {
             String serverCommand;
@@ -137,6 +122,7 @@ public class Client implements Runnable {
                 }
             } else if (input.contains("ABORT")) {
                 notifyClientAbort();
+                shutDown();
             }
         } catch (ServerUnavailableException | IOException e) {
             e.printStackTrace();
@@ -177,13 +163,17 @@ public class Client implements Runnable {
 
             case ProtocolMessages.TILES:
                 game.setCurrentPlayer(name);
-                String[] stringTileList  = command[1].split(ProtocolMessages.AS);
-                game.putTilesToTray(stringTileList);
+                if (command.length > 1 ) {
+                    String[] stringTileList  = command[1].split(ProtocolMessages.AS);
+                    game.putTilesToTray(stringTileList);
+                }
                 if (game != null) view.update(game);
+
                 break;
 
             case ProtocolMessages.TURN:
                 game.setCurrentPlayer(command[1]);
+                view.update(game);
                 if(name.equals(command[1])) handleUserTurn();
                 else {view.showMessage("It's currently " + command[1] + "'s turn");}
                 break;
@@ -294,7 +284,7 @@ public class Client implements Runnable {
 
     public void notifyClientReady() throws ServerUnavailableException, IOException {
         boolean answer = view.getBoolean("The game is ready to start. Do you want to start now? " +
-                "\n Enter \"Y\" to start or \"N\" to abo rt");
+                "\n Enter \"Y\" to start or \"N\" to abort");
         String command = (answer == true) ?  ProtocolMessages.CLIENTREADY + ProtocolMessages.SEPARATOR + name
                 : ProtocolMessages.ABORT+ "\n";
         sendMessage(command);
@@ -314,8 +304,12 @@ public class Client implements Runnable {
     }
 
     public void doSwapWithTiles(String[] swapTiles) throws ServerUnavailableException {
-        game.removeSwapTiles(swapTiles);
-        String message = ProtocolMessages.PASS + ProtocolMessages.SEPARATOR + swapTiles;
+        game.removeTiles(swapTiles);
+        String swapTilesString = "";
+        for(String swapTile: swapTiles) {
+            swapTilesString += swapTile + AS;
+        }
+        String message = ProtocolMessages.PASS + ProtocolMessages.SEPARATOR + swapTilesString;
         sendMessage(message+ "\n");
     }
 
