@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Represents each players in the Scrabble game.
+ * Represents each player in the Scrabble game.
  * @author Hung Nguyen
  * @version finale
  */
-public abstract class Player implements Comparable<Player>, PlayerInterface {
+public abstract class Player implements Comparable<Player> {
     protected String name;
     protected int id;
     protected int totalPoints;

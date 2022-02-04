@@ -2,9 +2,13 @@ package Test;
 
 import Model.LocalPlayer;
 import Model.Tile;
-import Model.TileDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
@@ -26,7 +30,7 @@ class LocalPlayerTest {
      * test setting the tray of the player.
      */
     @Test
-    void setTray() {
+    void testSetTray() {
         assertTrue(player1.getTray().size() == 0);
 
         ArrayList<Tile> tray = new ArrayList<>();
@@ -44,7 +48,7 @@ class LocalPlayerTest {
      * Test adding points to the player.
      */
     @Test
-    void addPoints() {
+    void testAddPoints() {
         player1.addPoints(100);
         assertEquals(player1.getTotalPoints(), 100);
         player1.addPoints(13);
@@ -55,7 +59,7 @@ class LocalPlayerTest {
      * Test comparing the player.
      */
     @Test
-    void compareTo() {
+    void testCompareTo() {
         player1.setFinalPoints(100);
         player2.setFinalPoints(50);
         assertEquals(player1.compareTo(player2), 50);
