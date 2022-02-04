@@ -25,6 +25,8 @@ public class LocalGame extends Game {
         this.numPlayer = players.length;
         this.UI = UI;
         nextValidSquares = new ArrayList<>();
+        this.players = players;
+
 
         for (Player player : players)
         {

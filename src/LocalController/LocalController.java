@@ -38,6 +38,7 @@ public class LocalController {
             playerName[i] = args[i+1];
             localPlayers[i] = new LocalPlayer(playerName[i], i);
         }
+
         localGame = new LocalGame(localPlayers,textUI);
 
         loopingOverTheGame:

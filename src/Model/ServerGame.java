@@ -133,9 +133,13 @@ public class ServerGame extends Game {
                             resetTurnScore();
                             resetPassCount();
                             server.broadcastMove(move, turnScore, getCurrentPlayerID());
-                            break;
                         }
-                        server.broadcastInvalidMove(currentClient);
+                        else {
+                            server.broadcastInvalidMove(currentClient);
+                            server.broadcastPass();
+                            incrementPassCount();
+                        }
+                        break;
                     case ProtocolMessages.PASS:
                         System.out.println("PASS. " + moveType + move);
                         if (!move.equals("Pass")) {

@@ -67,7 +67,7 @@ public class ClientHandler implements Runnable{
     public void shutDown() {
         server.removeClient(this);
         running = false;
-        serverGame.getPlayerByID(this.getClientId()).setAborted(true);
+        if (server.getGameState()) serverGame.getPlayerByID(this.getClientId()).setAborted(true);
         view.showMessage(this + " has been shutdown. ID: " + this.clientId);
     }
 

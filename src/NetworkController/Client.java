@@ -161,11 +161,11 @@ public class Client implements Runnable {
 
         switch (command[0]){
             case ProtocolMessages.HELLO:
-                view.showMessage("Hello! Bonjour! Xin chao!");
+                view.showMessage("You have been connected to the game server.");
                 break;
 
             case ProtocolMessages.WELCOME:
-                view.showMessage( command[1] + " has just joined!.");
+                if (!command[1].equals(name)) view.showMessage( command[1] + " has just joined!.");
                 break;
 
             case ProtocolMessages.SERVERREADY:
