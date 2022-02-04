@@ -80,7 +80,7 @@ public class Square {
      * @return true if this square has a tile, false otherwise
      */
     public boolean hasTile() {
-        return tile == null ? false : true;
+        return tile != null;
     }
 
 }

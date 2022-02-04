@@ -363,35 +363,38 @@ public abstract class Game {
 
         for (int i = 0; i < playSquares.size(); i++) {
             Square currentSquare = playSquares.get(i);
-            if (currentSquare.getxPosition() >= 0 && currentSquare.getxPosition() < 15 &&
-                    currentSquare.getyPosition() >= 0 && currentSquare.getyPosition() < 15) {
-                if(direction.equals("H")) {
-                    if (i == 0 && copyBoard.getSquareLeft(currentSquare).hasTile())
-                        nextValidSquares.add(copyBoard.getSquareLeft(currentSquare));
+            try {
+                if (currentSquare.getxPosition() >= 0 && currentSquare.getxPosition() < 15 &&
+                        currentSquare.getyPosition() >= 0 && currentSquare.getyPosition() < 15) {
+                    if (direction.equals("H")) {
+                        if (i == 0 && !copyBoard.getSquareLeft(currentSquare).hasTile())
+                            nextValidSquares.add(copyBoard.getSquareLeft(currentSquare));
 
-                    else if (i == playSquares.size() -1 && copyBoard.getSquareRight(currentSquare).hasTile())
-                        nextValidSquares.add(copyBoard.getSquareRight(currentSquare));
+                        else if (i == playSquares.size() - 1 && !copyBoard.getSquareRight(currentSquare).hasTile())
+                            nextValidSquares.add(copyBoard.getSquareRight(currentSquare));
 
-                    if (copyBoard.getSquareAbove(currentSquare).hasTile())
-                        nextValidSquares.add(copyBoard.getSquareAbove(currentSquare));
-                    if (copyBoard.getSquareBelow(currentSquare).hasTile())
-                        nextValidSquares.add(copyBoard.getSquareBelow(currentSquare));
+                        if (!copyBoard.getSquareAbove(currentSquare).hasTile())
+                            nextValidSquares.add(copyBoard.getSquareAbove(currentSquare));
+                        if (!copyBoard.getSquareBelow(currentSquare).hasTile())
+                            nextValidSquares.add(copyBoard.getSquareBelow(currentSquare));
+                    } else {
+                        if (i == 0 && !copyBoard.getSquareAbove(currentSquare).hasTile())
+                            nextValidSquares.add(copyBoard.getSquareAbove(currentSquare));
+
+                        else if (i == playSquares.size() - 1 && !copyBoard.getSquareBelow(currentSquare).hasTile())
+                            nextValidSquares.add(copyBoard.getSquareBelow(currentSquare));
+
+                        if (!copyBoard.getSquareRight(currentSquare).hasTile())
+                            nextValidSquares.add(copyBoard.getSquareRight(currentSquare));
+                        if (!copyBoard.getSquareLeft(currentSquare).hasTile())
+                            nextValidSquares.add(copyBoard.getSquareLeft(currentSquare));
+                    }
+
                 }
-                else {
-                    if (i == 0 && copyBoard.getSquareAbove(currentSquare).hasTile())
-                        nextValidSquares.add(copyBoard.getSquareAbove(currentSquare));
-
-                    else if (i == playSquares.size() -1 &&  copyBoard.getSquareBelow(currentSquare).hasTile())
-                        nextValidSquares.add(copyBoard.getSquareBelow(currentSquare));
-
-                    if (copyBoard.getSquareRight(currentSquare).hasTile())
-                        nextValidSquares.add(copyBoard.getSquareRight(currentSquare));
-                    if (copyBoard.getSquareLeft(currentSquare).hasTile())
-                        nextValidSquares.add(copyBoard.getSquareLeft(currentSquare));
-                }
-
+            } catch (NullPointerException e) {
+                System.out.println("Catch the null pointer exception here is intentional.");
+                continue;
             }
-
         }
     }
 

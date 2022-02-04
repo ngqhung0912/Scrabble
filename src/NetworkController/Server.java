@@ -13,7 +13,9 @@ import Model.ServerPlayer;
 import View.NetworkView;
 
 /**
- * Server is the final point for hosting the game. It decides who can connect, when to start the game and who can play.
+ * Server is the final point for hosting the game.
+ * It decides who can connect, when to start the game and who can play.
+ *
  * @author Hung Nguyen
  * @version finale
  */
@@ -43,7 +45,7 @@ public class Server implements Runnable {
     }
 
     /**
-     * check a newly joined client's name to see if it is the same as a client that has already join.
+     * check a newly joined client's name to see if it is the same as a client that has already joined.
      * @param name the newly joined client's name.
      * @return return true if the name not yet exist, false otherwise
      */
@@ -351,7 +353,7 @@ public class Server implements Runnable {
             client.sendMessageToClient(ProtocolMessages.MOVE + ProtocolMessages.SEPARATOR +
                     clients.get(currentPlayerID) + ProtocolMessages.SEPARATOR +
                     move + ProtocolMessages.SEPARATOR + score + "\n");
-            view.showMessage("message broadcast: moved " + " to " + client.getClientId());
+            view.showMessage("message broadcast: move from  " + currentPlayerID + " " + move + " score: " + score +  " to " + client);
         }
     }
 

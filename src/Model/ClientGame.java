@@ -43,7 +43,7 @@ public class ClientGame {
      */
     public void putTilesToTray(String[] stringTileList) {
         for(String stringTile: stringTileList) {
-            Tile tile = determineTileFromServer(stringTile);
+            Tile tile = determineTileFromString(stringTile);
             players[currentPlayer].getTray().add(tile);
         }
     }
@@ -100,7 +100,7 @@ public class ClientGame {
             String charMove = "";
             String coordinateString = "";
             if (letterSquarePairs.toString().contains("-")) {
-                charMove = letterSquarePairs[0] + letterSquarePairs[1];
+                charMove = letterSquarePairs[1];
                 for (int j = 2; j < letterSquarePairs.length; j++ ) {
                     coordinateString += letterSquarePairs[j];
                 }
@@ -114,7 +114,7 @@ public class ClientGame {
         }
 
         for(Map.Entry<String, String> entry: letterToSquare.entrySet()) {
-            Tile tile = determineTileFromInput(entry.getValue());
+            Tile tile = determineTileFromString(entry.getValue());
             String indexFormatSquare = entry.getKey();
             Square square = board.getSquare(Integer.parseInt(indexFormatSquare));
             square.setTile(tile);
@@ -208,7 +208,7 @@ public class ClientGame {
      * @return a new tile containing the letter with 0 points.
      */
 
-    private Tile determineTileFromServer(String letter) {
+    private Tile determineTileFromString(String letter) {
         return new Tile(letter.charAt(0), 0);
     }
 
