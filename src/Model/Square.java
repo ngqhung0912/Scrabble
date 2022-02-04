@@ -2,6 +2,7 @@ package Model;
 
 /**
  * Represent a square in the Scrabble Board.
+ *
  * @author Hung Nguyen
  * @version 0.1
  */

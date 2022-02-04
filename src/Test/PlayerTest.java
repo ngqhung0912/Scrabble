@@ -1,8 +1,14 @@
 package Test;
 
 import Model.LocalPlayer;
+import Model.Tile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
@@ -12,36 +18,38 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class LocalPlayerTest {
     private LocalPlayer player1;
-//    private ClientPlayer player2;
-//    private ServerPlayer player3;
+    private LocalPlayer player2;
 
     @BeforeEach
     void setUp() {
         player1 = new LocalPlayer("nhat", 0);
-        player1.setFinalPoints(100);
+        player2 = new LocalPlayer("hung", 50);
     }
 
     /**
      * test setting the tray of the player.
      */
     @Test
-    void setTray() {
+    void testSetTray() {
+        assertTrue(player1.getTray().size() == 0);
 
+        ArrayList<Tile> tray = new ArrayList<>();
+
+        for (int i = 0; i < 7; i++) {
+            Tile tile = new Tile('A', 1);
+            tray.add(tile);
+        }
+        player1.setTray(tray);
+        assertTrue(player1.getTray().size() == 7);
     }
 
-    /**
-     * Test setting the final point.
-     */
-    @Test
-    void setFinalPoints() {
-
-    }
 
     /**
      * Test adding points to the player.
      */
     @Test
     void testAddPoints() {
+        player1.addPoints(100);
         assertEquals(player1.getTotalPoints(), 100);
         player1.addPoints(13);
         assertEquals(player1.getTotalPoints(), 113);
@@ -52,9 +60,8 @@ class LocalPlayerTest {
      */
     @Test
     void testCompareTo() {
-        LocalPlayer localPlayer2 = new LocalPlayer("hung", 50);
-        localPlayer2.setFinalPoints(50);
-        assertEquals(player1.compareTo(localPlayer2), 50);
-
+        player1.setFinalPoints(100);
+        player2.setFinalPoints(50);
+        assertEquals(player1.compareTo(player2), 50);
     }
 }

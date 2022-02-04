@@ -36,7 +36,7 @@ class SquareTest {
      * Test setting and getting the tile of the square.
      */
     @Test
-    void testSetandGetTile() {
+    void testSetAundGetTile() {
         assertNull(normalSquare.getTile());
         normalSquare.setTile(tile);
         assertEquals(normalSquare.getTile(), tile);

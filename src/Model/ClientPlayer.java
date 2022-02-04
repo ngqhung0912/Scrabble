@@ -19,8 +19,6 @@ public class ClientPlayer extends Player {
         super(name, id);
     }
 
-
-
     @Override
     public String[] determineMove() throws IOException {
         return new String[0];
