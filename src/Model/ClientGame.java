@@ -118,17 +118,9 @@ public class ClientGame {
             String indexFormatSquare = entry.getKey();
             Square square = board.getSquare(Integer.parseInt(indexFormatSquare));
             square.setTile(tile);
+            square.setType(SquareType.NORMAL);
         }
     }
-
-
-//    private String determineCoordinateFromSquareInt( int location ) {
-//        int xPosition = location % 15;
-//        int yPosition = location / 15;
-//        String[] alphaArr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-//        String xCoordinate = alphaArr[xPosition];
-//        return (xCoordinate + yPosition);
-//    }
 
     /**
      * set the point sent by the server to their respective players.
@@ -173,7 +165,6 @@ public class ClientGame {
      * Getting a string array representation of a tray.
      *  @param tray player's tray.
      * @return return the String array represents the tray.
-     *
      */
     public ArrayList<String> getLetterFromTray(ArrayList<Tile> tray) {
         ArrayList<String> letterTray = new ArrayList<>();
@@ -211,6 +202,5 @@ public class ClientGame {
     private Tile determineTileFromString(String letter) {
         return new Tile(letter.charAt(0), 0);
     }
-
 }
 

@@ -17,16 +17,18 @@ public class LocalGame extends Game {
 
     /**
      * Creates a new game
-     * @param players number of players
+     * @param playersName list of name of the players.
      * @param UI the local view.
      */
-    public LocalGame(Player[] players, LocalView UI) {
+    public LocalGame(String[] playersName, LocalView UI) {
         super();
-        this.numPlayer = players.length;
+        this.numPlayer = playersName.length;
         this.UI = UI;
         nextValidSquares = new ArrayList<>();
-        this.players = players;
-
+        players = new Player[numPlayer];
+        for (int i = 0; i < numPlayer; i++) {
+            players[i] = new LocalPlayer(playersName[i], i);
+        }
 
         for (Player player : players)
         {

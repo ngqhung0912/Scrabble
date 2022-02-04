@@ -2,7 +2,6 @@ package Model;
 
 import WordChecker.main.java.InMemoryScrabbleWordChecker;
 import WordChecker.main.java.ScrabbleWordChecker;
-
 import java.util.*;
 
 /**
@@ -27,7 +26,6 @@ public abstract class Game {
         currentPlayer = 0;
         passCount = 0;
         checker = new InMemoryScrabbleWordChecker();
-
     }
 
     /**
@@ -433,8 +431,7 @@ public abstract class Game {
     /**
      * Swap the tiles that the player chooses with new tiles from the tileBag,
      * if there is still tiles in the tileBag.
-     * @param chars the chars Array representation of the tiles player want to
-     *              swap.
+     * @param chars the chars Array representation of the tiles player want to swap.
      */
     abstract void swapTray(String[] chars);
 
@@ -456,5 +453,7 @@ public abstract class Game {
      * @return the winner (player).
      */
     abstract Player isWinner();
+
+
 }
 

@@ -104,7 +104,7 @@ public class ServerGame extends Game {
      * Start the game.
      */
     public void start() {
-        while (!gameOver()) {
+        while (server.getClients().size() >= 2 || !gameOver()) {
             server.getView().update(this);
             ServerPlayer currentPlayer = getCurrentPlayer();
             ClientHandler currentClient = currentPlayer.getClient();
@@ -141,7 +141,7 @@ public class ServerGame extends Game {
                         }
                         break;
                     case ProtocolMessages.PASS:
-                        System.out.println("PASS. " + moveType + move);
+                        System.out.println(moveType + move);
                         if (!move.equals("Pass")) {
                             swapTray(moves);
                         }
@@ -158,13 +158,8 @@ public class ServerGame extends Game {
             moveType = null;
             server.broadcastTiles(currentClient, addNewTilesToTray(currentClient.getClientId()));
             setNextPlayer();
-
-            // then clientHandler handle moves
-            // clientHandler then broadcast the move to all other clients.
-            // then clientHandler call server to send new tiles to current player.
-            // then next turn.
         }
-        // print result
+        server.broadcastWinner();
     }
 
     public ServerPlayer isWinner() {
@@ -235,6 +230,11 @@ public class ServerGame extends Game {
 
     public ServerPlayer getCurrentPlayer() { return serverPlayers[currentPlayer];}
 
+    /**
+     * get player by their ID.
+     * @param id of the player
+     * @return the player associated with that ID.
+     */
     public ServerPlayer getPlayerByID(int id) {
         for (ServerPlayer serverPlayer : serverPlayers) {
             if (serverPlayer.getId() == id) return serverPlayer;

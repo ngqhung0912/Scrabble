@@ -42,16 +42,23 @@ public class NetworkView implements View {
      */
     public void update(ClientGame game) {
         ArrayList<String> tray = game.getLetterFromTray(game.getCurrentPlayer().getTray());
-        String trayMessage = "Tray: " +  (!tray.isEmpty() ? tray : "");
+        String trayMessage =  (!tray.isEmpty() ? "Tray: " + tray  +  "\n" : "");
         showMessage("\n\n" + BoardConstructor.generateBoard(game.getBoard()) + "\n"
                 + "Player: " + game.getCurrentPlayer().getName() + "\n"
-                + trayMessage + "\n"
+                + trayMessage
                 + "Total Score: " + game.getCurrentPlayer().getTotalPoints() + "\n");
     }
 
     public void showMessage(String message) {
         System.out.println(message);
     }
+
+    /**
+     * prompt the user to input a String
+     * @param prompt the prompt to ask the user.
+     * @return the user inputs.
+     * @throws IOException when there is input/output error.
+     */
     public String getString(String prompt) throws IOException {
         showMessage(prompt);
         return bf.readLine();
@@ -92,6 +99,12 @@ public class NetworkView implements View {
      */
     public void printResult(String winner) {
         showMessage("---GAMEOVER---" + "\n********************" +
-                "\nThe winner is " + winner);
+                "\nThe winner is " + winner + ". Better luck next time!");
+    }
+
+    public void congratulations() {
+        showMessage("---GAMEOVER---" + "\n********************" +
+                "\nCongratulations! You are the winner!!!!");
+
     }
 }

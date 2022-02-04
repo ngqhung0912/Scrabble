@@ -377,7 +377,6 @@ public class Server implements Runnable {
         for (ClientHandler client : clients.values()) {
             client.sendMessageToClient(ProtocolMessages.GAMEOVER + ProtocolMessages.SEPARATOR + winner.getName() + "\n");
             view.showMessage("message broadcast: winner " + " to " + client.getClientId());
-
         }
     }
 

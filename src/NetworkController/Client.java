@@ -217,7 +217,8 @@ public class Client implements Runnable {
                 break;
 
             case ProtocolMessages.GAMEOVER:
-                view.printResult(command[1]);
+                if (command[1].equals(name)) {view.congratulations();}
+                else {view.printResult(command[1]);}
                 break;
 
             case ProtocolMessages.ERROR:

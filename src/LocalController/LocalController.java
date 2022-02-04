@@ -36,17 +36,16 @@ public class LocalController {
 
         for (int i = 0; i < numPlayers; i++) {
             playerName[i] = args[i+1];
-            localPlayers[i] = new LocalPlayer(playerName[i], i);
         }
 
-        localGame = new LocalGame(localPlayers,textUI);
+        localGame = new LocalGame(playerName,textUI);
 
         loopingOverTheGame:
         do {
             textUI.update(localGame);
             String[] moves = new String[0];
             try {
-                moves = localPlayers[currentPlayer].determineMove();
+                moves = localGame.getCurrentPlayer().determineMove();
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -16,7 +16,6 @@ import java.util.List;
  * @version finale
  */
 public class ClientHandler implements Runnable{
-    private Socket socket;
     private BufferedReader in;
     private BufferedWriter out;
     private Server server;
@@ -41,13 +40,12 @@ public class ClientHandler implements Runnable{
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.server = server;
-            this.view = new NetworkView();
+            this.view = server.getView();
             this.hasTimeLimit = false;
             this.running = true;
             this.hasChatFunction = false;
             this.isReady = false;
             this.clientId = id;
-
         } catch (IOException e) {
             shutDown();
         }
@@ -57,17 +55,15 @@ public class ClientHandler implements Runnable{
      * Setter for the serverGame.
      * @param serverGame the serverGame that handles this client.
      */
-
     public void setServerGame (ServerGame serverGame) {this.serverGame = serverGame;}
 
     /**
      * shut down the connection and remove this thread from the server.
      */
-
     public void shutDown() {
         server.removeClient(this);
         running = false;
-        if (server.getGameState()) serverGame.getPlayerByID(this.getClientId()).setAborted(true);
+//        if (server.getGameState()) serverGame.getPlayerByID(this.getClientId()).setAborted(true);
         view.showMessage(this + " has been shutdown. ID: " + this.clientId);
     }
 
@@ -150,7 +146,7 @@ public class ClientHandler implements Runnable{
                     serverGame.setAbort(this.clientId);
                     serverGame.doMove(this, ProtocolMessages.PASS, "Pass");
                 }
-                else shutDown();
+                shutDown();
                 break;
 
             case ProtocolMessages.MOVE:
@@ -163,6 +159,9 @@ public class ClientHandler implements Runnable{
                 } else {
                     sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
                 }
+                break;
+            default:
+                sendErrorToClient(ProtocolMessages.OUT_OF_TURN);
                 break;
         }
     }
@@ -185,7 +184,6 @@ public class ClientHandler implements Runnable{
      * setter for the client's name.
      * @param name the name to be set.
      */
-
     private void setName(String name) {
         this.clientName = name;
     }
@@ -194,7 +192,6 @@ public class ClientHandler implements Runnable{
      * toString override.
      * @return client's name.
      */
-
     public String toString() {
         return clientName;
     }
@@ -203,7 +200,6 @@ public class ClientHandler implements Runnable{
      * to send message to the client.
      * @param message to send.
      */
-
     public void sendMessageToClient(String message) {
         try {
             out.write(message);
@@ -213,11 +209,11 @@ public class ClientHandler implements Runnable{
             view.showMessage("Cannot send message to client: " + this + "(client ID: " + clientId + ")");
         }
     }
+
     /**
      * send error to the client.
      * @param error the error to send
      */
-
     public void sendErrorToClient(String error) {
         try {
             out.write(ProtocolMessages.ERROR + ProtocolMessages.SEPARATOR + error);
@@ -232,10 +228,7 @@ public class ClientHandler implements Runnable{
      * getter for this client's ID
      * @return client's ID.
      */
-
     public int getClientId() {
         return clientId;
     }
-
-
 }
